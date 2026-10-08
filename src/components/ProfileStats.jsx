@@ -1,18 +1,17 @@
 export default function ProfileStats({ stats, loading }) {
   const items = [
-    { label: "Friends", value: stats?.friends ?? 0 },
-    { label: "Posts", value: stats?.posts ?? 0 },
-    { label: "Status", value: stats?.status ?? 0 },
+    { label: "Followers", value: stats?.followers ?? 0 },
+    { label: "Likes", value: stats?.likes ?? 0 },
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-4 max-w-4xl mx-auto px-6 py-6">
+    <div className="grid grid-cols-2 gap-6 max-w-2xl mx-auto px-6 py-6">
       {items.map((item) => (
         <div key={item.label} className="text-center">
-          <div className="text-2xl sm:text-3xl font-black text-warm font-mono">
-            {loading ? "—" : item.value}
+          <div className="text-3xl sm:text-4xl font-black text-warm font-mono">
+            {loading ? "—" : item.value.toLocaleString()}
           </div>
-          <div className="text-label mt-1">{item.label}</div>
+          <div className="text-label mt-1.5">{item.label}</div>
         </div>
       ))}
     </div>

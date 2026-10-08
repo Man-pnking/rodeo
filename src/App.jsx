@@ -10,6 +10,7 @@ import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
 import UserProfile from "./pages/UserProfile.jsx";
 import Friends from "./pages/Friends.jsx";
+import Discover from "./pages/Discover.jsx";
 import Messages from "./pages/Messages.jsx";
 import Compose from "./pages/Compose.jsx";
 import { useAuth } from "./hooks/useAuth";
@@ -77,6 +78,7 @@ export default function App() {
             <Route path="/signup" element={<RequireGuest><Signup /></RequireGuest>} />
 
             <Route path="/" element={<RequireAuth><AppLayout><Home /></AppLayout></RequireAuth>} />
+            <Route path="/discover" element={<RequireAuth><AppLayout><Discover /></AppLayout></RequireAuth>} />
             <Route path="/friends" element={<RequireAuth><AppLayout><Friends /></AppLayout></RequireAuth>} />
             <Route path="/messages" element={<RequireAuth><AppLayout><Messages /></AppLayout></RequireAuth>} />
             <Route path="/compose" element={<RequireAuth><AppLayout><Compose /></AppLayout></RequireAuth>} />

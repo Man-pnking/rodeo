@@ -4,7 +4,7 @@ import { Home, Users, MessageCircle, Plus, User } from "lucide-react";
 
 const LINKS = [
   { to: "/",         icon: Home,           label: "Home" },
-  { to: "/friends",  icon: Users,          label: "Friends" },
+  { to: "/discover",  icon: Users,          label: "Discover" },
   { to: "/compose",  icon: Plus,           label: "Create", isPrimary: true },
   { to: "/messages", icon: MessageCircle,  label: "Messages" },
   { to: "/profile",  icon: User,           label: "Profile" },

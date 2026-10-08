@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
 export function useProfileStats(userId) {
-  const [stats, setStats] = useState({ friends: 0, posts: 0, status: 0 });
+  const [stats, setStats] = useState({ followers: 0, likes: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -10,7 +10,7 @@ export function useProfileStats(userId) {
     let cancelled = false;
 
     async function load() {
-      const [friends, posts, status] = await Promise.all([
+      const [followers, likes] = await Promise.all([
         supabase
           .from("friendships")
           .select("id", { count: "exact", head: true })
@@ -19,19 +19,18 @@ export function useProfileStats(userId) {
           .then((r) => r.count || 0),
         supabase
           .from("posts")
-          .select("id", { count: "exact", head: true })
+          .select("likes_count", { count: "exact" })
           .eq("author_id", userId)
-          .then((r) => r.count || 0),
-        supabase
-          .from("statuses")
-          .select("id", { count: "exact", head: true })
-          .eq("author_id", userId)
-          .gt("expires_at", new Date().toISOString())
-          .then((r) => r.count || 0),
+          .then((r) => {
+            // Will return 0 until posts table has likes_count column
+            if (!r.data) return 0;
+            return r.data.reduce((sum, p) => sum + (p.likes_count || 0), 0);
+          })
+          .catch(() => 0),
       ]);
 
       if (!cancelled) {
-        setStats({ friends, posts, status });
+        setStats({ followers, likes });
         setLoading(false);
       }
     }
