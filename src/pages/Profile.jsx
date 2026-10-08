@@ -7,6 +7,7 @@ import ProfileHeader from "../components/ProfileHeader.jsx";
 import ProfileStats from "../components/ProfileStats.jsx";
 import ProfileTabs from "../components/ProfileTabs.jsx";
 import EditProfileModal from "../components/EditProfileModal.jsx";
+import SavedTab from "../components/SavedTab.jsx";
 import SlideIn from "../components/SlideIn.jsx";
 
 export default function Profile() {
@@ -103,9 +104,7 @@ export default function Profile() {
           {tab === "status" && (
             <EmptyState title="No status updates" body="Post a status to share a moment — disappears in 24 hours." />
           )}
-          {tab === "saved" && (
-            <EmptyState title="Nothing saved" body="Posts you save will be visible only to you." />
-          )}
+          {tab === "saved" && <SavedTab />}
         </SlideIn>
       </div>
 

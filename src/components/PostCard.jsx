@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Heart, MessageCircle, Bookmark, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Trash2, Repeat2 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import CommentSheet from "./CommentSheet.jsx";
 import ParallaxLayer from "./ParallaxLayer.jsx";
@@ -17,7 +17,7 @@ function timeAgo(iso) {
   return `${Math.floor(s / 86400)}d`;
 }
 
-export default function PostCard({ post, onLike, onSave, onDelete }) {
+export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
   const { user } = useAuth();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -110,6 +110,19 @@ export default function PostCard({ post, onLike, onSave, onDelete }) {
           >
             <MessageCircle className="w-4 h-4" />
             <span>{post.comments_count || 0}</span>
+          </button>
+
+          <button
+            onClick={() => onRepost?.(post)}
+            className="flex items-center gap-1.5 text-xs transition-colors"
+            style={{ color: post.reposted ? "#22c55e" : undefined }}
+            aria-label="Repost"
+          >
+            <Repeat2
+              className="w-4 h-4"
+              stroke={post.reposted ? "#22c55e" : "currentColor"}
+            />
+            {(post.reposts_count || 0) > 0 && <span>{post.reposts_count}</span>}
           </button>
 
           <button

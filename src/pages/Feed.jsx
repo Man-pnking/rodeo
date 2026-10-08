@@ -8,7 +8,7 @@ import StatusBar from "../components/StatusBar.jsx";
 
 export default function Feed() {
   const { user } = useAuth();
-  const { posts, loading, toggleLike, toggleSave, deletePost, reload } = useFeed(user?.id);
+  const { posts, loading, toggleLike, toggleSave, toggleRepost, deletePost, reload } = useFeed(user?.id);
   const [composerOpen, setComposerOpen] = useState(true);
 
   return (
@@ -52,6 +52,7 @@ export default function Feed() {
               post={post}
               onLike={toggleLike}
               onSave={toggleSave}
+              onRepost={toggleRepost}
               onDelete={deletePost}
             />
           ))}
