@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import AnimatedBackground from "./components/AnimatedBackground.jsx";
 import Splash from "./components/Splash.jsx";
 import Onboarding from "./components/Onboarding.jsx";
 import AppLayout from "./components/AppLayout.jsx";
@@ -68,8 +67,6 @@ export default function App() {
   return (
     <StatusProvider>
     <div className="relative min-h-screen w-full text-warm">
-      <AnimatedBackground />
-
       <div className="relative z-10">
         {/* Splash only on mobile */}
         {isMobile && <Splash onDone={() => setSplashDone(true)} />}
