@@ -12,7 +12,7 @@ export default function Feed() {
   const [composerOpen, setComposerOpen] = useState(true);
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8">
+    <div className="max-w-2xl mx-auto px-6 py-8 w-full">
       <SlideIn variant="up">
         <h1 className="display-lg mb-6">Home</h1>
       </SlideIn>

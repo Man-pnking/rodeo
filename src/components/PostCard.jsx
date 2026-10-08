@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Heart, MessageCircle, Bookmark, Trash2 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import CommentSheet from "./CommentSheet.jsx";
+import ParallaxLayer from "./ParallaxLayer.jsx";
 import StatusRing from "./StatusRing.jsx";
 import StatusViewer from "./StatusViewer.jsx";
 import { useStatusContext } from "../context/StatusContext.jsx";

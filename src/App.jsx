@@ -21,6 +21,7 @@ import { useAuth } from "./hooks/useAuth";
 import { StatusProvider } from "./context/StatusContext.jsx";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { ToastProvider } from "./context/ToastContext.jsx";
+import { ParallaxProvider } from "./context/ParallaxContext.jsx";
 import { useIsMobile } from "./hooks/useIsMobile";
 
 const ONBOARDING_KEY = "rodeo_onboarded";
@@ -68,6 +69,7 @@ export default function App() {
   };
 
   return (
+    <ParallaxProvider>
     <ThemeProvider>
     <ToastProvider>
     <StatusProvider>
@@ -105,5 +107,6 @@ export default function App() {
     </StatusProvider>
     </ToastProvider>
     </ThemeProvider>
+    </ParallaxProvider>
   );
 }

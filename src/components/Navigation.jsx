@@ -13,7 +13,7 @@ const LINKS = [
 export default function Navigation() {
   return (
     <>
-      <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-64 flex-col z-40"
+      <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-64 flex-col z-40 no-scrollbar overflow-y-auto"
         style={{
           background: "rgba(10, 8, 15, 0.65)",
           backdropFilter: "blur(24px) saturate(140%)",
@@ -28,7 +28,7 @@ export default function Navigation() {
           </div>
         </div>
 
-        <nav className="flex-1 px-3 space-y-1">
+        <nav className="flex-1 px-3 space-y-1 no-scrollbar overflow-y-auto">
           {LINKS.map((link) => (
             <NavLink
               key={link.to}
@@ -57,9 +57,10 @@ export default function Navigation() {
         <div className="p-6 text-label">v0.1.0 · alpha</div>
       </aside>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 safe-bottom">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 safe-bottom" style={{ maxWidth: "100vw", overflow: "hidden" }}>
         <div
           className="flex items-center justify-around px-2 pt-2 pb-2"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0) + 8px)" }}
           style={{
             background: "rgba(10, 8, 15, 0.85)",
             backdropFilter: "blur(24px)",

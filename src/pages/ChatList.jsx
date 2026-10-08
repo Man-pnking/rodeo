@@ -21,7 +21,7 @@ export default function ChatList() {
   const [newChatOpen, setNewChatOpen] = useState(false);
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8">
+    <div className="max-w-2xl mx-auto px-6 py-8 w-full">
       <SlideIn variant="up">
         <div className="flex items-center justify-between mb-6">
           <h1 className="display-lg">Messages</h1>

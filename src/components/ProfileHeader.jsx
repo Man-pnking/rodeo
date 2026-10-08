@@ -1,5 +1,6 @@
 import { Camera, Settings as SettingsIcon, UserPlus, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import ParallaxLayer from "./ParallaxLayer.jsx";
 import { useState } from "react";
 import StatusRing from "./StatusRing.jsx";
 import StatusViewer from "./StatusViewer.jsx";
@@ -24,14 +25,9 @@ export default function ProfileHeader({
   return (
     <div className="relative">
       {/* Banner */}
-      <div
-        className="relative w-full h-48 sm:h-64 md:h-80 overflow-hidden"
-        style={{
-          background: bannerUrl
-            ? `url(${bannerUrl}) center/cover`
-            : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 50%, #3b82f6 100%)",
-        }}
-      >
+      <ParallaxLayer speed={0.25} className="relative w-full h-48 sm:h-64 md:h-80 overflow-hidden" style={{
+        background: bannerUrl ? `url(${bannerUrl}) center/cover` : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 50%, #3b82f6 100%)",
+      }}>
         {isOwn && (
           <button
             onClick={onEditBanner}
@@ -42,7 +38,7 @@ export default function ProfileHeader({
             <Camera className="w-4 h-4 text-white" />
           </button>
         )}
-      </div>
+      </ParallaxLayer>
 
       {/* Avatar + actions */}
       <div className="max-w-4xl mx-auto px-6 -mt-16 sm:-mt-20 flex items-end justify-between gap-4 relative z-10">

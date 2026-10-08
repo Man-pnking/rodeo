@@ -65,7 +65,7 @@ export default function Discover() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8">
+    <div className="max-w-2xl mx-auto px-6 py-8 w-full">
       <SlideIn variant="up">
         <h1 className="display-lg mb-2">Discover</h1>
         <p className="text-body mb-8">Find friends already on Rodeo.</p>

@@ -11,7 +11,7 @@ export default function Library() {
   const [preview, setPreview] = useState(null);
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8">
+    <div className="max-w-4xl mx-auto px-6 py-8 w-full">
       <SlideIn variant="up">
         <h1 className="display-lg mb-2">Library</h1>
         <p className="text-body mb-8">Your uploaded photos.</p>
