@@ -5,12 +5,17 @@ function timeOnly(iso) {
   });
 }
 
-export default function MessageBubble({ message, isOwn }) {
+export default function MessageBubble({ message, isOwn, senderName, showSender }) {
   const read = !!message.read_at;
 
   return (
     <div className={`flex ${isOwn ? "justify-end" : "justify-start"} px-1 mb-1`}>
       <div className="max-w-[78%] sm:max-w-[65%]">
+        {showSender && !isOwn && senderName && (
+          <div className="text-[11px] text-iri-pink font-medium mb-1 px-2">
+            {senderName}
+          </div>
+        )}
         <div
           className="px-4 py-2.5"
           style={{

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "../lib/supabase";
 
-export function useMessages(conversationId, userId) {
+export function useMessages({ conversationId, groupId }, userId) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const channelRef = useRef(null);
@@ -20,7 +20,7 @@ export function useMessages(conversationId, userId) {
       .order("created_at", { ascending: true });
     setMessages(data || []);
     setLoading(false);
-  }, [conversationId]);
+  }, [conversationId, groupId]);
 
   // Initial load
   useEffect(() => {
@@ -29,17 +29,19 @@ export function useMessages(conversationId, userId) {
 
   // Realtime subscription
   useEffect(() => {
-    if (!conversationId) return;
+    const filterValue = groupId || conversationId;
+    const filterCol = groupId ? "group_id" : "conversation_id";
+    if (!filterValue) return;
 
     const channel = supabase
-      .channel(`messages:${conversationId}`)
+      .channel(`messages:${filterCol}:${filterValue}`)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "messages",
-          filter: `conversation_id=eq.${conversationId}`,
+          filter: `${filterCol}=eq.${filterValue}`,
         },
         (payload) => {
           setMessages((prev) => {
@@ -55,7 +57,7 @@ export function useMessages(conversationId, userId) {
           event: "UPDATE",
           schema: "public",
           table: "messages",
-          filter: `conversation_id=eq.${conversationId}`,
+          filter: `${filterCol}=eq.${filterValue}`,
         },
         (payload) => {
           setMessages((prev) =>
@@ -69,11 +71,12 @@ export function useMessages(conversationId, userId) {
     return () => {
       if (channelRef.current) supabase.removeChannel(channelRef.current);
     };
-  }, [conversationId]);
+  }, [conversationId, groupId]);
 
   // Mark incoming messages as read
   useEffect(() => {
-    if (!conversationId || !userId || messages.length === 0) return;
+    const targetId = groupId || conversationId;
+    if (!targetId || !userId || messages.length === 0) return;
     const unread = messages.filter(
       (m) => m.sender_id !== userId && !m.read_at
     );
@@ -92,18 +95,22 @@ export function useMessages(conversationId, userId) {
           )
         );
       });
-  }, [messages, conversationId, userId]);
+  }, [messages, conversationId, groupId, userId]);
 
   const send = async (body, imageUrl) => {
-    if (!userId || !conversationId) return { error: "Missing" };
+    const targetValue = groupId || conversationId;
+    if (!userId || !targetValue) return { error: "Missing" };
     if (!body?.trim() && !imageUrl) return { error: "Empty" };
 
-    const { error } = await supabase.from("messages").insert({
-      conversation_id: conversationId,
+    const payload = {
       sender_id: userId,
       body: body?.trim() || null,
       image_url: imageUrl || null,
-    });
+    };
+    if (groupId) payload.group_id = groupId;
+    else payload.conversation_id = conversationId;
+
+    const { error } = await supabase.from("messages").insert(payload);
     return { error: error?.message || null };
   };
 

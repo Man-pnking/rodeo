@@ -4,18 +4,26 @@ import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useMessages } from "../hooks/useMessages";
 import { useConversations } from "../hooks/useConversations";
+import { useGroups } from "../hooks/useGroups";
 import MessageBubble from "../components/MessageBubble.jsx";
 import MessageInput from "../components/MessageInput.jsx";
+import GroupAvatar from "../components/GroupAvatar.jsx";
 
 export default function Conversation() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { messages, loading, send } = useMessages(id, user?.id);
+  const { messages, loading, send } = useMessages(
+    isGroup ? { groupId: id } : { conversationId: id },
+    user?.id
+  );
   const { conversations } = useConversations(user?.id);
+  const { groups: myGroups } = useGroups(user?.id);
   const scrollRef = useRef(null);
 
-  const conv = conversations.find((c) => c.id === id);
+  const group = myGroups.find((g) => g.id === id);
+  const isGroup = !!group;
+  const conv = isGroup ? null : conversations.find((c) => c.id === id);
   const other = conv?.other;
 
   // Lock body scroll while in chat
@@ -65,7 +73,20 @@ export default function Conversation() {
           <ArrowLeft className="w-5 h-5 text-warm" />
         </button>
 
-        {other ? (
+        {isGroup && group ? (
+          <button
+            onClick={() => navigate(`/group/${id}`)}
+            className="flex items-center gap-3 min-w-0 flex-1 text-left"
+          >
+            <GroupAvatar group={group} members={group.members} size={40} />
+            <div className="min-w-0">
+              <div className="text-warm font-semibold text-sm truncate">{group.name}</div>
+              <div className="text-xs text-warm-mute truncate">
+                {group.members?.length || 1} member{(group.members?.length || 1) !== 1 ? "s" : ""}
+              </div>
+            </div>
+          </button>
+        ) : other ? (
           <Link to={`/u/${other.username}`} className="flex items-center gap-3 min-w-0 flex-1">
             <div
               className="w-10 h-10 rounded-full shrink-0"
@@ -99,9 +120,21 @@ export default function Conversation() {
         {!loading && messages.length === 0 && (
           <div className="text-center text-warm-mute text-sm py-6">Say hi 👋</div>
         )}
-        {messages.map((m) => (
-          <MessageBubble key={m.id} message={m} isOwn={m.sender_id === user?.id} />
-        ))}
+        {messages.map((m) => {
+          const senderMember = isGroup
+            ? group?.members?.find((gm) => gm.user_id === m.sender_id)
+            : null;
+          const senderName = senderMember?.profile?.display_name || senderMember?.profile?.username;
+          return (
+            <MessageBubble
+              key={m.id}
+              message={m}
+              isOwn={m.sender_id === user?.id}
+              senderName={senderName}
+              showSender={isGroup}
+            />
+          );
+        })}
       </div>
 
       {/* Input — pinned at bottom */}

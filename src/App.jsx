@@ -14,6 +14,7 @@ import Discover from "./pages/Discover.jsx";
 import Messages from "./pages/Messages.jsx";
 import ChatList from "./pages/ChatList.jsx";
 import Conversation from "./pages/Conversation.jsx";
+import GroupInfo from "./pages/GroupInfo.jsx";
 import Compose from "./pages/Compose.jsx";
 import Library from "./pages/Library.jsx";
 import Settings from "./pages/Settings.jsx";
@@ -102,6 +103,7 @@ export default function App() {
             <Route path="/friends" element={<RequireAuth><AppLayout><Friends /></AppLayout></RequireAuth>} />
             <Route path="/messages" element={<RequireAuth><AppLayout><ChatList /></AppLayout></RequireAuth>} />
             <Route path="/messages/:id" element={<RequireAuth><Conversation /></RequireAuth>} />
+            <Route path="/group/:id" element={<RequireAuth><AppLayout><GroupInfo /></AppLayout></RequireAuth>} />
             <Route path="/compose" element={<RequireAuth><AppLayout><Compose /></AppLayout></RequireAuth>} />
             <Route path="/library" element={<RequireAuth><AppLayout><Library /></AppLayout></RequireAuth>} />
             <Route path="/settings" element={<RequireAuth><AppLayout><Settings /></AppLayout></RequireAuth>} />

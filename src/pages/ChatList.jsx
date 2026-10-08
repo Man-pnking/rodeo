@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MessageCircle, Plus } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useConversations } from "../hooks/useConversations";
+import { useGroups } from "../hooks/useGroups";
+import GroupAvatar from "../components/GroupAvatar.jsx";
 import NewChatSheet from "../components/NewChatSheet.jsx";
+import CreateGroupSheet from "../components/CreateGroupSheet.jsx";
 import SlideIn from "../components/SlideIn.jsx";
 
 function timeAgo(iso) {
@@ -16,9 +19,38 @@ function timeAgo(iso) {
 }
 
 export default function ChatList() {
+  const navigate = useNavigate();
   const { user } = useAuth();
-  const { conversations, loading } = useConversations(user?.id);
+  const { conversations, loading: convLoading } = useConversations(user?.id);
+  const { groups, loading: groupLoading } = useGroups(user?.id);
+  const loading = convLoading || groupLoading;
   const [newChatOpen, setNewChatOpen] = useState(false);
+  const [newGroupOpen, setNewGroupOpen] = useState(false);
+
+  const mergedItems = [
+    ...conversations.map((c) => ({
+      type: "dm",
+      id: c.id,
+      to: `/messages/${c.id}`,
+      avatar: c.other?.avatar_url,
+      name: c.other?.display_name || c.other?.username,
+      sub: c.other?.username,
+      lastMessage: c.lastMessage,
+      lastAt: c.lastMessage?.created_at || c.last_message_at,
+      unread: c.unread,
+    })),
+    ...groups.map((g) => ({
+      type: "group",
+      id: g.id,
+      to: `/messages/${g.id}`,
+      group: g,
+      name: g.name,
+      sub: `${g.members?.length || 1} members`,
+      lastMessage: g.lastMessage,
+      lastAt: g.lastMessage?.created_at || g.updated_at,
+      unread: g.unread,
+    })),
+  ].sort((a, b) => new Date(b.lastAt || 0) - new Date(a.lastAt || 0));
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-8 w-full">
@@ -26,7 +58,7 @@ export default function ChatList() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="display-lg">Messages</h1>
           <button
-            onClick={() => setNewChatOpen(true)}
+            onClick={() => setNewGroupOpen(true)}
             className="w-11 h-11 rounded-full flex items-center justify-center transition-transform hover:scale-105"
             style={{
               background: "linear-gradient(135deg, #ff6ec7 0%, #a855f7 50%, #3b82f6 100%)",
@@ -58,43 +90,45 @@ export default function ChatList() {
         </div>
       )}
 
-      {!loading && conversations.length > 0 && (
+      {!loading && mergedItems.length > 0 && (
         <div>
-          {conversations.map((c) => (
+          {mergedItems.map((item) => (
             <Link
-              key={c.id}
-              to={`/messages/${c.id}`}
+              key={`${item.type}-${item.id}`}
+              to={item.to}
               className="flex items-center gap-4 py-4 hover:bg-white/[0.02] transition-colors -mx-2 px-2 rounded-xl"
             >
-              <div
-                className="w-12 h-12 rounded-full shrink-0"
-                style={{
-                  background: c.other?.avatar_url
-                    ? `url(${c.other.avatar_url}) center/cover`
-                    : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
-                }}
-              />
+              {item.type === "group" ? (
+                <GroupAvatar group={item.group} members={item.group.members} size={48} />
+              ) : (
+                <div
+                  className="w-12 h-12 rounded-full shrink-0"
+                  style={{
+                    background: item.avatar
+                      ? `url(${item.avatar}) center/cover`
+                      : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                  }}
+                />
+              )}
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-3 mb-1">
-                  <div className="text-warm font-medium truncate">
-                    {c.other?.display_name || c.other?.username}
-                  </div>
+                  <div className="text-warm font-medium truncate">{item.name}</div>
                   <div className="text-xs text-warm-mute shrink-0">
-                    {timeAgo(c.lastMessage?.created_at || c.last_message_at)}
+                    {timeAgo(item.lastAt)}
                   </div>
                 </div>
                 <div className="flex items-baseline justify-between gap-3">
                   <div className="text-sm text-warm-mute truncate">
-                    {c.lastMessage?.image_url && !c.lastMessage?.body
+                    {item.lastMessage?.image_url && !item.lastMessage?.body
                       ? "📷 Photo"
-                      : c.lastMessage?.body || "Start the conversation"}
+                      : item.lastMessage?.body || (item.type === "group" ? "Group created" : "Start the conversation")}
                   </div>
-                  {c.unread > 0 && (
+                  {item.unread > 0 && (
                     <span
                       className="shrink-0 min-w-[20px] h-5 rounded-full flex items-center justify-center text-[10px] font-bold px-1.5 text-white"
                       style={{ background: "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)" }}
                     >
-                      {c.unread}
+                      {item.unread}
                     </span>
                   )}
                 </div>
@@ -105,6 +139,11 @@ export default function ChatList() {
       )}
 
       <NewChatSheet open={newChatOpen} onClose={() => setNewChatOpen(false)} />
+      <CreateGroupSheet
+        open={newGroupOpen}
+        onClose={() => setNewGroupOpen(false)}
+        onCreated={(gid) => navigate(`/messages/${gid}`)}
+      />
     </div>
   );
 }
