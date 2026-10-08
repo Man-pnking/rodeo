@@ -1,102 +1,132 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { LogOut } from "lucide-react";
+import { useState, useRef } from "react";
+import { supabase } from "../lib/supabase";
 import { useAuth } from "../hooks/useAuth";
+import { useProfile } from "../hooks/useProfile";
+import { useProfileStats } from "../hooks/useProfileStats";
+import ProfileHeader from "../components/ProfileHeader.jsx";
+import ProfileStats from "../components/ProfileStats.jsx";
+import ProfileTabs from "../components/ProfileTabs.jsx";
+import EditProfileModal from "../components/EditProfileModal.jsx";
+import SlideIn from "../components/SlideIn.jsx";
 
 export default function Profile() {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [bio, setBio] = useState("");
-  const [saved, setSaved] = useState(false);
+  const { user } = useAuth();
+  const { profile, loading, update, refetch } = useProfile(user?.id);
+  const { stats, loading: statsLoading } = useProfileStats(user?.id);
+  const [tab, setTab] = useState("posts");
+  const [editOpen, setEditOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const avatarInput = useRef(null);
+  const bannerInput = useRef(null);
 
-  useEffect(() => {
-    if (user?.user_metadata?.username) setName(user.user_metadata.username);
-  }, [user]);
-
-  const handleSave = (e) => {
-    e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const upload = async (file, bucket, column) => {
+    if (!file || !user) return;
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `${user.id}/${column}-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
+    if (upErr) {
+      alert(upErr.message);
+      setUploading(false);
+      return;
+    }
+    const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path);
+    await update({ [column]: pub.publicUrl });
+    await refetch();
+    setUploading(false);
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/login");
-  };
+  const onPickAvatar = () => avatarInput.current?.click();
+  const onPickBanner = () => bannerInput.current?.click();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-warm-mute text-sm">Loading profile...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative min-h-screen">
-      <div className="max-w-2xl mx-auto px-6 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <div className="flex items-center justify-between mb-12">
-            <div className="text-label">Profile</div>
-            <button
-              onClick={handleSignOut}
-              className="text-warm-mute hover:text-warm text-sm flex items-center gap-2 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              Sign out
-            </button>
-          </div>
+    <div className="min-h-screen">
+      <input
+        ref={avatarInput}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => e.target.files?.[0] && upload(e.target.files[0], "avatars", "avatar_url")}
+      />
+      <input
+        ref={bannerInput}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => e.target.files?.[0] && upload(e.target.files[0], "banners", "banner_url")}
+      />
 
-          <div className="flex items-center gap-5 mb-12">
-            <div
-              className="flex items-center justify-center shrink-0"
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: 24,
-                background: "linear-gradient(120deg, #ff6ec7 0%, #a855f7 50%, #3b82f6 100%)",
-                boxShadow: "0 16px 50px rgba(168, 85, 247, 0.35)",
-              }}
-            >
-              <span style={{ fontFamily: '"Space Grotesk", Inter, sans-serif', fontSize: 34, fontWeight: 800, color: "#fff" }}>
-                {(name || "U")[0].toUpperCase()}
-              </span>
-            </div>
-            <div className="min-w-0">
-              <h1 className="display-lg mb-1 truncate">
-                {name || "Your profile"}
-              </h1>
-              <p className="text-warm-dim text-sm truncate">{user?.email}</p>
-            </div>
-          </div>
+      <ProfileHeader
+        profile={profile}
+        isOwn
+        onEditAvatar={onPickAvatar}
+        onEditBanner={onPickBanner}
+      />
 
-          <form onSubmit={handleSave} className="space-y-8">
-            <div>
-              <label className="text-label block mb-3">Display name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
-                className="w-full bg-transparent border-0 border-b border-white/15 focus:border-iri-pink pb-3 text-warm placeholder:text-warm-mute outline-none transition-colors"
-              />
-            </div>
+      <SlideIn variant="up" delay={0.1}>
+        <div className="max-w-4xl mx-auto px-6 pt-6 pb-4">
+          <h1 className="display-lg mb-1">
+            {profile?.display_name || "Your profile"}
+          </h1>
+          <p className="text-warm-dim text-sm mb-3">@{profile?.username || "you"}</p>
+          <p className="text-body max-w-2xl">
+            {profile?.bio || "Hey there! I am using Rodeo."}
+          </p>
+          {uploading && (
+            <p className="text-xs text-iri-pink mt-3">Uploading...</p>
+          )}
+        </div>
+      </SlideIn>
 
-            <div>
-              <label className="text-label block mb-3">Bio</label>
-              <textarea
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Tell people about yourself..."
-                rows={3}
-                className="w-full bg-transparent border-0 border-b border-white/15 focus:border-iri-pink pb-3 text-warm placeholder:text-warm-mute outline-none transition-colors resize-none"
-              />
-            </div>
+      <SlideIn variant="up" delay={0.15}>
+        <ProfileStats stats={stats} loading={statsLoading} />
+      </SlideIn>
 
-            <button type="submit" className="btn-primary">
-              {saved ? "Saved!" : "Save changes"}
-            </button>
-          </form>
-        </motion.div>
+      <ProfileTabs isOwn value={tab} onChange={setTab} />
+
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        <SlideIn variant="up">
+          {tab === "posts" && (
+            <EmptyState title="No posts yet" body="Your posts and reposts will appear here." />
+          )}
+          {tab === "media" && (
+            <EmptyState title="No media yet" body="Photos and videos you share will appear here." />
+          )}
+          {tab === "status" && (
+            <EmptyState title="No status updates" body="Post a status to share a moment — disappears in 24 hours." />
+          )}
+          {tab === "saved" && (
+            <EmptyState title="Nothing saved" body="Posts you save will be visible only to you." />
+          )}
+        </SlideIn>
       </div>
+
+      <EditProfileModal
+        open={editOpen}
+        profile={profile}
+        onClose={() => setEditOpen(false)}
+        onSave={async (patch) => {
+          await update(patch);
+          await refetch();
+        }}
+      />
+    </div>
+  );
+}
+
+function EmptyState({ title, body }) {
+  return (
+    <div className="text-center py-16">
+      <h3 className="display-md mb-2 text-warm">{title}</h3>
+      <p className="text-body">{body}</p>
     </div>
   );
 }

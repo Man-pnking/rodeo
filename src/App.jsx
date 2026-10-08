@@ -8,10 +8,12 @@ import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
+import UserProfile from "./pages/UserProfile.jsx";
 import Friends from "./pages/Friends.jsx";
 import Messages from "./pages/Messages.jsx";
 import Compose from "./pages/Compose.jsx";
 import { useAuth } from "./hooks/useAuth";
+import { useIsMobile } from "./hooks/useIsMobile";
 
 const ONBOARDING_KEY = "rodeo_onboarded";
 
@@ -20,7 +22,7 @@ function RequireAuth({ children }) {
   const location = useLocation();
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-transparent">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-warm-mute text-sm">Loading...</div>
       </div>
     );
@@ -33,7 +35,7 @@ function RequireGuest({ children }) {
   const { user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-transparent">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-warm-mute text-sm">Loading...</div>
       </div>
     );
@@ -43,7 +45,8 @@ function RequireGuest({ children }) {
 }
 
 export default function App() {
-  const [splashDone, setSplashDone] = useState(false);
+  const isMobile = useIsMobile();
+  const [splashDone, setSplashDone] = useState(() => !isMobile);
   const [onboarded, setOnboarded] = useState(true);
 
   useEffect(() => {
@@ -61,7 +64,8 @@ export default function App() {
       <AnimatedBackground />
 
       <div className="relative z-10">
-        <Splash onDone={() => setSplashDone(true)} />
+        {/* Splash only on mobile */}
+        {isMobile && <Splash onDone={() => setSplashDone(true)} />}
 
         {splashDone && !onboarded && (
           <Onboarding onComplete={handleOnboardingComplete} />
@@ -77,6 +81,7 @@ export default function App() {
             <Route path="/messages" element={<RequireAuth><AppLayout><Messages /></AppLayout></RequireAuth>} />
             <Route path="/compose" element={<RequireAuth><AppLayout><Compose /></AppLayout></RequireAuth>} />
             <Route path="/profile" element={<RequireAuth><AppLayout><Profile /></AppLayout></RequireAuth>} />
+            <Route path="/u/:username" element={<RequireAuth><AppLayout><UserProfile /></AppLayout></RequireAuth>} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
