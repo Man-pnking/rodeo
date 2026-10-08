@@ -16,7 +16,7 @@ export default function Composer({ onPosted }) {
   const [posting, setPosting] = useState(false);
 
   const submit = async () => {
-    if (!body.trim() && !image) return;
+    if (!body.trim() && images.length === 0) return;
     setPosting(true);
     const { error } = await createPost(body, images.map(i => i.url));
     setPosting(false);

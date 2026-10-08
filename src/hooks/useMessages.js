@@ -128,8 +128,20 @@ export function useMessages({ conversationId, groupId }, userId) {
     if (groupId) payload.group_id = groupId;
     else payload.conversation_id = conversationId;
 
-    const { error } = await supabase.from("messages").insert(payload);
+    const { data: inserted, error } = await supabase
+      .from("messages")
+      .insert(payload)
+      .select()
+      .single();
     if (error) return { error: error.message };
+
+    // Optimistically add to local state so the sender sees it instantly
+    if (inserted) {
+      setMessages((prev) => {
+        if (prev.find((m) => m.id === inserted.id)) return prev;
+        return [...prev, inserted];
+      });
+    }
 
     // Fire push to the other user (DM only, not groups for now)
     if (!groupId && conversationId) {

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useMessages } from "../hooks/useMessages";
@@ -8,23 +9,37 @@ import { useGroups } from "../hooks/useGroups";
 import MessageBubble from "../components/MessageBubble.jsx";
 import MessageInput from "../components/MessageInput.jsx";
 import GroupAvatar from "../components/GroupAvatar.jsx";
+import DateSeparator from "../components/DateSeparator.jsx";
+import TypingIndicator from "../components/TypingIndicator.jsx";
+
+function sameDay(aIso, bIso) {
+  if (!aIso || !bIso) return false;
+  const a = new Date(aIso);
+  const b = new Date(bIso);
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
 
 export default function Conversation() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { messages, loading, send } = useMessages(
-    isGroup ? { groupId: id } : { conversationId: id },
-    user?.id
-  );
-  const { conversations } = useConversations(user?.id);
   const { groups: myGroups } = useGroups(user?.id);
+  const { conversations } = useConversations(user?.id);
   const scrollRef = useRef(null);
 
   const group = myGroups.find((g) => g.id === id);
   const isGroup = !!group;
   const conv = isGroup ? null : conversations.find((c) => c.id === id);
   const other = conv?.other;
+
+  const { messages, loading, send } = useMessages(
+    isGroup ? { groupId: id } : { conversationId: id },
+    user?.id
+  );
 
   // Lock body scroll while in chat
   useEffect(() => {
@@ -108,7 +123,7 @@ export default function Conversation() {
         )}
       </div>
 
-      {/* Messages area — scrolls internally */}
+      {/* Messages area */}
       <div
         ref={scrollRef}
         className="px-4 py-4"
@@ -120,24 +135,37 @@ export default function Conversation() {
         {!loading && messages.length === 0 && (
           <div className="text-center text-warm-mute text-sm py-6">Say hi 👋</div>
         )}
-        {messages.map((m) => {
+
+        {messages.map((m, idx) => {
+          const prev = messages[idx - 1];
+          const showDateSeparator = !prev || !sameDay(prev.created_at, m.created_at);
+
           const senderMember = isGroup
             ? group?.members?.find((gm) => gm.user_id === m.sender_id)
             : null;
-          const senderName = senderMember?.profile?.display_name || senderMember?.profile?.username;
+          const senderName =
+            senderMember?.profile?.display_name || senderMember?.profile?.username;
+
           return (
-            <MessageBubble
-              key={m.id}
-              message={m}
-              isOwn={m.sender_id === user?.id}
-              senderName={senderName}
-              showSender={isGroup}
-            />
+            <div key={m.id}>
+              {showDateSeparator && <DateSeparator date={m.created_at} />}
+              <MessageBubble
+                message={m}
+                isOwn={m.sender_id === user?.id}
+                senderName={senderName}
+                showSender={isGroup}
+              />
+            </div>
           );
         })}
+
+        <AnimatePresence>
+          {/* Wire in a real typing state later — placeholder for now */}
+          {false && <TypingIndicator key="typing" />}
+        </AnimatePresence>
       </div>
 
-      {/* Input — pinned at bottom */}
+      {/* Input */}
       <div
         style={{
           flexShrink: 0,

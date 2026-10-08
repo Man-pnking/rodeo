@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Send, Image as ImageIcon, X } from "lucide-react";
 import MediaPicker from "./MediaPicker.jsx";
 
@@ -7,9 +8,12 @@ export default function MessageInput({ onSend, disabled }) {
   const [image, setImage] = useState(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [sending, setSending] = useState(false);
+  const [focused, setFocused] = useState(false);
+
+  const canSend = (body.trim() || image) && !sending && !disabled;
 
   const submit = async () => {
-    if ((!body.trim() && !image) || sending) return;
+    if (!canSend) return;
     setSending(true);
     await onSend(body, image?.url || null);
     setBody("");
@@ -25,7 +29,6 @@ export default function MessageInput({ onSend, disabled }) {
           background: "var(--bg-card)",
           backdropFilter: "blur(20px) saturate(140%)",
           WebkitBackdropFilter: "blur(20px) saturate(140%)",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
         }}
       >
         <button
@@ -51,18 +54,25 @@ export default function MessageInput({ onSend, disabled }) {
             </div>
           )}
           <div
-            className="flex items-center rounded-full px-4 py-1.5"
+            className="flex items-center rounded-full px-4 py-1.5 transition-all duration-200"
             style={{
               background: "rgba(255,255,255,0.06)",
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
-              border: "1px solid rgba(255,255,255,0.10)",
+              border: focused
+                ? "1px solid rgba(10,132,255,0.55)"
+                : "1px solid rgba(255,255,255,0.10)",
+              boxShadow: focused
+                ? "0 0 0 3px rgba(10,132,255,0.15)"
+                : "none",
             }}
           >
             <input
               type="text"
               value={body}
               onChange={(e) => setBody(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
               onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && submit()}
               placeholder="Message..."
               disabled={disabled}
@@ -71,19 +81,25 @@ export default function MessageInput({ onSend, disabled }) {
           </div>
         </div>
 
-        <button
+        <motion.button
+          whileTap={{ scale: 0.9 }}
           onClick={submit}
-          disabled={disabled || (!body.trim() && !image) || sending}
-          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-opacity"
+          disabled={!canSend}
+          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
           style={{
-            background: "linear-gradient(180deg, #0a84ff 0%, #0066cc 100%)",
-            boxShadow: "0 4px 14px rgba(10, 132, 255, 0.4)",
-            opacity: disabled || (!body.trim() && !image) || sending ? 0.35 : 1,
+            background: canSend
+              ? "linear-gradient(180deg, #0a84ff 0%, #0066cc 100%)"
+              : "rgba(255,255,255,0.08)",
+            boxShadow: canSend
+              ? "0 4px 14px rgba(10, 132, 255, 0.4)"
+              : "none",
+            transition: "background 0.2s, box-shadow 0.2s",
+            opacity: disabled ? 0.4 : 1,
           }}
           aria-label="Send"
         >
-          <Send className="w-4 h-4 text-white" />
-        </button>
+          <Send className={`w-4 h-4 ${canSend ? "text-white" : "text-warm-mute"}`} />
+        </motion.button>
       </div>
 
       <MediaPicker
