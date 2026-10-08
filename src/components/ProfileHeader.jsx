@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import ParallaxLayer from "./ParallaxLayer.jsx";
 import { useState } from "react";
 import StatusRing from "./StatusRing.jsx";
+import UserActionsMenu from "./UserActionsMenu.jsx";
+import ReportModal from "./ReportModal.jsx";
+import { MoreVertical } from "lucide-react";
 import StatusViewer from "./StatusViewer.jsx";
 import { useStatusContext } from "../context/StatusContext.jsx";
 
@@ -17,6 +20,8 @@ export default function ProfileHeader({
   hasPendingRequest,
 }) {
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const { groups, getStatusFor, reload } = useStatusContext();
   const statusInfo = getStatusFor(profile?.id);
   const avatarUrl = profile?.avatar_url;
@@ -82,6 +87,13 @@ export default function ProfileHeader({
                 <MessageCircle className="w-4 h-4" />
                 Message
               </button>
+              <button
+                onClick={() => setActionsOpen(true)}
+                className="p-3 rounded-full transition-colors hover:bg-white/5"
+                aria-label="More actions"
+              >
+                <MoreVertical className="w-4 h-4 text-warm" />
+              </button>
               {!isFriend && (
                 <button
                   onClick={onAddFriend}
@@ -96,6 +108,24 @@ export default function ProfileHeader({
           )}
         </div>
       </div>
+
+      {profile && (
+        <UserActionsMenu
+          open={actionsOpen}
+          onClose={() => setActionsOpen(false)}
+          profile={profile}
+          onOpenReport={() => setReportOpen(true)}
+        />
+      )}
+
+      {profile && (
+        <ReportModal
+          open={reportOpen}
+          onClose={() => setReportOpen(false)}
+          targetType="user"
+          targetId={profile.id}
+        />
+      )}
 
       {viewerOpen && statusInfo.group && (
         <StatusViewer

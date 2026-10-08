@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../lib/supabase";
+import { useBlocks } from "./useBlocks";
 
 export function useFeed(userId) {
+  const { blockedIds } = useBlocks(userId);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,8 +41,9 @@ export function useFeed(userId) {
       repostedIds = new Set((repostsRes.data || []).map((r) => r.post_id));
     }
 
+    const filtered = (data || []).filter((p) => !blockedIds.has(p.author_id));
     setPosts(
-      (data || []).map((p) => ({
+      filtered.map((p) => ({
         ...p,
         liked: likedIds.has(p.id),
         saved: savedIds.has(p.id),
@@ -48,7 +51,7 @@ export function useFeed(userId) {
       }))
     );
     setLoading(false);
-  }, [userId]);
+  }, [userId, blockedIds]);
 
   useEffect(() => {
     load();

@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { Heart, MessageCircle, Bookmark, Trash2, Repeat2 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import CommentSheet from "./CommentSheet.jsx";
-import ParallaxLayer from "./ParallaxLayer.jsx";
+import ReportModal from "./ReportModal.jsx";
+import { Flag } from "lucide-react";
 import StatusRing from "./StatusRing.jsx";
 import StatusViewer from "./StatusViewer.jsx";
 import { useStatusContext } from "../context/StatusContext.jsx";
@@ -20,6 +21,7 @@ function timeAgo(iso) {
 export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
   const { user } = useAuth();
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
   const { groups, getStatusFor, reload } = useStatusContext();
   const statusInfo = getStatusFor(post.author_id);
@@ -60,13 +62,21 @@ export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
             </div>
           </Link>
 
-          {isOwn && (
+          {isOwn ? (
             <button
               onClick={() => onDelete(post)}
               className="p-2 rounded-full hover:bg-white/5 transition-colors shrink-0"
               aria-label="Delete post"
             >
               <Trash2 className="w-4 h-4 text-warm-mute" />
+            </button>
+          ) : (
+            <button
+              onClick={() => setReportOpen(true)}
+              className="p-2 rounded-full hover:bg-white/5 transition-colors shrink-0"
+              aria-label="Report post"
+            >
+              <Flag className="w-3.5 h-3.5 text-warm-mute" />
             </button>
           )}
         </div>
@@ -144,6 +154,13 @@ export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
         open={commentsOpen}
         post={post}
         onClose={() => setCommentsOpen(false)}
+      />
+
+      <ReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        targetType="post"
+        targetId={post.id}
       />
       {viewerOpen && statusInfo.group && (
         <StatusViewer

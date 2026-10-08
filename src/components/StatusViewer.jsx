@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Send } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useStatuses } from "../hooks/useStatuses";
+import { useConversations } from "../hooks/useConversations";
+import { useNavigate } from "react-router-dom";
 
 const DURATION = 5000;
 
 export default function StatusViewer({ groups, startIndex = 0, onClose }) {
   const { user } = useAuth();
   const { markViewed } = useStatuses(user?.id);
+  const { getOrCreate } = useConversations(user?.id);
+  const navigate = useNavigate();
   const [groupIndex, setGroupIndex] = useState(startIndex);
   const [itemIndex, setItemIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [replyText, setReplyText] = useState("");
+  const [sending, setSending] = useState(false);
 
   const group = groups[groupIndex];
   const item = group?.items[itemIndex];
@@ -33,6 +39,28 @@ export default function StatusViewer({ groups, startIndex = 0, onClose }) {
 
     return () => clearInterval(tick);
   }, [item?.id]);
+
+  const sendReply = async () => {
+    if (!replyText.trim() || !group?.author) return;
+    if (group.author.id === user?.id) return; // Can't reply to own status
+    setSending(true);
+    const { id: convId, error } = await getOrCreate(group.author.id);
+    if (error) { alert(error); setSending(false); return; }
+
+    // Insert message with a reference to the status
+    const { supabase } = await import("../lib/supabase");
+    await supabase.from("messages").insert({
+      conversation_id: convId,
+      sender_id: user.id,
+      body: `↩ Replied to your status: ${replyText.trim()}`,
+      image_url: item.image_url,
+    });
+
+    setSending(false);
+    setReplyText("");
+    onClose?.();
+    navigate(`/messages/${convId}`);
+  };
 
   const next = () => {
     if (!group) return;
@@ -151,6 +179,35 @@ export default function StatusViewer({ groups, startIndex = 0, onClose }) {
           className="absolute right-0 top-0 bottom-0 w-1/3 z-10"
           aria-label="Next"
         />
+
+        {/* Reply bar */}
+        {group.author?.id !== user?.id && (
+          <div
+            className="absolute bottom-0 left-0 right-0 z-30 flex items-center gap-2 px-4 py-3 safe-bottom"
+            style={{ background: "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.7) 40%)" }}
+          >
+            <input
+              type="text"
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendReply()}
+              placeholder={`Reply to ${group.author?.display_name || group.author?.username}...`}
+              className="flex-1 bg-white/10 backdrop-blur-md border border-white/15 rounded-full px-5 py-3 text-white text-sm placeholder:text-white/50 outline-none focus:border-white/40"
+            />
+            <button
+              onClick={sendReply}
+              disabled={sending || !replyText.trim()}
+              className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
+              style={{
+                background: "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                opacity: sending || !replyText.trim() ? 0.35 : 1,
+              }}
+              aria-label="Send reply"
+            >
+              <Send className="w-4 h-4 text-white" />
+            </button>
+          </div>
+        )}
 
         {/* Desktop arrows */}
         <button

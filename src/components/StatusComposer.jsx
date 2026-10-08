@@ -10,6 +10,7 @@ export default function StatusComposer({ open, onClose, onPosted }) {
   const { createStatus } = useStatuses(user?.id);
   const [media, setMedia] = useState(null);
   const [caption, setCaption] = useState("");
+  const [audience, setAudience] = useState("contacts");
   const [pickerOpen, setPickerOpen] = useState(false);
   const [posting, setPosting] = useState(false);
 
@@ -21,7 +22,7 @@ export default function StatusComposer({ open, onClose, onPosted }) {
     const blob = await res.blob();
     const ext = media.url.split(".").pop() || "jpg";
     const file = new File([blob], `status-${Date.now()}.${ext}`, { type: blob.type });
-    const { error } = await createStatus(user.id, file, caption);
+    const { error } = await createStatus(user.id, file, caption, audience);
     setPosting(false);
     if (!error) {
       setMedia(null);
@@ -35,6 +36,7 @@ export default function StatusComposer({ open, onClose, onPosted }) {
   const close = () => {
     setMedia(null);
     setCaption("");
+    setAudience("contacts");
     onClose();
   };
 
@@ -100,6 +102,34 @@ export default function StatusComposer({ open, onClose, onPosted }) {
                     placeholder="Add a caption..."
                     className="w-full bg-transparent border-0 border-b border-white/15 focus:border-iri-pink pb-3 text-warm placeholder:text-warm-mute outline-none transition-colors text-sm mb-4"
                   />
+                  <div className="mb-4">
+                    <label className="text-label block mb-3">Who can see this</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: "everyone", label: "Everyone" },
+                        { id: "contacts", label: "Friends" },
+                        { id: "close_friends", label: "Close" },
+                      ].map((a) => (
+                        <button
+                          key={a.id}
+                          onClick={() => setAudience(a.id)}
+                          className="py-3 rounded-xl text-xs font-medium transition-colors"
+                          style={{
+                            background: audience === a.id
+                              ? "linear-gradient(135deg, rgba(255,110,199,0.15) 0%, rgba(168,85,247,0.18) 100%)"
+                              : "rgba(255,255,255,0.04)",
+                            border: audience === a.id
+                              ? "1px solid rgba(168,85,247,0.5)"
+                              : "1px solid rgba(255,255,255,0.06)",
+                            color: audience === a.id ? "#fff" : "var(--text-secondary)",
+                          }}
+                        >
+                          {a.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <button
                     onClick={submit}
                     disabled={posting}

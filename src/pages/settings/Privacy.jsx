@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Ban } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useSettingsContext } from "../../context/SettingsContext.jsx";
 import { SettingsSection, SettingsSelect, SettingsToggle, SettingsRow } from "../../components/SettingsUI.jsx";
+import BlockedList from "../../components/BlockedList.jsx";
+import CloseFriendsList from "../../components/CloseFriendsList.jsx";
+import { Star } from "lucide-react";
 import SlideIn from "../../components/SlideIn.jsx";
 
 const VIS = [
@@ -48,8 +51,14 @@ export default function Privacy() {
         </SettingsSection>
       </SlideIn>
       <SlideIn variant="up" delay={0.1}>
+        <SettingsSection title="Close Friends">
+          <CloseFriendsList />
+        </SettingsSection>
+      </SlideIn>
+
+      <SlideIn variant="up" delay={0.15}>
         <SettingsSection title="Blocked">
-          <SettingsRow icon={Ban} label="Blocked contacts" subtitle="0 contacts blocked" onClick={() => {}} />
+          <BlockedList />
         </SettingsSection>
       </SlideIn>
     </div>

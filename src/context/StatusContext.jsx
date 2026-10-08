@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../hooks/useAuth";
+import { useBlocks } from "../hooks/useBlocks";
 
 const StatusContext = createContext(null);
 
 export function StatusProvider({ children }) {
   const { user } = useAuth();
+  const { blockedIds } = useBlocks(user?.id);
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,8 +43,10 @@ export function StatusProvider({ children }) {
       viewed = new Set((views || []).map((v) => v.status_id));
     }
 
+    const visible = statuses.filter((s) => !blockedIds.has(s.author_id));
+
     const map = new Map();
-    for (const s of statuses) {
+    for (const s of visible) {
       const author = profileMap.get(s.author_id);
       if (!map.has(s.author_id)) {
         map.set(s.author_id, { author_id: s.author_id, author, items: [] });
@@ -63,7 +67,7 @@ export function StatusProvider({ children }) {
 
     setGroups(grouped);
     setLoading(false);
-  }, [user?.id]);
+  }, [user?.id, blockedIds]);
 
   useEffect(() => {
     load();

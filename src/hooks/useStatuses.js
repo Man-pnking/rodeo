@@ -68,7 +68,7 @@ export function useStatuses(viewerId) {
     load();
   }, [load]);
 
-  const createStatus = async (userId, file, caption) => {
+  const createStatus = async (userId, file, caption, audience = "contacts") => {
     if (!file || !userId) return { error: "Missing file" };
     const ext = file.name.split(".").pop();
     const path = `${userId}/status-${Date.now()}.${ext}`;
@@ -81,6 +81,7 @@ export function useStatuses(viewerId) {
       author_id: userId,
       image_url: pub.publicUrl,
       caption: caption?.trim() || null,
+      audience,
     });
     if (error) return { error: error.message };
 
