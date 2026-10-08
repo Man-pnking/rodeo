@@ -73,7 +73,7 @@ export default function Profile() {
 
       <SlideIn variant="up" delay={0.1}>
         <div className="max-w-4xl mx-auto px-6 pt-6 pb-4">
-          <h1 className="display-lg mb-1">
+          <h1 className="display-md mb-1">
             {profile?.display_name || "Your profile"}
           </h1>
           <p className="text-warm-dim text-sm mb-3">@{profile?.username || "you"}</p>

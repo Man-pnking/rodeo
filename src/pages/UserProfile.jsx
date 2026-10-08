@@ -52,7 +52,7 @@ export default function UserProfile() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="display-lg mb-2">User not found</h1>
+          <h1 className="display-md mb-2">User not found</h1>
           <p className="text-body">@{username} doesn't exist or was deleted.</p>
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function UserProfile() {
 
       <SlideIn variant="up" delay={0.1}>
         <div className="max-w-4xl mx-auto px-6 pt-6 pb-4">
-          <h1 className="display-lg mb-1">{profile.display_name || profile.username}</h1>
+          <h1 className="display-md mb-1">{profile.display_name || profile.username}</h1>
           <p className="text-warm-dim text-sm mb-3">@{profile.username}</p>
           <p className="text-body max-w-2xl">
             {profile.bio || "Hey there! I am using Rodeo."}

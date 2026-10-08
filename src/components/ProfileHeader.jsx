@@ -25,7 +25,7 @@ export default function ProfileHeader({
   return (
     <div className="relative">
       {/* Banner */}
-      <ParallaxLayer speed={0.25} className="relative w-full h-48 sm:h-64 md:h-80 overflow-hidden" style={{
+      <ParallaxLayer speed={0.25} className="relative w-full h-32 sm:h-44 md:h-56 overflow-hidden" style={{
         background: bannerUrl ? `url(${bannerUrl}) center/cover` : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 50%, #3b82f6 100%)",
       }}>
         {isOwn && (
@@ -41,11 +41,11 @@ export default function ProfileHeader({
       </ParallaxLayer>
 
       {/* Avatar + actions */}
-      <div className="max-w-4xl mx-auto px-6 -mt-16 sm:-mt-20 flex items-end justify-between gap-4 relative z-10">
+      <div className="max-w-4xl mx-auto px-6 -mt-12 sm:-mt-14 flex items-end justify-between gap-4 relative z-10">
         <div className="relative">
           <StatusRing
             src={avatarUrl}
-            size={120}
+            size={88}
             ringWidth={statusInfo.hasStatus ? 4 : 0}
             gap={statusInfo.hasStatus ? 3 : 0}
             hasStatus={statusInfo.hasStatus}
@@ -58,11 +58,11 @@ export default function ProfileHeader({
           {isOwn && (
             <button
               onClick={onEditAvatar}
-              className="absolute bottom-1 right-1 w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+              className="absolute bottom-0 right-0 w-7 h-7 rounded-full flex items-center justify-center transition-colors"
               style={{ background: "#a855f7" }}
               aria-label="Edit avatar"
             >
-              <Camera className="w-4 h-4 text-white" />
+              <Camera className="w-3 h-3 text-white" />
             </button>
           )}
         </div>
