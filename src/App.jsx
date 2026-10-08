@@ -1,30 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Splash from "./components/Splash.jsx";
 import Onboarding from "./components/Onboarding.jsx";
 import AppLayout from "./components/AppLayout.jsx";
-import Home from "./pages/Home.jsx";
-import Feed from "./pages/Feed.jsx";
-import Login from "./pages/Login.jsx";
-import Signup from "./pages/Signup.jsx";
-import Profile from "./pages/Profile.jsx";
-import UserProfile from "./pages/UserProfile.jsx";
-import Friends from "./pages/Friends.jsx";
-import Discover from "./pages/Discover.jsx";
-import Messages from "./pages/Messages.jsx";
-import ChatList from "./pages/ChatList.jsx";
-import Conversation from "./pages/Conversation.jsx";
-import GroupInfo from "./pages/GroupInfo.jsx";
-import Compose from "./pages/Compose.jsx";
-import Library from "./pages/Library.jsx";
-import Settings from "./pages/Settings.jsx";
-import SettingsAccount from "./pages/settings/Account.jsx";
-import SettingsPrivacy from "./pages/settings/Privacy.jsx";
-import SettingsNotifications from "./pages/settings/Notifications.jsx";
-import SettingsStorage from "./pages/settings/Storage.jsx";
-import SettingsChat from "./pages/settings/Chat.jsx";
-import SettingsAppearance from "./pages/settings/Appearance.jsx";
-import SettingsGeneral from "./pages/settings/General.jsx";
+const Home = lazy(() => import("./pages/Home.jsx"));
+const Feed = lazy(() => import("./pages/Feed.jsx"));
+const Login = lazy(() => import("./pages/Login.jsx"));
+const Signup = lazy(() => import("./pages/Signup.jsx"));
+const Profile = lazy(() => import("./pages/Profile.jsx"));
+const UserProfile = lazy(() => import("./pages/UserProfile.jsx"));
+const Friends = lazy(() => import("./pages/Friends.jsx"));
+const Discover = lazy(() => import("./pages/Discover.jsx"));
+const Messages = lazy(() => import("./pages/Messages.jsx"));
+const ChatList = lazy(() => import("./pages/ChatList.jsx"));
+const Conversation = lazy(() => import("./pages/Conversation.jsx"));
+const GroupInfo = lazy(() => import("./pages/GroupInfo.jsx"));
+const Compose = lazy(() => import("./pages/Compose.jsx"));
+const Library = lazy(() => import("./pages/Library.jsx"));
+const Settings = lazy(() => import("./pages/Settings.jsx"));
+const SettingsAccount = lazy(() => import("./pages/settings/Account.jsx"));
+const SettingsPrivacy = lazy(() => import("./pages/settings/Privacy.jsx"));
+const SettingsNotifications = lazy(() => import("./pages/settings/Notifications.jsx"));
+const SettingsStorage = lazy(() => import("./pages/settings/Storage.jsx"));
+const SettingsChat = lazy(() => import("./pages/settings/Chat.jsx"));
+const SettingsAppearance = lazy(() => import("./pages/settings/Appearance.jsx"));
+const SettingsGeneral = lazy(() => import("./pages/settings/General.jsx"));
 import { useAuth } from "./hooks/useAuth";
 import { StatusProvider } from "./context/StatusContext.jsx";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
@@ -93,6 +93,11 @@ export default function App() {
         )}
 
         {splashDone && onboarded && (
+          <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full border-2 border-iri-pink border-t-transparent animate-spin" />
+            </div>
+          }>
           <Routes>
             <Route path="/login" element={<RequireGuest><Login /></RequireGuest>} />
             <Route path="/signup" element={<RequireGuest><Signup /></RequireGuest>} />
@@ -119,6 +124,7 @@ export default function App() {
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </Suspense>
         )}
       </div>
     </div>
