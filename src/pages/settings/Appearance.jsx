@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Sun, Moon, Smartphone } from "lucide-react";
+import { ArrowLeft, Sun, Moon, Smartphone, Check } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext.jsx";
+import { useSettingsContext } from "../../context/SettingsContext.jsx";
 import { useToast } from "../../context/ToastContext.jsx";
 import { sounds } from "../../lib/sounds";
 import { SettingsSection } from "../../components/SettingsUI.jsx";
@@ -22,12 +23,27 @@ const ACCENTS = [
 export default function Appearance() {
   const navigate = useNavigate();
   const { mode, resolved, setTheme } = useTheme();
+  const { settings, update } = useSettingsContext();
   const { toast } = useToast();
+
+  const currentAccent = settings?.accent_color || "iridescent";
+
   const handleTheme = (id) => {
     setTheme(id);
     sounds.tap();
     toast({ title: "Theme updated", message: `Set to ${id}`, type: "success", duration: 1200 });
   };
+
+  const handleAccent = async (id) => {
+    sounds.tap();
+    const { error } = await update({ accent_color: id });
+    if (error) {
+      toast({ title: error, type: "error" });
+      return;
+    }
+    toast({ title: "Accent updated", message: id, type: "success", duration: 1200 });
+  };
+
   return (
     <div className="max-w-2xl mx-auto px-6 py-8 w-full">
       <div className="flex items-center gap-4 mb-8">
@@ -36,6 +52,7 @@ export default function Appearance() {
         </button>
         <h1 className="display-lg">Appearance</h1>
       </div>
+
       <SlideIn variant="up">
         <SettingsSection title="Theme">
           <div className="grid grid-cols-3 gap-2 mb-2">
@@ -58,19 +75,41 @@ export default function Appearance() {
           <p className="text-xs text-warm-mute">Current: {resolved} ({mode})</p>
         </SettingsSection>
       </SlideIn>
+
       <SlideIn variant="up" delay={0.05}>
         <SettingsSection title="Accent color">
           <div className="grid grid-cols-4 gap-3 mt-2">
-            {ACCENTS.map((a) => (
-              <button key={a.id} className="flex flex-col items-center gap-2">
-                <div className="w-12 h-12 rounded-full" style={{
-                  background: `linear-gradient(135deg, ${a.colors[0]} 0%, ${a.colors[1]} 50%, ${a.colors[2]} 100%)`,
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
-                }} />
-                <span className="text-[10px] text-warm-mute">{a.label}</span>
-              </button>
-            ))}
+            {ACCENTS.map((a) => {
+              const active = currentAccent === a.id;
+              return (
+                <button
+                  key={a.id}
+                  onClick={() => handleAccent(a.id)}
+                  className="flex flex-col items-center gap-2"
+                  aria-pressed={active}
+                >
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center relative transition-transform"
+                    style={{
+                      background: `linear-gradient(135deg, ${a.colors[0]} 0%, ${a.colors[1]} 50%, ${a.colors[2]} 100%)`,
+                      boxShadow: active ? "0 0 0 3px rgba(255,255,255,0.9), 0 4px 16px rgba(0,0,0,0.2)" : "0 4px 16px rgba(0,0,0,0.2)",
+                      transform: active ? "scale(1.05)" : "scale(1)",
+                    }}
+                  >
+                    {active && (
+                      <Check className="w-5 h-5 text-white drop-shadow-md" strokeWidth={3} />
+                    )}
+                  </div>
+                  <span className="text-[10px]" style={{ color: active ? "#fff" : "rgba(240,240,245,0.4)" }}>
+                    {a.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
+          <p className="text-xs text-warm-mute mt-4">
+            Saved to your account. The accent color is stored but not yet applied across the UI — that's a future update.
+          </p>
         </SettingsSection>
       </SlideIn>
     </div>
