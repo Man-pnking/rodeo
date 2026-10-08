@@ -98,11 +98,15 @@ export function useFeed(userId) {
     );
   };
 
-  const createPost = async (body, imageUrl) => {
+  const createPost = async (body, imageUrls) => {
     if (!userId) return { error: "Not signed in" };
     const { data, error } = await supabase
       .from("posts")
-      .insert({ author_id: userId, body: body.trim(), image_url: imageUrl || null })
+      .insert({
+        author_id: userId,
+        body: body.trim(),
+        image_url: Array.isArray(imageUrls) && imageUrls.length > 0 ? imageUrls[0] : (imageUrls || null),
+      })
       .select(`
         id, author_id, body, image_url, likes_count, comments_count, created_at,
         author:profiles!posts_author_id_fkey (id, username, display_name, avatar_url)

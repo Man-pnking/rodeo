@@ -11,23 +11,23 @@ export default function Composer({ onPosted }) {
   const { profile } = useProfile(user?.id);
   const { createPost } = useFeed(user?.id);
   const [body, setBody] = useState("");
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [posting, setPosting] = useState(false);
 
   const submit = async () => {
     if (!body.trim() && !image) return;
     setPosting(true);
-    const { error } = await createPost(body, image?.url || null);
+    const { error } = await createPost(body, images.map(i => i.url));
     setPosting(false);
     if (!error) {
       setBody("");
-      setImage(null);
+      setImages([]);
       onPosted?.();
     }
   };
 
-  const canPost = (body.trim() || image) && !posting;
+  const canPost = (body.trim() || images.length > 0) && !posting;
 
   return (
     <>
@@ -54,17 +54,21 @@ export default function Composer({ onPosted }) {
               className="w-full bg-transparent border-0 text-warm placeholder:text-warm-mute outline-none resize-none text-base"
             />
 
-            {image && (
-              <div className="relative mt-3 rounded-2xl overflow-hidden">
-                <img src={image.url} alt="" className="w-full max-h-96 object-cover" />
-                <button
-                  onClick={() => setImage(null)}
-                  className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center"
-                  style={{ background: "rgba(0,0,0,0.6)" }}
-                  aria-label="Remove image"
-                >
-                  <X className="w-4 h-4 text-white" />
-                </button>
+            {images.length > 0 && (
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                {images.map((img, idx) => (
+                  <div key={img.id || idx} className="relative rounded-2xl overflow-hidden aspect-square">
+                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => setImages((prev) => prev.filter((_, i) => i !== idx))}
+                      className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
+                      style={{ background: "rgba(0,0,0,0.65)" }}
+                      aria-label="Remove image"
+                    >
+                      <X className="w-3.5 h-3.5 text-white" />
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
 
@@ -96,7 +100,10 @@ export default function Composer({ onPosted }) {
       <MediaPicker
         open={pickerOpen}
         onClose={() => setPickerOpen(false)}
-        onPick={(media) => setImage(media)}
+        onPick={(media) => {
+          const arr = Array.isArray(media) ? media : [media];
+          setImages((prev) => [...prev, ...arr]);
+        }}
       />
     </>
   );

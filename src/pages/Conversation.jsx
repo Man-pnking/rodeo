@@ -52,7 +52,7 @@ export default function Conversation() {
           flexShrink: 0,
           paddingTop: "calc(env(safe-area-inset-top, 0) + 12px)",
           borderBottom: "1px solid rgba(255,255,255,0.08)",
-          background: "rgba(255, 255, 255, 0.04)",
+          background: "var(--bg-card)",
           backdropFilter: "blur(28px) saturate(150%)",
           WebkitBackdropFilter: "blur(28px) saturate(150%)",
         }}
@@ -109,7 +109,7 @@ export default function Conversation() {
         style={{
           flexShrink: 0,
           paddingBottom: "env(safe-area-inset-bottom, 0)",
-          background: "rgba(255, 255, 255, 0.03)",
+          background: "var(--bg-card)",
           backdropFilter: "blur(24px) saturate(140%)",
           WebkitBackdropFilter: "blur(24px) saturate(140%)",
           borderTop: "1px solid rgba(255,255,255,0.08)",

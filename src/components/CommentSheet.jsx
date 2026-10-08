@@ -49,7 +49,7 @@ export default function CommentSheet({ open, post, onClose }) {
             exit={{ y: "100%" }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-x-0 bottom-0 top-16 md:inset-x-auto md:right-4 md:left-auto md:top-1/2 md:-translate-y-1/2 md:w-[440px] md:rounded-3xl rounded-t-3xl z-50 flex flex-col safe-bottom"
-            style={{ background: "#0f0e18", border: "1px solid rgba(255,255,255,0.08)" }}
+            style={{ background: "var(--bg-soft)", border: "1px solid rgba(255,255,255,0.08)" }}
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/8">
               <h3 className="display-md">Comments</h3>

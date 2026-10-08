@@ -77,7 +77,7 @@ export default function StatusRing({
           width: size + gap * 2,
           height: size + gap * 2,
           borderRadius: "50%",
-          background: "#050510",
+          background: "var(--bg)",
           padding: gap,
           display: "flex",
           alignItems: "center",

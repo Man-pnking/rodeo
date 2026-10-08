@@ -16,10 +16,11 @@ export default function MediaPicker({ open, onClose, onPick }) {
   useEffect(() => {
     if (!open) return;
     const onPaste = async (e) => {
-      const file = Array.from(e.clipboardData?.items || [])
-        .find((i) => i.type.startsWith("image/"))
-        ?.getAsFile();
-      if (file) await handleFile(file);
+      const files = Array.from(e.clipboardData?.items || [])
+        .filter((i) => i.type.startsWith("image/"))
+        .map((i) => i.getAsFile())
+        .filter(Boolean);
+      if (files.length) await handleFiles(files);
     };
     window.addEventListener("paste", onPaste);
     return () => window.removeEventListener("paste", onPaste);
@@ -33,25 +34,28 @@ export default function MediaPicker({ open, onClose, onPick }) {
       img.src = URL.createObjectURL(file);
     });
 
-  const handleFile = async (file) => {
-    if (!file) return;
+  const handleFiles = async (files) => {
+    if (!files || files.length === 0) return;
     setUploading(true);
-    const dims = await getDimensions(file);
-    const { data, error } = await uploadMedia(file, dims);
-    setUploading(false);
-    if (error) {
-      alert(error);
-      return;
+    const uploaded = [];
+    for (const file of files) {
+      const dims = await getDimensions(file);
+      const { data, error } = await uploadMedia(file, dims);
+      if (error) { alert(error); continue; }
+      uploaded.push(data);
     }
-    onPick?.(data);
-    onClose?.();
+    setUploading(false);
+    if (uploaded.length > 0) {
+      onPick?.(uploaded.length === 1 ? uploaded[0] : uploaded);
+      onClose?.();
+    }
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     setDragActive(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) handleFile(file);
+    const files = Array.from(e.dataTransfer.files || []);
+    if (files.length) handleFiles(files);
   };
 
   return (
@@ -72,7 +76,7 @@ export default function MediaPicker({ open, onClose, onPick }) {
             exit={{ opacity: 0, y: 40 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-x-0 bottom-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg z-[60] rounded-t-3xl md:rounded-3xl safe-bottom max-h-[90vh] overflow-hidden flex flex-col"
-            style={{ background: "#0f0e18", border: "1px solid rgba(255,255,255,0.08)" }}
+            style={{ background: "var(--bg-soft)", border: "1px solid rgba(255,255,255,0.08)" }}
             onDragOver={(e) => {
               e.preventDefault();
               setDragActive(true);
@@ -145,9 +149,10 @@ export default function MediaPicker({ open, onClose, onPick }) {
                   <input
                     ref={fileRef}
                     type="file"
+                    multiple
                     accept="image/jpeg,image/png,image/webp,image/gif"
                     className="hidden"
-                    onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+                    onChange={(e) => e.target.files && handleFiles(Array.from(e.target.files))}
                   />
                   <input
                     ref={cameraRef}

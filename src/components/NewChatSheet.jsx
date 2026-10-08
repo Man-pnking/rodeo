@@ -53,7 +53,7 @@ export default function NewChatSheet({ open, onClose }) {
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-x-0 bottom-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-md z-50 rounded-t-3xl md:rounded-3xl safe-bottom"
             style={{
-              background: "#0f0e18",
+              background: "var(--bg-soft)",
               border: "1px solid rgba(255,255,255,0.08)",
               maxHeight: "85vh",
               display: "flex",

@@ -23,7 +23,7 @@ export default function ContactsConsent({ open, onClose, onGrant, onManual }) {
             exit={{ opacity: 0, y: 40 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-x-0 bottom-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-md z-50 rounded-t-3xl md:rounded-3xl p-6 sm:p-8 safe-bottom"
-            style={{ background: "#0f0e18", border: "1px solid rgba(255,255,255,0.08)" }}
+            style={{ background: "var(--bg-soft)", border: "1px solid rgba(255,255,255,0.08)" }}
           >
             <div className="flex items-center justify-between mb-6">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center"

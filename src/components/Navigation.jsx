@@ -18,7 +18,7 @@ export default function Navigation() {
           background: "rgba(10, 8, 15, 0.65)",
           backdropFilter: "blur(24px) saturate(140%)",
           WebkitBackdropFilter: "blur(24px) saturate(140%)",
-          borderRight: "1px solid rgba(255, 255, 255, 0.08)",
+          borderRight: "1px solid var(--bg-card-strong)",
         }}
       >
         <div className="p-6">
@@ -64,7 +64,7 @@ export default function Navigation() {
             background: "rgba(10, 8, 15, 0.85)",
             backdropFilter: "blur(24px)",
             WebkitBackdropFilter: "blur(24px)",
-            borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+            borderTop: "1px solid var(--bg-card-strong)",
           }}
         >
           {LINKS.map((link) => (

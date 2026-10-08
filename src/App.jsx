@@ -16,8 +16,11 @@ import ChatList from "./pages/ChatList.jsx";
 import Conversation from "./pages/Conversation.jsx";
 import Compose from "./pages/Compose.jsx";
 import Library from "./pages/Library.jsx";
+import Settings from "./pages/Settings.jsx";
 import { useAuth } from "./hooks/useAuth";
 import { StatusProvider } from "./context/StatusContext.jsx";
+import { ThemeProvider } from "./context/ThemeContext.jsx";
+import { ToastProvider } from "./context/ToastContext.jsx";
 import { useIsMobile } from "./hooks/useIsMobile";
 
 const ONBOARDING_KEY = "rodeo_onboarded";
@@ -65,6 +68,8 @@ export default function App() {
   };
 
   return (
+    <ThemeProvider>
+    <ToastProvider>
     <StatusProvider>
     <div className="relative min-h-screen w-full text-warm">
       <div className="relative z-10">
@@ -88,6 +93,7 @@ export default function App() {
             <Route path="/messages/:id" element={<RequireAuth><Conversation /></RequireAuth>} />
             <Route path="/compose" element={<RequireAuth><AppLayout><Compose /></AppLayout></RequireAuth>} />
             <Route path="/library" element={<RequireAuth><AppLayout><Library /></AppLayout></RequireAuth>} />
+            <Route path="/settings" element={<RequireAuth><AppLayout><Settings /></AppLayout></RequireAuth>} />
             <Route path="/profile" element={<RequireAuth><AppLayout><Profile /></AppLayout></RequireAuth>} />
             <Route path="/u/:username" element={<RequireAuth><AppLayout><UserProfile /></AppLayout></RequireAuth>} />
 
@@ -97,5 +103,7 @@ export default function App() {
       </div>
     </div>
     </StatusProvider>
+    </ToastProvider>
+    </ThemeProvider>
   );
 }

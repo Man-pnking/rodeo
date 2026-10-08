@@ -50,7 +50,7 @@ export default function StatusBar() {
                   height: 22,
                   borderRadius: "50%",
                   background: "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
-                  border: "2px solid #050510",
+                  border: "2px solid var(--bg)",
                 }}
               >
                 <Plus className="w-3 h-3 text-white" strokeWidth={3} />

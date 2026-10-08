@@ -22,7 +22,7 @@ export default function MessageInput({ onSend, disabled }) {
       <div
         className="flex items-end gap-2 px-4 py-3 safe-bottom"
         style={{
-          background: "rgba(255, 255, 255, 0.03)",
+          background: "var(--bg-card)",
           backdropFilter: "blur(20px) saturate(140%)",
           WebkitBackdropFilter: "blur(20px) saturate(140%)",
           borderTop: "1px solid rgba(255,255,255,0.06)",
