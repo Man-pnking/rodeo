@@ -5,6 +5,7 @@ import Splash from "./components/Splash.jsx";
 import Onboarding from "./components/Onboarding.jsx";
 import AppLayout from "./components/AppLayout.jsx";
 import Home from "./pages/Home.jsx";
+import Feed from "./pages/Feed.jsx";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
 import Profile from "./pages/Profile.jsx";
@@ -77,7 +78,8 @@ export default function App() {
             <Route path="/login" element={<RequireGuest><Login /></RequireGuest>} />
             <Route path="/signup" element={<RequireGuest><Signup /></RequireGuest>} />
 
-            <Route path="/" element={<RequireAuth><AppLayout><Home /></AppLayout></RequireAuth>} />
+            <Route path="/" element={<RequireAuth><AppLayout><Feed /></AppLayout></RequireAuth>} />
+            <Route path="/home-legacy" element={<RequireAuth><AppLayout><Home /></AppLayout></RequireAuth>} />
             <Route path="/discover" element={<RequireAuth><AppLayout><Discover /></AppLayout></RequireAuth>} />
             <Route path="/friends" element={<RequireAuth><AppLayout><Friends /></AppLayout></RequireAuth>} />
             <Route path="/messages" element={<RequireAuth><AppLayout><Messages /></AppLayout></RequireAuth>} />
