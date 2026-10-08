@@ -10,6 +10,7 @@ export default function ParallaxLayer({
   children,
   speed = 0.15,
   className = "",
+  style = {},
   as = "div",
 }) {
   const ref = useRef(null);
@@ -27,7 +28,7 @@ export default function ParallaxLayer({
   const MotionTag = motion[as] || motion.div;
 
   return (
-    <MotionTag ref={ref} style={{ y }} className={className}>
+    <MotionTag ref={ref} style={{ y, ...style }} className={className}>
       {children}
     </MotionTag>
   );

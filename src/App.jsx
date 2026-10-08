@@ -17,11 +17,19 @@ import Conversation from "./pages/Conversation.jsx";
 import Compose from "./pages/Compose.jsx";
 import Library from "./pages/Library.jsx";
 import Settings from "./pages/Settings.jsx";
+import SettingsAccount from "./pages/settings/Account.jsx";
+import SettingsPrivacy from "./pages/settings/Privacy.jsx";
+import SettingsNotifications from "./pages/settings/Notifications.jsx";
+import SettingsStorage from "./pages/settings/Storage.jsx";
+import SettingsChat from "./pages/settings/Chat.jsx";
+import SettingsAppearance from "./pages/settings/Appearance.jsx";
+import SettingsGeneral from "./pages/settings/General.jsx";
 import { useAuth } from "./hooks/useAuth";
 import { StatusProvider } from "./context/StatusContext.jsx";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { ToastProvider } from "./context/ToastContext.jsx";
 import { ParallaxProvider } from "./context/ParallaxContext.jsx";
+import { SettingsProvider } from "./context/SettingsContext.jsx";
 import { useIsMobile } from "./hooks/useIsMobile";
 
 const ONBOARDING_KEY = "rodeo_onboarded";
@@ -70,6 +78,7 @@ export default function App() {
 
   return (
     <ParallaxProvider>
+    <SettingsProvider>
     <ThemeProvider>
     <ToastProvider>
     <StatusProvider>
@@ -96,6 +105,13 @@ export default function App() {
             <Route path="/compose" element={<RequireAuth><AppLayout><Compose /></AppLayout></RequireAuth>} />
             <Route path="/library" element={<RequireAuth><AppLayout><Library /></AppLayout></RequireAuth>} />
             <Route path="/settings" element={<RequireAuth><AppLayout><Settings /></AppLayout></RequireAuth>} />
+            <Route path="/settings/account" element={<RequireAuth><AppLayout><SettingsAccount /></AppLayout></RequireAuth>} />
+            <Route path="/settings/privacy" element={<RequireAuth><AppLayout><SettingsPrivacy /></AppLayout></RequireAuth>} />
+            <Route path="/settings/notifications" element={<RequireAuth><AppLayout><SettingsNotifications /></AppLayout></RequireAuth>} />
+            <Route path="/settings/storage" element={<RequireAuth><AppLayout><SettingsStorage /></AppLayout></RequireAuth>} />
+            <Route path="/settings/chat" element={<RequireAuth><AppLayout><SettingsChat /></AppLayout></RequireAuth>} />
+            <Route path="/settings/appearance" element={<RequireAuth><AppLayout><SettingsAppearance /></AppLayout></RequireAuth>} />
+            <Route path="/settings/general" element={<RequireAuth><AppLayout><SettingsGeneral /></AppLayout></RequireAuth>} />
             <Route path="/profile" element={<RequireAuth><AppLayout><Profile /></AppLayout></RequireAuth>} />
             <Route path="/u/:username" element={<RequireAuth><AppLayout><UserProfile /></AppLayout></RequireAuth>} />
 
@@ -107,6 +123,7 @@ export default function App() {
     </StatusProvider>
     </ToastProvider>
     </ThemeProvider>
+    </SettingsProvider>
     </ParallaxProvider>
   );
 }
