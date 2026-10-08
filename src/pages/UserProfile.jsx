@@ -4,6 +4,8 @@ import { supabase } from "../lib/supabase";
 import { useProfile } from "../hooks/useProfile";
 import { useProfileStats } from "../hooks/useProfileStats";
 import { useAuth } from "../hooks/useAuth";
+import { useConversations } from "../hooks/useConversations";
+import { useNavigate } from "react-router-dom";
 import ProfileHeader from "../components/ProfileHeader.jsx";
 import ProfileStats from "../components/ProfileStats.jsx";
 import ProfileTabs from "../components/ProfileTabs.jsx";
@@ -12,6 +14,9 @@ import SlideIn from "../components/SlideIn.jsx";
 export default function UserProfile() {
   const { username } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { getOrCreate } = useConversations(user?.id);
+  const [startingChat, setStartingChat] = useState(false);
   const [resolvedId, setResolvedId] = useState(null);
   const [lookupDone, setLookupDone] = useState(false);
   const [tab, setTab] = useState("posts");
@@ -61,7 +66,14 @@ export default function UserProfile() {
       <ProfileHeader
         profile={profile}
         isOwn={isOwn}
-        onMessage={() => alert("DMs coming soon")}
+        onMessage={async () => {
+          if (!profile || startingChat) return;
+          setStartingChat(true);
+          const { id, error } = await getOrCreate(profile.id);
+          setStartingChat(false);
+          if (error) { alert(error); return; }
+          navigate(`/messages/${id}`);
+        }}
         onAddFriend={() => alert("Friend requests coming soon")}
       />
 

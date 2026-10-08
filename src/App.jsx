@@ -13,8 +13,12 @@ import UserProfile from "./pages/UserProfile.jsx";
 import Friends from "./pages/Friends.jsx";
 import Discover from "./pages/Discover.jsx";
 import Messages from "./pages/Messages.jsx";
+import ChatList from "./pages/ChatList.jsx";
+import Conversation from "./pages/Conversation.jsx";
 import Compose from "./pages/Compose.jsx";
+import Library from "./pages/Library.jsx";
 import { useAuth } from "./hooks/useAuth";
+import { StatusProvider } from "./context/StatusContext.jsx";
 import { useIsMobile } from "./hooks/useIsMobile";
 
 const ONBOARDING_KEY = "rodeo_onboarded";
@@ -62,6 +66,7 @@ export default function App() {
   };
 
   return (
+    <StatusProvider>
     <div className="relative min-h-screen w-full text-warm">
       <AnimatedBackground />
 
@@ -82,8 +87,10 @@ export default function App() {
             <Route path="/home-legacy" element={<RequireAuth><AppLayout><Home /></AppLayout></RequireAuth>} />
             <Route path="/discover" element={<RequireAuth><AppLayout><Discover /></AppLayout></RequireAuth>} />
             <Route path="/friends" element={<RequireAuth><AppLayout><Friends /></AppLayout></RequireAuth>} />
-            <Route path="/messages" element={<RequireAuth><AppLayout><Messages /></AppLayout></RequireAuth>} />
+            <Route path="/messages" element={<RequireAuth><AppLayout><ChatList /></AppLayout></RequireAuth>} />
+            <Route path="/messages/:id" element={<RequireAuth><Conversation /></RequireAuth>} />
             <Route path="/compose" element={<RequireAuth><AppLayout><Compose /></AppLayout></RequireAuth>} />
+            <Route path="/library" element={<RequireAuth><AppLayout><Library /></AppLayout></RequireAuth>} />
             <Route path="/profile" element={<RequireAuth><AppLayout><Profile /></AppLayout></RequireAuth>} />
             <Route path="/u/:username" element={<RequireAuth><AppLayout><UserProfile /></AppLayout></RequireAuth>} />
 
@@ -92,5 +99,6 @@ export default function App() {
         )}
       </div>
     </div>
+    </StatusProvider>
   );
 }

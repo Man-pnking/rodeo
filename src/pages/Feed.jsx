@@ -4,6 +4,7 @@ import { useFeed } from "../hooks/useFeed";
 import Composer from "../components/Composer.jsx";
 import PostCard from "../components/PostCard.jsx";
 import SlideIn from "../components/SlideIn.jsx";
+import StatusBar from "../components/StatusBar.jsx";
 
 export default function Feed() {
   const { user } = useAuth();
@@ -15,6 +16,12 @@ export default function Feed() {
       <SlideIn variant="up">
         <h1 className="display-lg mb-6">Home</h1>
       </SlideIn>
+
+      {composerOpen && (
+        <>
+          <StatusBar />
+        </>
+      )}
 
       {composerOpen && (
         <SlideIn variant="up" delay={0.05}>

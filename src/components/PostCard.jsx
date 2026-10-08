@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 import { Heart, MessageCircle, Bookmark, Trash2 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import CommentSheet from "./CommentSheet.jsx";
+import StatusRing from "./StatusRing.jsx";
+import StatusViewer from "./StatusViewer.jsx";
+import { useStatusContext } from "../context/StatusContext.jsx";
 
 function timeAgo(iso) {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -16,6 +19,9 @@ function timeAgo(iso) {
 export default function PostCard({ post, onLike, onSave, onDelete }) {
   const { user } = useAuth();
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const { groups, getStatusFor, reload } = useStatusContext();
+  const statusInfo = getStatusFor(post.author_id);
   const isOwn = post.author_id === user?.id;
 
   return (
@@ -29,12 +35,18 @@ export default function PostCard({ post, onLike, onSave, onDelete }) {
       >
         <div className="flex items-start justify-between gap-3 mb-3">
           <Link to={`/u/${post.author?.username}`} className="flex items-center gap-3 min-w-0">
-            <div
-              className="w-10 h-10 rounded-full shrink-0"
-              style={{
-                background: post.author?.avatar_url
-                  ? `url(${post.author.avatar_url}) center/cover`
-                  : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+            <StatusRing
+              src={post.author?.avatar_url}
+              size={40}
+              hasStatus={statusInfo.hasStatus}
+              hasUnseen={statusInfo.hasUnseen}
+              fallbackInitial={post.author?.display_name || post.author?.username || "?"}
+              onClick={(e) => {
+                if (statusInfo.hasStatus) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setViewerOpen(true);
+                }
               }}
             />
             <div className="min-w-0">
@@ -119,6 +131,16 @@ export default function PostCard({ post, onLike, onSave, onDelete }) {
         post={post}
         onClose={() => setCommentsOpen(false)}
       />
+      {viewerOpen && statusInfo.group && (
+        <StatusViewer
+          groups={groups}
+          startIndex={groups.indexOf(statusInfo.group)}
+          onClose={() => {
+            setViewerOpen(false);
+            reload();
+          }}
+        />
+      )}
     </>
   );
 }
