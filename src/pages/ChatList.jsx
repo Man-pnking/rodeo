@@ -61,7 +61,7 @@ export default function ChatList() {
             onClick={() => setNewGroupOpen(true)}
             className="w-11 h-11 rounded-full flex items-center justify-center transition-transform hover:scale-105"
             style={{
-              background: "linear-gradient(135deg, #ff6ec7 0%, #a855f7 50%, #3b82f6 100%)",
+              background: "linear-gradient(135deg, var(--brand) 0%, var(--violet) 50%, #3b82f6 100%)",
               boxShadow: "0 8px 24px rgba(168, 85, 247, 0.4)",
             }}
             aria-label="New chat"
@@ -106,7 +106,7 @@ export default function ChatList() {
                   style={{
                     background: item.avatar
                       ? `url(${item.avatar}) center/cover`
-                      : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                      : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                   }}
                 />
               )}
@@ -126,7 +126,7 @@ export default function ChatList() {
                   {item.unread > 0 && (
                     <span
                       className="shrink-0 min-w-[20px] h-5 rounded-full flex items-center justify-center text-[10px] font-bold px-1.5 text-white"
-                      style={{ background: "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)" }}
+                      style={{ background: "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)" }}
                     >
                       {item.unread}
                     </span>

@@ -1,35 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useFeed } from "../hooks/useFeed";
-import Composer from "../components/Composer.jsx";
 import PostCard from "../components/PostCard.jsx";
 import SlideIn from "../components/SlideIn.jsx";
-import StatusBar from "../components/StatusBar.jsx";
 
 export default function Feed() {
   const { user } = useAuth();
-  const { posts, loading, toggleLike, toggleSave, toggleRepost, deletePost, reload } = useFeed(user?.id);
-  const [composerOpen, setComposerOpen] = useState(true);
+  const {
+    posts,
+    loading,
+    toggleLike,
+    toggleSave,
+    toggleRepost,
+    deletePost,
+    reload,
+  } = useFeed(user?.id);
+
+  // Refresh feed whenever the tab/window regains focus
+  // (so a post created on Profile shows up when you come back)
+  useEffect(() => {
+    const onFocus = () => reload();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [reload]);
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8 w-full">
+    <div className="w-full py-6">
       <SlideIn variant="up">
-        <h1 className="display-lg mb-6">Home</h1>
+        <h1 className="display-lg mb-6">Feed</h1>
       </SlideIn>
-
-      {composerOpen && (
-        <>
-          <StatusBar />
-        </>
-      )}
-
-      {composerOpen && (
-        <SlideIn variant="up" delay={0.05}>
-          <div className="pb-6 mb-2">
-            <Composer onPosted={reload} />
-          </div>
-        </SlideIn>
-      )}
 
       {loading && (
         <div className="text-center py-16">
@@ -39,8 +38,10 @@ export default function Feed() {
 
       {!loading && posts.length === 0 && (
         <div className="text-center py-16">
-          <h3 className="display-md mb-2 text-warm">No posts yet</h3>
-          <p className="text-body">Be the first to share something.</p>
+          <h3 className="display-md mb-2 text-warm">Your feed is empty</h3>
+          <p className="text-body">
+            Add friends and their posts will show up here.
+          </p>
         </div>
       )}
 

@@ -11,9 +11,9 @@ const ICONS = {
 };
 
 const ACCENTS = {
-  success: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+  success: "linear-gradient(135deg, var(--success) 0%, #16a34a 100%)",
   error: "linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)",
-  info: "linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)",
+  info: "linear-gradient(135deg, var(--violet) 0%, #3b82f6 100%)",
 };
 
 export function ToastProvider({ children }) {

@@ -31,7 +31,7 @@ export default function ProfileHeader({
     <div className="relative">
       {/* Banner */}
       <ParallaxLayer speed={0.25} className="relative w-full h-32 sm:h-44 md:h-56 overflow-hidden" style={{
-        background: bannerUrl ? `url(${bannerUrl}) center/cover` : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 50%, #3b82f6 100%)",
+        background: bannerUrl ? `url(${bannerUrl}) center/cover` : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 50%, var(--accent) 100%)",
       }}>
         {isOwn && (
           <button
@@ -46,7 +46,7 @@ export default function ProfileHeader({
       </ParallaxLayer>
 
       {/* Avatar + actions */}
-      <div className="max-w-4xl mx-auto px-6 -mt-12 sm:-mt-14 flex items-end justify-between gap-4 relative z-10">
+      <div className="max-w-4xl mx-auto px-6 -mt-12 sm:-mt-14 flex flex-col items-center gap-0 relative z-10">
         <div className="relative">
           <StatusRing
             src={avatarUrl}
@@ -64,7 +64,7 @@ export default function ProfileHeader({
             <button
               onClick={onEditAvatar}
               className="absolute bottom-0 right-0 w-7 h-7 rounded-full flex items-center justify-center transition-colors"
-              style={{ background: "#a855f7" }}
+              style={{ background: "var(--violet)" }}
               aria-label="Edit avatar"
             >
               <Camera className="w-3 h-3 text-white" />
@@ -72,7 +72,7 @@ export default function ProfileHeader({
           )}
         </div>
 
-        <div className="flex items-center gap-2 pb-3">
+        <div className="flex items-center gap-2 pt-4">
           {isOwn ? (
             <Link
               to="/settings"

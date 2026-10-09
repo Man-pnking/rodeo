@@ -1,110 +1,118 @@
 import { NavLink } from "react-router-dom";
-import RodeoMark from "./RodeoMark.jsx";
-import { Home, Users, MessageCircle, Plus, User } from "lucide-react";
+import { Home, Compass, Users, MessageCircle, User, Plus } from "lucide-react";
+import { motion } from "framer-motion";
 
-const LINKS = [
-  { to: "/",         icon: Home,           label: "Home" },
-  { to: "/discover",  icon: Users,          label: "Discover" },
-  { to: "/compose",  icon: Plus,           label: "Create", isPrimary: true },
-  { to: "/messages", icon: MessageCircle,  label: "Messages" },
-  { to: "/profile",  icon: User,           label: "Profile" },
+const items = [
+  { to: "/", icon: Home, label: "Home", end: true },
+  { to: "/discover", icon: Compass, label: "Discover" },
+  { to: "/compose", icon: Plus, label: "Create", primary: true },
+  { to: "/messages", icon: MessageCircle, label: "Messages" },
+  { to: "/profile", icon: User, label: "Profile" },
 ];
 
 export default function Navigation() {
   return (
     <>
-      <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-64 flex-col z-40 no-scrollbar overflow-y-auto"
+      {/* Desktop / tablet sidebar */}
+      <aside
+        className="hidden md:flex fixed left-0 top-0 bottom-0 w-64 flex-col px-4 py-6 z-40"
         style={{
-          background: "rgba(10, 8, 15, 0.65)",
-          backdropFilter: "blur(24px) saturate(140%)",
-          WebkitBackdropFilter: "blur(24px) saturate(140%)",
-          borderRight: "1px solid var(--bg-card-strong)",
+          background: "var(--bg-soft)",
+          borderRight: "1px solid var(--border)",
+          backdropFilter: "blur(20px) saturate(140%)",
+          WebkitBackdropFilter: "blur(20px) saturate(140%)",
         }}
       >
-        <div className="p-6">
-          <div className="flex items-center gap-3">
-            <RodeoMark size={44} />
-            <span className="display-md gradient-text">Rodeo</span>
-          </div>
+        <div
+          className="text-[22px] font-black mb-10 px-2"
+          style={{ letterSpacing: "-0.03em", color: "var(--text-primary)" }}
+        >
+          Rodeo
         </div>
-
-        <nav className="flex-1 px-3 space-y-1 no-scrollbar overflow-y-auto">
-          {LINKS.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              end={link.to === "/"}
-              className={({ isActive }) =>
-                [
-                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all",
-                  isActive
-                    ? "text-white"
-                    : "text-warm-dim hover:text-warm hover:bg-white/[0.04]",
-                ].join(" ")
-              }
-              style={({ isActive }) =>
-                isActive
-                  ? { background: "linear-gradient(120deg, rgba(255,110,199,0.15) 0%, rgba(168,85,247,0.18) 50%, rgba(59,130,246,0.15) 100%)" }
-                  : undefined
-              }
-            >
-              <link.icon className="w-5 h-5" strokeWidth={2} />
-              <span>{link.label}</span>
+        <nav className="flex flex-col gap-1">
+          {items.map(({ to, icon: Icon, label, end, primary }) => (
+            <NavLink key={to} to={to} end={end}>
+              {({ isActive }) => (
+                <motion.div
+                  whileTap={{ scale: 0.97 }}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors"
+                  style={{
+                    background: isActive
+                      ? "var(--accent-soft)"
+                      : "transparent",
+                    color: isActive ? "var(--accent)" : "var(--text-secondary)",
+                    fontWeight: isActive ? 600 : 500,
+                  }}
+                >
+                  <Icon
+                    className="w-[20px] h-[20px]"
+                    strokeWidth={isActive || primary ? 2.2 : 1.8}
+                  />
+                  <span className="text-[15px]">{label}</span>
+                </motion.div>
+              )}
             </NavLink>
           ))}
         </nav>
-
-        <div className="p-6 text-label">v0.1.0 · alpha</div>
       </aside>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 safe-bottom" style={{ maxWidth: "100vw", overflow: "hidden" }}>
-        <div
-          className="flex items-center justify-around px-2 pt-2 pb-2"
-          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0) + 8px)" }}
-          style={{
-            background: "rgba(10, 8, 15, 0.85)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            borderTop: "1px solid var(--bg-card-strong)",
-          }}
-        >
-          {LINKS.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              end={link.to === "/"}
-              className="flex flex-col items-center justify-center gap-1 relative"
-              style={{ minWidth: 56, minHeight: 48 }}
-            >
+      {/* Mobile bottom bar */}
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40"
+        style={{
+          background: "color-mix(in srgb, var(--bg-soft) 92%, transparent)",
+          backdropFilter: "blur(24px) saturate(160%)",
+          WebkitBackdropFilter: "blur(24px) saturate(160%)",
+          borderTop: "1px solid var(--border)",
+          paddingBottom: "env(safe-area-inset-bottom, 0)",
+        }}
+      >
+        <div className="flex items-center justify-around px-2 pt-2 pb-1.5">
+          {items.map(({ to, icon: Icon, label, end, primary }) => (
+            <NavLink key={to} to={to} end={end} className="flex-1">
               {({ isActive }) => (
-                <>
-                  {link.isPrimary ? (
+                <motion.div
+                  whileTap={{ scale: 0.9 }}
+                  className="flex flex-col items-center justify-center gap-0.5 py-1 relative"
+                >
+                  {primary ? (
                     <div
-                      className="flex items-center justify-center -mt-6 mb-1"
+                      className="w-11 h-11 rounded-2xl flex items-center justify-center -mt-4 mb-0.5"
                       style={{
-                        width: 48,
-                        height: 48,
-                        borderRadius: 16,
-                        background: "linear-gradient(120deg, #ff6ec7 0%, #a855f7 50%, #3b82f6 100%)",
-                        boxShadow: "0 8px 24px rgba(168, 85, 247, 0.45)",
+                        background:
+                          "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
+                        boxShadow:
+                          "0 6px 20px rgba(251, 113, 133, 0.35)",
                       }}
                     >
-                      <link.icon className="w-6 h-6 text-white" strokeWidth={2.5} />
+                      <Icon className="w-5 h-5 text-white" strokeWidth={2.5} />
                     </div>
                   ) : (
-                    <link.icon
-                      className="w-5 h-5 transition-colors"
-                      strokeWidth={2}
-                      style={{ color: isActive ? "#ff6ec7" : "rgba(240, 240, 245, 0.5)" }}
-                    />
+                    <div className="relative py-1.5">
+                      <Icon
+                        className="w-[22px] h-[22px]"
+                        strokeWidth={isActive ? 2.4 : 1.8}
+                        style={{
+                          color: isActive
+                            ? "var(--accent)"
+                            : "var(--text-tertiary)",
+                          transition: "color 0.15s ease",
+                        }}
+                      />
+                    </div>
                   )}
                   <span
-                    className="text-[10px] font-medium transition-colors"
-                    style={{ color: isActive && !link.isPrimary ? "#ff6ec7" : "rgba(240, 240, 245, 0.5)" }}
+                    className="text-[10.5px] font-medium"
+                    style={{
+                      color: isActive
+                        ? "var(--accent)"
+                        : "var(--text-tertiary)",
+                      letterSpacing: "-0.005em",
+                    }}
                   >
-                    {link.label}
+                    {label}
                   </span>
-                </>
+                </motion.div>
               )}
             </NavLink>
           ))}

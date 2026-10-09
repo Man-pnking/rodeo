@@ -49,7 +49,7 @@ export default function StatusBar() {
                   width: 22,
                   height: 22,
                   borderRadius: "50%",
-                  background: "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                  background: "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                   border: "2px solid var(--bg)",
                 }}
               >

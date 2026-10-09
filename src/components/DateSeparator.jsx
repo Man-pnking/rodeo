@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 function labelForDate(iso) {
   const d = new Date(iso);
   const today = new Date();
@@ -21,19 +23,27 @@ function labelForDate(iso) {
 
 export default function DateSeparator({ date }) {
   return (
-    <div className="flex items-center justify-center my-4">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.25 }}
+      className="flex items-center justify-center my-5"
+    >
       <div
-        className="px-3 py-1 rounded-full text-[11px] font-medium tracking-wide"
+        className="px-3.5 py-1.5 rounded-full text-[11px] font-semibold tracking-wide uppercase"
         style={{
-          background: "rgba(255,255,255,0.06)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          color: "rgba(255,255,255,0.55)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
+          background:
+            "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%)",
+          border: "1px solid rgba(255,255,255,0.10)",
+          color: "rgba(255,255,255,0.65)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+          letterSpacing: "0.06em",
         }}
       >
         {labelForDate(date)}
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -74,7 +74,7 @@ export default function CommentSheet({ open, post, onClose }) {
                     style={{
                       background: c.author?.avatar_url
                         ? `url(${c.author.avatar_url}) center/cover`
-                        : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                        : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                     }}
                   />
                   <div className="min-w-0 flex-1">
@@ -96,7 +96,7 @@ export default function CommentSheet({ open, post, onClose }) {
                 style={{
                   background: profile?.avatar_url
                     ? `url(${profile.avatar_url}) center/cover`
-                    : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                    : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                 }}
               />
               <input
@@ -112,7 +112,7 @@ export default function CommentSheet({ open, post, onClose }) {
                 disabled={!body.trim() || sending}
                 className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-opacity"
                 style={{
-                  background: "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                  background: "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                   opacity: !body.trim() || sending ? 0.4 : 1,
                 }}
                 aria-label="Send"

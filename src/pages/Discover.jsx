@@ -89,7 +89,7 @@ export default function Discover() {
                       style={{
                         background: r.profile?.avatar_url
                           ? `url(${r.profile.avatar_url}) center/cover`
-                          : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                          : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                       }}
                     />
                     <div className="min-w-0">
@@ -170,7 +170,7 @@ export default function Discover() {
                         style={{
                           background: m.avatar_url
                             ? `url(${m.avatar_url}) center/cover`
-                            : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                            : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                         }}
                       />
                       <div className="min-w-0">

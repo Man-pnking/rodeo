@@ -97,7 +97,7 @@ export default function CreateGroupSheet({ open, onClose, onCreated }) {
                   style={{
                     background: avatar?.url
                       ? `url(${avatar.url}) center/cover`
-                      : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                      : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                   }}
                   aria-label="Group avatar"
                 >
@@ -149,7 +149,7 @@ export default function CreateGroupSheet({ open, onClose, onCreated }) {
                         style={{
                           background: f.avatar_url
                             ? `url(${f.avatar_url}) center/cover`
-                            : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                            : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                         }}
                       />
                       <div className="min-w-0 flex-1">
@@ -159,7 +159,7 @@ export default function CreateGroupSheet({ open, onClose, onCreated }) {
                       <div
                         className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors"
                         style={{
-                          background: isSelected ? "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)" : "rgba(255,255,255,0.08)",
+                          background: isSelected ? "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)" : "rgba(255,255,255,0.08)",
                           border: isSelected ? "none" : "1px solid rgba(255,255,255,0.15)",
                         }}
                       >

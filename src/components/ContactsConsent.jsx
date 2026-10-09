@@ -27,7 +27,7 @@ export default function ContactsConsent({ open, onClose, onGrant, onManual }) {
           >
             <div className="flex items-center justify-between mb-6">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)" }}>
+                style={{ background: "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)" }}>
                 <Phone className="w-5 h-5 text-white" />
               </div>
               <button onClick={onClose} className="p-2 -m-2" aria-label="Close">

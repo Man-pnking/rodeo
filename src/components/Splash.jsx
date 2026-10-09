@@ -62,7 +62,7 @@ export default function Splash({ onDone }) {
             style={{
               width: "min(40vw, 180px)",
               height: 2,
-              background: "linear-gradient(90deg, transparent 0%, #ff6ec7 20%, #a855f7 50%, #3b82f6 80%, transparent 100%)",
+              background: "linear-gradient(90deg, transparent 0%, var(--brand) 20%, var(--violet) 50%, #3b82f6 80%, transparent 100%)",
               borderRadius: 2,
             }}
           />

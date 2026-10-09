@@ -89,7 +89,7 @@ export default function GroupInfo() {
             {isOwner && (
               <div
                 className="absolute bottom-1 right-1 w-9 h-9 rounded-full flex items-center justify-center"
-                style={{ background: "#a855f7", border: "3px solid var(--bg)" }}
+                style={{ background: "var(--violet)", border: "3px solid var(--bg)" }}
               >
                 <Camera className="w-4 h-4 text-white" />
               </div>
@@ -140,7 +140,7 @@ export default function GroupInfo() {
                 style={{
                   background: m.profile?.avatar_url
                     ? `url(${m.profile.avatar_url}) center/cover`
-                    : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                    : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                 }}
               />
               <div className="min-w-0 flex-1">
@@ -235,7 +235,7 @@ export default function GroupInfo() {
                   style={{
                     background: f.avatar_url
                       ? `url(${f.avatar_url}) center/cover`
-                      : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                      : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                   }}
                 />
                 <div className="min-w-0 flex-1">

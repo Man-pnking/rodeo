@@ -10,12 +10,40 @@ export function useFeed(userId) {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setError(null);
+
+    // 1. Get accepted friend IDs (both directions)
+    let friendIds = [];
+    if (userId) {
+      const { data: friendships } = await supabase
+        .from("friendships")
+        .select("user_id, friend_id, status")
+        .or(`user_id.eq.${userId},friend_id.eq.${userId}`)
+        .eq("status", "accepted");
+
+      friendIds = (friendships || []).map((f) =>
+        f.user_id === userId ? f.friend_id : f.user_id
+      );
+    }
+
+    // 2. Build the author filter: self + friends
+    //    If no userId (logged out), show nothing.
+    if (!userId) {
+      setPosts([]);
+      setLoading(false);
+      return;
+    }
+
+    const authorIds = [userId, ...friendIds];
+
+    // 3. Fetch posts authored by self or friends
     const { data, error } = await supabase
       .from("posts")
       .select(`
         id, author_id, body, image_url, likes_count, comments_count, created_at,
         author:profiles!posts_author_id_fkey (id, username, display_name, avatar_url)
       `)
+      .in("author_id", authorIds)
       .order("created_at", { ascending: false })
       .limit(50);
 
@@ -25,11 +53,12 @@ export function useFeed(userId) {
       return;
     }
 
+    // 4. Fetch viewer's likes / saves / reposts
     let likedIds = new Set();
     let savedIds = new Set();
     let repostedIds = new Set();
 
-    if (userId && data?.length) {
+    if (data?.length) {
       const postIds = data.map((p) => p.id);
       const [likesRes, savesRes, repostsRes] = await Promise.all([
         supabase.from("likes").select("post_id").eq("user_id", userId).in("post_id", postIds),
@@ -41,7 +70,9 @@ export function useFeed(userId) {
       repostedIds = new Set((repostsRes.data || []).map((r) => r.post_id));
     }
 
+    // 5. Filter out blocked users
     const filtered = (data || []).filter((p) => !blockedIds.has(p.author_id));
+
     setPosts(
       filtered.map((p) => ({
         ...p,
@@ -136,7 +167,7 @@ export function useFeed(userId) {
       `)
       .single();
     if (error) return { error: error.message };
-    setPosts((prev) => [{ ...data, liked: false, saved: false }, ...prev]);
+    setPosts((prev) => [{ ...data, liked: false, saved: false, reposted: false }, ...prev]);
     return { data };
   };
 
@@ -159,5 +190,10 @@ export function useFeed(userId) {
     return (data || []).map((p) => ({ ...p, liked: false, saved: true, reposted: false }));
   };
 
-  return { posts, loading, error, reload: load, toggleLike, toggleSave, toggleRepost, deletePost, addComment, createPost, getSavedPosts };
+  return {
+    posts, loading, error,
+    reload: load,
+    toggleLike, toggleSave, toggleRepost, deletePost,
+    addComment, createPost, getSavedPosts,
+  };
 }

@@ -21,7 +21,7 @@ export default function StatusRing({
         overflow: "hidden",
         background: src
           ? `url(${src}) center/cover`
-          : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 50%, #3b82f6 100%)",
+          : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 50%, #3b82f6 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -52,7 +52,7 @@ export default function StatusRing({
 
   // Ring present
   const ringBackground = hasUnseen
-    ? "conic-gradient(from 180deg, #ff6ec7 0%, #a855f7 30%, #3b82f6 60%, #22d3ee 85%, #ff6ec7 100%)"
+    ? "conic-gradient(from 180deg, var(--brand) 0%, var(--violet) 30%, #3b82f6 60%, #22d3ee 85%, var(--brand) 100%)"
     : "conic-gradient(from 180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.18) 100%)";
 
   return (

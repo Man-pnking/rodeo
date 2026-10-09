@@ -123,7 +123,7 @@ export default function StatusViewer({ groups, startIndex = 0, onClose }) {
               style={{
                 background: group.author?.avatar_url
                   ? `url(${group.author.avatar_url}) center/cover`
-                  : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                  : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
               }}
             />
             <div>
@@ -199,7 +199,7 @@ export default function StatusViewer({ groups, startIndex = 0, onClose }) {
               disabled={sending || !replyText.trim()}
               className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
               style={{
-                background: "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                background: "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                 opacity: sending || !replyText.trim() ? 0.35 : 1,
               }}
               aria-label="Send reply"

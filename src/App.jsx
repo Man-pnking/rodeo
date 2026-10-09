@@ -8,6 +8,7 @@ const Feed = lazy(() => import("./pages/Feed.jsx"));
 const Login = lazy(() => import("./pages/Login.jsx"));
 const Signup = lazy(() => import("./pages/Signup.jsx"));
 const Profile = lazy(() => import("./pages/Profile.jsx"));
+const PostDetail = lazy(() => import("./pages/PostDetail.jsx"));
 const UserProfile = lazy(() => import("./pages/UserProfile.jsx"));
 const Friends = lazy(() => import("./pages/Friends.jsx"));
 const Discover = lazy(() => import("./pages/Discover.jsx"));
@@ -122,6 +123,7 @@ export default function App() {
             <Route path="/profile" element={<RequireAuth><AppLayout><Profile /></AppLayout></RequireAuth>} />
             <Route path="/u/:username" element={<RequireAuth><AppLayout><UserProfile /></AppLayout></RequireAuth>} />
 
+            <Route path="/post/:id" element={<RequireAuth><AppLayout><PostDetail /></AppLayout></RequireAuth>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           </Suspense>

@@ -9,7 +9,7 @@ const SLIDES = [
     title: "Meet people nearby",
     body: "Find friends by phone, chat instantly, share moments. Rodeo brings your real connections into one place.",
     bullets: ["Phone-based friend discovery", "Real-time messaging", "Group conversations"],
-    accent: "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+    accent: "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
     orbs: [
       { size: 420, top: "10%", left: "15%", color: "rgba(255,110,199,0.35)" },
       { size: 320, top: "55%", left: "60%", color: "rgba(168,85,247,0.30)" },
@@ -21,7 +21,7 @@ const SLIDES = [
     title: "Post and share",
     body: "Stories, feed, and DMs — everything in one place. Share what matters, see what your circle is up to.",
     bullets: ["24-hour disappearing stories", "Likes, comments, replies", "Photo and video posts"],
-    accent: "linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)",
+    accent: "linear-gradient(135deg, var(--violet) 0%, #3b82f6 100%)",
     orbs: [
       { size: 440, top: "5%", left: "55%", color: "rgba(168,85,247,0.35)" },
       { size: 340, top: "60%", left: "10%", color: "rgba(59,130,246,0.30)" },
@@ -230,7 +230,7 @@ export default function Onboarding({ onComplete }) {
                   >
                     <span
                       className="w-1.5 h-1.5 rounded-full shrink-0"
-                      style={{ background: "#ff6ec7", boxShadow: "0 0 8px #ff6ec7" }}
+                      style={{ background: "var(--brand)", boxShadow: "0 0 8px var(--brand)" }}
                     />
                     <span className="text-sm">{b}</span>
                   </motion.li>
@@ -252,7 +252,7 @@ export default function Onboarding({ onComplete }) {
                   height: 8,
                   background:
                     i === index
-                      ? "linear-gradient(90deg, #ff6ec7 0%, #a855f7 100%)"
+                      ? "linear-gradient(90deg, var(--brand) 0%, var(--violet) 100%)"
                       : "rgba(255, 255, 255, 0.15)",
                 }}
               />

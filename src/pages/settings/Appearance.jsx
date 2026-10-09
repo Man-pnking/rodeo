@@ -14,10 +14,10 @@ const THEMES = [
 ];
 
 const ACCENTS = [
-  { id: "iridescent", label: "Iridescent", colors: ["#ff6ec7", "#a855f7", "#3b82f6"] },
-  { id: "pink", label: "Pink", colors: ["#ff6ec7", "#ff6ec7", "#ff6ec7"] },
+  { id: "iridescent", label: "Iridescent", colors: ["var(--brand)", "var(--violet)", "#3b82f6"] },
+  { id: "pink", label: "Pink", colors: ["var(--brand)", "var(--brand)", "var(--brand)"] },
   { id: "blue", label: "Blue", colors: ["#3b82f6", "#3b82f6", "#3b82f6"] },
-  { id: "green", label: "Green", colors: ["#22c55e", "#22c55e", "#22c55e"] },
+  { id: "green", label: "Green", colors: ["var(--success)", "var(--success)", "var(--success)"] },
 ];
 
 export default function Appearance() {
@@ -66,7 +66,7 @@ export default function Appearance() {
                     background: active ? "linear-gradient(135deg, rgba(255,110,199,0.15) 0%, rgba(168,85,247,0.18) 100%)" : "rgba(255,255,255,0.03)",
                     border: active ? "1px solid rgba(168,85,247,0.5)" : "1px solid rgba(255,255,255,0.06)",
                   }}>
-                  <Icon className="w-5 h-5" style={{ color: active ? "#ff6ec7" : "rgba(240,240,245,0.6)" }} />
+                  <Icon className="w-5 h-5" style={{ color: active ? "var(--brand)" : "rgba(240,240,245,0.6)" }} />
                   <span className="text-xs font-medium" style={{ color: active ? "#fff" : "rgba(240,240,245,0.7)" }}>{t.label}</span>
                 </button>
               );

@@ -17,7 +17,7 @@ export default function GroupAvatar({ group, members = [], size = 48 }) {
 
   // Auto-generate from first 3 members
   const shown = members.slice(0, 3);
-  const colors = ["#ff6ec7", "#a855f7", "#3b82f6"];
+  const colors = ["var(--brand)", "var(--violet)", "var(--accent)"];
 
   return (
     <div

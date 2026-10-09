@@ -78,7 +78,7 @@ export default function Notifications() {
                 width: 44,
                 height: 26,
                 background: subscribed
-                  ? "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)"
+                  ? "linear-gradient(135deg, var(--success) 0%, #16a34a 100%)"
                   : "rgba(255,255,255,0.12)",
               }}
               aria-pressed={subscribed}

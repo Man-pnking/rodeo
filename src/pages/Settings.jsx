@@ -41,7 +41,7 @@ export default function Settings() {
             style={{
               background: profile?.avatar_url
                 ? `url(${profile.avatar_url}) center/cover`
-                : "linear-gradient(135deg, #ff6ec7 0%, #a855f7 100%)",
+                : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
             }}
           />
           <div className="min-w-0 flex-1 text-left">

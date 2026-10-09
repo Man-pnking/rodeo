@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Heart, MessageCircle, Bookmark, Trash2, Repeat2 } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Trash2, Repeat2, Flag } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import CommentSheet from "./CommentSheet.jsx";
 import ReportModal from "./ReportModal.jsx";
-import { Flag } from "lucide-react";
 import StatusRing from "./StatusRing.jsx";
 import StatusViewer from "./StatusViewer.jsx";
 import { useStatusContext } from "../context/StatusContext.jsx";
@@ -15,11 +14,13 @@ function timeAgo(iso) {
   if (s < 60) return `${s}s`;
   if (s < 3600) return `${Math.floor(s / 60)}m`;
   if (s < 86400) return `${Math.floor(s / 3600)}h`;
-  return `${Math.floor(s / 86400)}d`;
+  if (s < 604800) return `${Math.floor(s / 86400)}d`;
+  return new Date(iso).toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
 export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -27,23 +28,38 @@ export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
   const statusInfo = getStatusFor(post.author_id);
   const isOwn = post.author_id === user?.id;
 
+  const stop = (e) => e.stopPropagation();
+
+  const handleCardClick = (e) => {
+    if (e.target.closest("button") || e.target.closest("a")) return;
+    navigate(`/post/${post.id}`);
+  };
+
   return (
     <>
       <motion.article
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.1 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="py-6"
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        onClick={handleCardClick}
+        className="w-full cursor-pointer transition-colors duration-200 hover:bg-white/[0.015]"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <Link to={`/u/${post.author?.username}`} className="flex items-center gap-3 min-w-0">
+        <div className="flex items-start justify-between gap-3 px-4 sm:px-6 pt-4 pb-3">
+          <Link
+            to={`/u/${post.author?.username}`}
+            onClick={stop}
+            className="flex items-center gap-3 min-w-0"
+          >
             <StatusRing
               src={post.author?.avatar_url}
-              size={40}
+              size={42}
               hasStatus={statusInfo.hasStatus}
               hasUnseen={statusInfo.hasUnseen}
-              fallbackInitial={post.author?.display_name || post.author?.username || "?"}
+              fallbackInitial={
+                post.author?.display_name || post.author?.username || "?"
+              }
               onClick={(e) => {
                 if (statusInfo.hasStatus) {
                   e.preventDefault();
@@ -53,10 +69,10 @@ export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
               }}
             />
             <div className="min-w-0">
-              <div className="text-warm font-semibold text-sm truncate">
+              <div className="text-warm font-semibold text-[14.5px] truncate">
                 {post.author?.display_name || post.author?.username}
               </div>
-              <div className="text-xs text-warm-mute truncate">
+              <div className="text-[12.5px] text-warm-mute truncate">
                 @{post.author?.username} · {timeAgo(post.created_at)}
               </div>
             </div>
@@ -64,16 +80,22 @@ export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
 
           {isOwn ? (
             <button
-              onClick={() => onDelete(post)}
-              className="p-2 rounded-full hover:bg-white/5 transition-colors shrink-0"
+              onClick={(e) => {
+                stop(e);
+                onDelete(post);
+              }}
+              className="p-2 -m-1 rounded-full hover:bg-white/5 transition-colors shrink-0"
               aria-label="Delete post"
             >
               <Trash2 className="w-4 h-4 text-warm-mute" />
             </button>
           ) : (
             <button
-              onClick={() => setReportOpen(true)}
-              className="p-2 rounded-full hover:bg-white/5 transition-colors shrink-0"
+              onClick={(e) => {
+                stop(e);
+                setReportOpen(true);
+              }}
+              className="p-2 -m-1 rounded-full hover:bg-white/5 transition-colors shrink-0"
               aria-label="Report post"
             >
               <Flag className="w-3.5 h-3.5 text-warm-mute" />
@@ -82,71 +104,66 @@ export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
         </div>
 
         {post.body && (
-          <p className="text-warm whitespace-pre-wrap mb-3 text-[15px] leading-relaxed">
+          <p className="text-warm whitespace-pre-wrap break-words px-4 sm:px-6 pb-3 text-[15.5px] leading-[1.6]">
             {post.body}
           </p>
         )}
 
         {post.image_url && (
-          <div className="rounded-2xl overflow-hidden mb-4">
+          <div className="w-full mb-3 bg-black/20">
             <img
               src={post.image_url}
               alt=""
-              className="w-full max-h-[500px] object-cover"
+              className="w-full max-h-[600px] object-cover block"
               loading="lazy"
             />
           </div>
         )}
 
-        <div className="flex items-center gap-6 text-warm-mute">
-          <button
-            onClick={() => onLike(post)}
-            className="flex items-center gap-1.5 text-xs transition-colors"
-            style={{ color: post.liked ? "#ff6ec7" : undefined }}
-            aria-label="Like"
-          >
-            <Heart
-              className="w-4 h-4"
-              fill={post.liked ? "#ff6ec7" : "none"}
-              stroke={post.liked ? "#ff6ec7" : "currentColor"}
-            />
-            <span>{post.likes_count || 0}</span>
-          </button>
-
-          <button
-            onClick={() => setCommentsOpen(true)}
-            className="flex items-center gap-1.5 text-xs transition-colors hover:text-warm"
-            aria-label="Comment"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span>{post.comments_count || 0}</span>
-          </button>
-
-          <button
-            onClick={() => onRepost?.(post)}
-            className="flex items-center gap-1.5 text-xs transition-colors"
-            style={{ color: post.reposted ? "#22c55e" : undefined }}
-            aria-label="Repost"
-          >
-            <Repeat2
-              className="w-4 h-4"
-              stroke={post.reposted ? "#22c55e" : "currentColor"}
-            />
-            {(post.reposts_count || 0) > 0 && <span>{post.reposts_count}</span>}
-          </button>
-
-          <button
-            onClick={() => onSave(post)}
-            className="flex items-center gap-1.5 text-xs ml-auto transition-colors"
-            style={{ color: post.saved ? "#a855f7" : undefined }}
-            aria-label="Save"
-          >
-            <Bookmark
-              className="w-4 h-4"
-              fill={post.saved ? "#a855f7" : "none"}
-              stroke={post.saved ? "#a855f7" : "currentColor"}
-            />
-          </button>
+        <div className="flex items-center gap-1 px-2 sm:px-4 pb-2">
+          <ActionButton
+            icon={Heart}
+            count={post.likes_count}
+            active={post.liked}
+            activeColor="var(--danger)"
+            onClick={(e) => {
+              stop(e);
+              onLike(post);
+            }}
+            aria="Like"
+          />
+          <ActionButton
+            icon={MessageCircle}
+            count={post.comments_count}
+            onClick={(e) => {
+              stop(e);
+              setCommentsOpen(true);
+            }}
+            aria="Comment"
+          />
+          <ActionButton
+            icon={Repeat2}
+            count={post.reposts_count}
+            active={post.reposted}
+            activeColor="var(--success)"
+            onClick={(e) => {
+              stop(e);
+              onRepost?.(post);
+            }}
+            aria="Repost"
+          />
+          <div className="flex-1" />
+          <ActionButton
+            icon={Bookmark}
+            active={post.saved}
+            activeColor="var(--violet)"
+            onClick={(e) => {
+              stop(e);
+              onSave(post);
+            }}
+            aria="Save"
+            noCount
+          />
         </div>
       </motion.article>
 
@@ -162,6 +179,7 @@ export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
         targetType="post"
         targetId={post.id}
       />
+
       {viewerOpen && statusInfo.group && (
         <StatusViewer
           groups={groups}
@@ -173,5 +191,36 @@ export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
         />
       )}
     </>
+  );
+}
+
+function ActionButton({ icon: Icon, count, active, activeColor = "var(--accent)", onClick, aria, noCount }) {
+  const [hover, setHover] = useState(false);
+  const color = active ? activeColor : hover ? "rgba(240,240,245,0.95)" : "rgba(240,240,245,0.6)";
+
+  return (
+    <motion.button
+      whileTap={{ scale: 0.9 }}
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition-colors"
+      style={{
+        background: hover ? "rgba(255,255,255,0.05)" : "transparent",
+        color,
+      }}
+      aria-label={aria}
+    >
+      <Icon
+        className="w-[18px] h-[18px] transition-colors"
+        style={{
+          fill: active ? activeColor : "none",
+          stroke: color,
+        }}
+      />
+      {!noCount && count > 0 && (
+        <span className="text-[12.5px] font-medium tabular-nums">{count}</span>
+      )}
+    </motion.button>
   );
 }

@@ -4,17 +4,58 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: {
-          DEFAULT: "#0a0a0f",
-          soft: "#12121a",
-          lighter: "#1a1a24",
+        // --- Surfaces (via CSS vars) ---
+        bg: {
+          DEFAULT: "var(--bg)",
+          soft: "var(--bg-soft)",
+          card: "var(--bg-card)",
+          "card-strong": "var(--bg-card-strong)",
+          input: "var(--bg-input)",
+          hover: "var(--bg-hover)",
+          elevated: "var(--bg-elevated)",
         },
-        warm: "#f0f0f5",
+        // --- Text ---
+        text: {
+          DEFAULT: "var(--text-primary)",
+          primary: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+          tertiary: "var(--text-tertiary)",
+        },
+        // Legacy "warm" text (keep for existing components)
+        warm: "var(--text-primary)",
+        "warm-mute": "var(--text-secondary)",
+        "warm-dim": "var(--text-tertiary)",
+
+        // --- Borders ---
+        border: {
+          DEFAULT: "var(--border)",
+          strong: "var(--border-strong)",
+        },
+
+        // --- Accents (semantic) ---
+        accent: {
+          DEFAULT: "var(--accent)",
+          strong: "var(--accent-strong)",
+          soft: "var(--accent-soft)",
+          fg: "var(--accent-fg)",
+        },
+        brand: {
+          DEFAULT: "var(--brand)",
+          strong: "var(--brand-strong)",
+          soft: "var(--brand-soft)",
+          fg: "var(--brand-fg)",
+        },
+        success: "var(--success)",
+        danger: "var(--danger)",
+        warning: "var(--warning)",
+        violet: "var(--violet)",
+
+        // --- Legacy "iri" palette (keep for compatibility) ---
         iri: {
-          pink: "#ff6ec7",
-          purple: "#a855f7",
-          blue: "#3b82f6",
-          cyan: "#22d3ee",
+          pink: "var(--brand)",
+          purple: "var(--violet)",
+          blue: "var(--accent)",
+          cyan: "#22D3EE",
         },
       },
       fontFamily: {
@@ -37,8 +78,8 @@ export default {
           "50%": { transform: "translateY(-16px)" },
         },
         "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 30px rgba(168, 85, 247, 0.35)" },
-          "50%": { boxShadow: "0 0 60px rgba(168, 85, 247, 0.6)" },
+          "0%, 100%": { boxShadow: "0 0 30px rgba(99, 102, 241, 0.35)" },
+          "50%": { boxShadow: "0 0 60px rgba(99, 102, 241, 0.60)" },
         },
       },
     },
