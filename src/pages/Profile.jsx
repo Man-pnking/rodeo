@@ -104,42 +104,11 @@ export default function Profile() {
         isOwn
         onEditAvatar={onPickAvatar}
         onEditBanner={onPickBanner}
+        stats={stats}
+        statsLoading={statsLoading}
+        onNewPost={() => setComposerOpen(true)}
       />
 
-      <SlideIn variant="up" delay={0.1}>
-        <div className="max-w-4xl mx-auto px-6 pt-6 pb-4">
-          <h1 className="display-md mb-1">
-            {profile?.display_name || "Your profile"}
-          </h1>
-          <div className="flex items-center gap-3 flex-wrap mb-3">
-            <p className="text-warm-dim text-sm">
-              @{profile?.username || "you"}
-            </p>
-            <ProfileStats stats={stats} loading={statsLoading} />
-          </div>
-          <p className="text-body max-w-2xl mb-5">
-            {profile?.bio || "Hey there! I am using Rodeo."}
-          </p>
-
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={() => setComposerOpen(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold"
-            style={{
-              background: "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
-              color: "#fff",
-              boxShadow: "0 4px 16px rgba(251, 113, 133, 0.30)",
-            }}
-          >
-            <Plus className="w-4 h-4" strokeWidth={2.5} />
-            New Post
-          </motion.button>
-
-          {uploading && (
-            <p className="text-xs text-iri-pink mt-3">Uploading...</p>
-          )}
-        </div>
-      </SlideIn>
 
       <ProfileTabs isOwn value={tab} onChange={setTab} />
 

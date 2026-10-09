@@ -8,6 +8,9 @@ import ReportModal from "./ReportModal.jsx";
 import { MoreVertical } from "lucide-react";
 import StatusViewer from "./StatusViewer.jsx";
 import { useStatusContext } from "../context/StatusContext.jsx";
+import ProfileStats from "./ProfileStats.jsx";
+import { motion } from "framer-motion";
+import { Plus } from "lucide-react";
 
 export default function ProfileHeader({
   profile,
@@ -18,6 +21,9 @@ export default function ProfileHeader({
   onMessage,
   isFriend,
   hasPendingRequest,
+  stats,
+  statsLoading,
+  onNewPost,
 }) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
@@ -71,6 +77,50 @@ export default function ProfileHeader({
             </button>
           )}
         </div>
+        {/* Identity block (name, handle, stats, bio, button) */}
+        <div className="text-center mt-4 w-full max-w-lg mx-auto">
+          <h1 className="text-[22px] sm:text-[26px] font-bold text-warm tracking-tight leading-tight">
+            {profile?.display_name || "Your profile"}
+          </h1>
+
+          <div className="flex items-center justify-center gap-2 flex-wrap mt-2">
+            <p className="text-warm-mute text-[13.5px]">
+              @{profile?.username || "you"}
+            </p>
+          </div>
+
+          {profile?.bio && (
+            <p className="text-warm-mute text-[14px] leading-relaxed mt-3 max-w-md mx-auto">
+              {profile.bio}
+            </p>
+          )}
+
+          {isOwn && onNewPost && (
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={onNewPost}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold mt-5"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
+                color: "#fff",
+                boxShadow: "0 4px 16px rgba(251, 113, 133, 0.30)",
+              }}
+            >
+              <Plus className="w-4 h-4" strokeWidth={2.5} />
+              New Post
+            </motion.button>
+          )}
+        </div>
+        {/* Stats row */}
+        {stats !== undefined && (
+          <div className="w-full mt-5 pt-5" style={{ borderTop: "1px solid var(--border)" }}>
+            <ProfileStats stats={stats} loading={statsLoading} />
+          </div>
+        )}
+
+
+
 
         <div className="flex items-center gap-2 pt-4">
           {isOwn ? (
