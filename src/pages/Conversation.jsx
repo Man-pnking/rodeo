@@ -74,33 +74,12 @@ export default function Conversation() {
         bottom: 0,
         display: "flex",
         flexDirection: "column",
-        background:
-          "radial-gradient(ellipse at top, rgba(30,15,60,1) 0%, rgba(8,6,18,1) 60%)",
+        background: "var(--bg)",
         zIndex: 30,
         overflow: "hidden",
       }}
     >
-      {/* Animated background orb */}
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute"
-        style={{
-          width: "600px",
-          height: "600px",
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle, rgba(10,132,255,0.12) 0%, transparent 70%)",
-          top: "-200px",
-          right: "-200px",
-          filter: "blur(40px)",
-        }}
-        animate={{
-          x: [0, 30, 0],
-          y: [0, 40, 0],
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-      />
-
+      
       {/* Header */}
       <div
         className="flex items-center gap-3 px-4 py-3 relative"
@@ -108,9 +87,7 @@ export default function Conversation() {
           flexShrink: 0,
           paddingTop: "calc(env(safe-area-inset-top, 0) + 12px)",
           borderBottom: "1px solid rgba(255,255,255,0.06)",
-          background: "rgba(15,12,25,0.65)",
-          backdropFilter: "blur(28px) saturate(160%)",
-          WebkitBackdropFilter: "blur(28px) saturate(160%)",
+          background: "var(--bg)",
           zIndex: 2,
         }}
       >
@@ -230,9 +207,7 @@ export default function Conversation() {
         style={{
           flexShrink: 0,
           paddingBottom: "env(safe-area-inset-bottom, 0)",
-          background: "rgba(15,12,25,0.7)",
-          backdropFilter: "blur(24px) saturate(160%)",
-          WebkitBackdropFilter: "blur(24px) saturate(160%)",
+          background: "var(--bg)",
           borderTop: "1px solid rgba(255,255,255,0.06)",
           zIndex: 2,
         }}
