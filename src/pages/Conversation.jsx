@@ -82,74 +82,73 @@ export default function Conversation() {
       
       {/* Header */}
       <div
-        className="flex items-center gap-3 px-4 py-3 relative"
+        className="relative flex items-center justify-between px-2 py-2"
         style={{
           flexShrink: 0,
-          paddingTop: "calc(env(safe-area-inset-top, 0) + 12px)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          paddingTop: "calc(env(safe-area-inset-top, 0) + 10px)",
+          borderBottom: "1px solid var(--border)",
           background: "var(--bg)",
           zIndex: 2,
         }}
       >
         <button
           onClick={() => navigate("/messages")}
-          className="p-2 -m-2 rounded-full transition-colors hover:bg-white/5 active:bg-white/10"
+          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+          style={{ color: "var(--text-primary)" }}
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5 text-warm" />
+          <ArrowLeft className="w-5 h-5" />
         </button>
 
-        {isGroup && group ? (
-          <button
-            onClick={() => navigate(`/group/${id}`)}
-            className="flex items-center gap-3 min-w-0 flex-1 text-left"
-          >
-            <GroupAvatar group={group} members={group.members} size={40} />
-            <div className="min-w-0">
-              <div className="text-warm font-semibold text-[15px] truncate">
-                {group.name}
+        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none max-w-[60%]">
+          {isGroup && group ? (
+            <button
+              onClick={() => navigate("/group/" + id)}
+              className="flex items-center gap-2 pointer-events-auto"
+            >
+              <GroupAvatar group={group} members={group.members} size={32} />
+              <div className="min-w-0 text-left">
+                <div className="text-[15px] font-semibold truncate" style={{ color: "var(--text-primary)" }}>
+                  {group.name}
+                </div>
+                <div className="text-[11px] truncate" style={{ color: "var(--text-tertiary)" }}>
+                  {group.members?.length || 1} member{(group.members?.length || 1) !== 1 ? "s" : ""}
+                </div>
               </div>
-              <div className="text-xs text-warm-mute truncate">
-                {group.members?.length || 1} member
-                {(group.members?.length || 1) !== 1 ? "s" : ""}
-              </div>
-            </div>
-          </button>
-        ) : other ? (
-          <Link
-            to={`/u/${other.username}`}
-            className="flex items-center gap-3 min-w-0 flex-1"
-          >
-            <div className="relative shrink-0">
+            </button>
+          ) : other ? (
+            <Link to={"/u/" + other.username} className="flex items-center gap-2 pointer-events-auto">
               <div
-                className="w-10 h-10 rounded-full"
+                className="w-8 h-8 rounded-full shrink-0"
                 style={{
                   background: other.avatar_url
-                    ? `url(${other.avatar_url}) center/cover`
+                    ? "url(" + other.avatar_url + ") center/cover"
                     : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
                 }}
               />
-              <motion.div
-                className="absolute -inset-0.5 rounded-full pointer-events-none"
-                style={{
-                  border: "2px solid rgba(10,132,255,0.4)",
-                }}
-                animate={{ opacity: [0.3, 0.7, 0.3] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              />
-            </div>
-            <div className="min-w-0">
-              <div className="text-warm font-semibold text-[15px] truncate">
-                {other.display_name || other.username}
+              <div className="min-w-0 text-left">
+                <div className="text-[15px] font-semibold truncate" style={{ color: "var(--text-primary)" }}>
+                  {other.display_name || other.username}
+                </div>
+                <div className="text-[11px] truncate" style={{ color: "var(--accent)" }}>
+                  Active now
+                </div>
               </div>
-              <div className="text-xs text-warm-mute truncate">
-                Active now
-              </div>
-            </div>
-          </Link>
-        ) : (
-          <div className="flex-1 text-warm-mute text-sm">Loading...</div>
-        )}
+            </Link>
+          ) : (
+            <div className="text-sm" style={{ color: "var(--text-secondary)" }}>Loading...</div>
+          )}
+        </div>
+
+        <button
+          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+          style={{ color: "var(--text-primary)" }}
+          aria-label="Call"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+          </svg>
+        </button>
       </div>
 
       {/* Messages */}
