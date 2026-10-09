@@ -1,52 +1,20 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { Plus } from "lucide-react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../hooks/useAuth";
 import { useProfile } from "../hooks/useProfile";
 import { useProfileStats } from "../hooks/useProfileStats";
 import ProfileHeader from "../components/ProfileHeader.jsx";
-import ProfileStats from "../components/ProfileStats.jsx";
-import ProfileTabs from "../components/ProfileTabs.jsx";
 import EditProfileModal from "../components/EditProfileModal.jsx";
-import SavedTab from "../components/SavedTab.jsx";
-import SlideIn from "../components/SlideIn.jsx";
-import PostGrid from "../components/PostGrid.jsx";
-import Composer from "../components/Composer.jsx";
 
 export default function Profile() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { profile, loading, update, refetch } = useProfile(user?.id);
   const { stats, loading: statsLoading } = useProfileStats(user?.id);
-  const [tab, setTab] = useState("posts");
-  const [editOpen, setEditOpen] = useState(false);
-  const [composerOpen, setComposerOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [myPosts, setMyPosts] = useState([]);
-  const [postsLoading, setPostsLoading] = useState(true);
   const avatarInput = useRef(null);
   const bannerInput = useRef(null);
-
-  const loadMyPosts = useCallback(async () => {
-    if (!user?.id) return;
-    setPostsLoading(true);
-    const { data } = await supabase
-      .from("posts")
-      .select(`
-        id, author_id, body, image_url, likes_count, comments_count, created_at,
-        author:profiles!posts_author_id_fkey (id, username, display_name, avatar_url)
-      `)
-      .eq("author_id", user.id)
-      .order("created_at", { ascending: false });
-    setMyPosts(data || []);
-    setPostsLoading(false);
-  }, [user?.id]);
-
-  useEffect(() => {
-    loadMyPosts();
-  }, [loadMyPosts]);
 
   const upload = async (file, bucket, column) => {
     if (!file || !user) return;
@@ -73,13 +41,15 @@ export default function Profile() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-warm-mute text-sm">Loading profile...</div>
+        <div className="text-sm" style={{ color: "var(--text-tertiary)" }}>
+          Loading profile...
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="pb-4">
+    <div className="w-full">
       <input
         ref={avatarInput}
         type="file"
@@ -106,77 +76,27 @@ export default function Profile() {
         onEditBanner={onPickBanner}
         stats={stats}
         statsLoading={statsLoading}
-        onNewPost={() => setComposerOpen(true)}
+        onNewPost={() => navigate("/settings")}
       />
 
-
-      <ProfileTabs isOwn value={tab} onChange={setTab} />
-
-      <div className="w-full">
-        <SlideIn variant="up">
-          {tab === "posts" && (
-            <>
-              {postsLoading && (
-                <div className="text-center py-6 text-warm-mute text-sm">
-                  Loading posts...
-                </div>
-              )}
-              {!postsLoading && myPosts.length === 0 && (
-                <EmptyState
-                  title="No posts yet"
-                  body="Tap “New Post” to share something."
-                />
-              )}
-              {!postsLoading && myPosts.length > 0 && (
-                <PostGrid
-                  posts={myPosts}
-                  onOpenPost={(post) => navigate(`/post/${post.id}`)}
-                />
-              )}
-            </>
-          )}
-          {tab === "media" && (
-            <PostGrid
-                posts={myPosts.filter((p) => !!p.image_url)}
-                onOpenPost={(post) => navigate(`/post/${post.id}`)}
-              />
-          )}
-          {tab === "status" && (
-            <EmptyState
-              title="No status updates"
-              body="Post a status to share a moment — disappears in 24 hours."
-            />
-          )}
-          {tab === "saved" && <SavedTab />}
-        </SlideIn>
-      </div>
+      {uploading && (
+        <p
+          className="text-xs text-center mt-3"
+          style={{ color: "var(--accent)" }}
+        >
+          Uploading...
+        </p>
+      )}
 
       <EditProfileModal
-        open={editOpen}
+        open={false}
         profile={profile}
-        onClose={() => setEditOpen(false)}
+        onClose={() => {}}
         onSave={async (patch) => {
           await update(patch);
           await refetch();
         }}
       />
-
-      <Composer
-        open={composerOpen}
-        onClose={() => setComposerOpen(false)}
-        onPosted={() => {
-          loadMyPosts();
-        }}
-      />
-    </div>
-  );
-}
-
-function EmptyState({ title, body }) {
-  return (
-    <div className="text-center py-16">
-      <h3 className="display-md mb-2 text-warm">{title}</h3>
-      <p className="text-body">{body}</p>
     </div>
   );
 }

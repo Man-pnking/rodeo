@@ -3,21 +3,14 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Splash from "./components/Splash.jsx";
 import Onboarding from "./components/Onboarding.jsx";
 import AppLayout from "./components/AppLayout.jsx";
-const Home = lazy(() => import("./pages/Home.jsx"));
-const Feed = lazy(() => import("./pages/Feed.jsx"));
 const Login = lazy(() => import("./pages/Login.jsx"));
 const Signup = lazy(() => import("./pages/Signup.jsx"));
 const Profile = lazy(() => import("./pages/Profile.jsx"));
-const PostDetail = lazy(() => import("./pages/PostDetail.jsx"));
 const UserProfile = lazy(() => import("./pages/UserProfile.jsx"));
-const Friends = lazy(() => import("./pages/Friends.jsx"));
-const Discover = lazy(() => import("./pages/Discover.jsx"));
 const Messages = lazy(() => import("./pages/Messages.jsx"));
 const ChatList = lazy(() => import("./pages/ChatList.jsx"));
 const Conversation = lazy(() => import("./pages/Conversation.jsx"));
 const GroupInfo = lazy(() => import("./pages/GroupInfo.jsx"));
-const Compose = lazy(() => import("./pages/Compose.jsx"));
-const Library = lazy(() => import("./pages/Library.jsx"));
 const Settings = lazy(() => import("./pages/Settings.jsx"));
 const SettingsAccount = lazy(() => import("./pages/settings/Account.jsx"));
 const SettingsPrivacy = lazy(() => import("./pages/settings/Privacy.jsx"));
@@ -103,15 +96,16 @@ export default function App() {
             <Route path="/login" element={<RequireGuest><Login /></RequireGuest>} />
             <Route path="/signup" element={<RequireGuest><Signup /></RequireGuest>} />
 
-            <Route path="/" element={<RequireAuth><AppLayout><Feed /></AppLayout></RequireAuth>} />
-            <Route path="/home-legacy" element={<RequireAuth><AppLayout><Home /></AppLayout></RequireAuth>} />
-            <Route path="/discover" element={<RequireAuth><AppLayout><Discover /></AppLayout></RequireAuth>} />
-            <Route path="/friends" element={<RequireAuth><AppLayout><Friends /></AppLayout></RequireAuth>} />
+            {/* Home = contact list */}
+            <Route path="/" element={<Navigate to="/messages" replace />} />
+
             <Route path="/messages" element={<RequireAuth><AppLayout><ChatList /></AppLayout></RequireAuth>} />
             <Route path="/messages/:id" element={<RequireAuth><Conversation /></RequireAuth>} />
             <Route path="/group/:id" element={<RequireAuth><AppLayout><GroupInfo /></AppLayout></RequireAuth>} />
-            <Route path="/compose" element={<RequireAuth><AppLayout><Compose /></AppLayout></RequireAuth>} />
-            <Route path="/library" element={<RequireAuth><AppLayout><Library /></AppLayout></RequireAuth>} />
+
+            <Route path="/profile" element={<RequireAuth><AppLayout><Profile /></AppLayout></RequireAuth>} />
+            <Route path="/u/:username" element={<RequireAuth><AppLayout><UserProfile /></AppLayout></RequireAuth>} />
+
             <Route path="/settings" element={<RequireAuth><AppLayout><Settings /></AppLayout></RequireAuth>} />
             <Route path="/settings/account" element={<RequireAuth><AppLayout><SettingsAccount /></AppLayout></RequireAuth>} />
             <Route path="/settings/privacy" element={<RequireAuth><AppLayout><SettingsPrivacy /></AppLayout></RequireAuth>} />
@@ -120,10 +114,7 @@ export default function App() {
             <Route path="/settings/chat" element={<RequireAuth><AppLayout><SettingsChat /></AppLayout></RequireAuth>} />
             <Route path="/settings/appearance" element={<RequireAuth><AppLayout><SettingsAppearance /></AppLayout></RequireAuth>} />
             <Route path="/settings/general" element={<RequireAuth><AppLayout><SettingsGeneral /></AppLayout></RequireAuth>} />
-            <Route path="/profile" element={<RequireAuth><AppLayout><Profile /></AppLayout></RequireAuth>} />
-            <Route path="/u/:username" element={<RequireAuth><AppLayout><UserProfile /></AppLayout></RequireAuth>} />
 
-            <Route path="/post/:id" element={<RequireAuth><AppLayout><PostDetail /></AppLayout></RequireAuth>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           </Suspense>
