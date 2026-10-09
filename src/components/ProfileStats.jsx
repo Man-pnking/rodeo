@@ -6,9 +6,16 @@ export default function ProfileStats({ stats, loading }) {
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-2 w-full">
-      {items.map((item) => (
-        <div key={item.label} className="text-center">
+    <div className="grid grid-cols-3 w-full max-w-sm mx-auto">
+      {items.map((item, i) => (
+        <div
+          key={item.label}
+          className="text-center px-2"
+          style={{
+            borderRight:
+              i < items.length - 1 ? "1px solid var(--border)" : "none",
+          }}
+        >
           <div className="text-[18px] sm:text-[20px] font-bold text-warm tabular-nums leading-none">
             {loading ? "—" : formatCount(item.value)}
           </div>

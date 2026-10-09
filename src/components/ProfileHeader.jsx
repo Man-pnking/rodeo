@@ -36,24 +36,35 @@ export default function ProfileHeader({
   return (
     <div className="relative">
       {/* Banner */}
-      <ParallaxLayer speed={0.25} className="relative w-full h-32 sm:h-44 md:h-56 overflow-hidden" style={{
-        background: bannerUrl ? `url(${bannerUrl}) center/cover` : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 50%, var(--accent) 100%)",
-      }}>
+      <div className="relative w-full">
+        {/* Soft arch background */}
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-md h-40 rounded-b-[40px]"
+          style={{
+            background: bannerUrl
+              ? `url(${bannerUrl}) center/cover`
+              : "var(--bg-soft)",
+            opacity: bannerUrl ? 1 : 1,
+          }}
+        />
+        {/* Edit banner button */}
         {isOwn && (
           <button
             onClick={onEditBanner}
-            className="absolute top-4 right-4 p-2 rounded-full transition-colors"
+            className="absolute top-4 right-4 p-2 rounded-full transition-colors z-20"
             style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(12px)" }}
             aria-label="Edit banner"
           >
             <Camera className="w-4 h-4 text-white" />
           </button>
         )}
-      </ParallaxLayer>
+        {/* Spacer so the arch reserves vertical space */}
+        <div className="h-40" />
+      </div>
 
       {/* Avatar + actions */}
-      <div className="max-w-2xl mx-auto profile-card relative z-10 flex flex-col items-center px-6 pt-0 pb-6" style={{ background: "var(--bg-soft)", borderRadius: "28px", marginTop: "48px", border: "1px solid var(--border)", boxShadow: "0 8px 32px rgba(0,0,0,0.10)" }}>
-        <div className="relative -mt-16 sm:-mt-20 mb-2 rounded-full" style={{ padding: "4px", background: "var(--bg-soft)" }}>
+      <div className="max-w-2xl mx-auto relative z-10 flex flex-col items-center px-6 pt-0 pb-6">
+        <div className="relative -mt-12 sm:-mt-14 mb-2 rounded-full" style={{ padding: "4px", background: "var(--bg-soft)" }}>
           <StatusRing
             src={avatarUrl}
             size={96}
@@ -114,7 +125,7 @@ export default function ProfileHeader({
         </div>
         {/* Stats row */}
         {stats !== undefined && (
-          <div className="w-full mt-5 pt-5" style={{ borderTop: "1px solid var(--border)" }}>
+          <div className="w-full mt-5">
             <ProfileStats stats={stats} loading={statsLoading} />
           </div>
         )}

@@ -11,7 +11,7 @@ function getSystemTheme() {
 export function ThemeProvider({ children }) {
   const [mode, setMode] = useState(() => {
     if (typeof window === "undefined") return "dark";
-    return localStorage.getItem(STORAGE_KEY) || "system";
+    return localStorage.getItem(STORAGE_KEY) || "light";
   });
 
   const [resolved, setResolved] = useState(() =>
@@ -23,8 +23,8 @@ export function ThemeProvider({ children }) {
       const r = mode === "system" ? getSystemTheme() : mode;
       setResolved(r);
       const root = document.documentElement;
-      if (r === "light") root.classList.add("light");
-      else root.classList.remove("light");
+      if (r === "dark") root.classList.add("dark");
+      else root.classList.remove("dark");
       root.style.colorScheme = r;
     };
     update();
