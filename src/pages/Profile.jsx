@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../hooks/useAuth";
 import { useProfile } from "../hooks/useProfile";
@@ -9,7 +8,6 @@ import EditProfileModal from "../components/EditProfileModal.jsx";
 
 export default function Profile() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const { profile, loading, update, refetch } = useProfile(user?.id);
   const { stats, loading: statsLoading } = useProfileStats(user?.id);
   const [uploading, setUploading] = useState(false);
@@ -76,7 +74,6 @@ export default function Profile() {
         onEditBanner={onPickBanner}
         stats={stats}
         statsLoading={statsLoading}
-        onNewPost={() => navigate("/settings")}
       />
 
       {uploading && (

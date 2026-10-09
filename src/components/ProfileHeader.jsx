@@ -23,7 +23,6 @@ export default function ProfileHeader({
   hasPendingRequest,
   stats,
   statsLoading,
-  onNewPost,
 }) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
@@ -106,23 +105,7 @@ export default function ProfileHeader({
             </p>
           )}
 
-          {isOwn && onNewPost && (
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={onNewPost}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold mt-5"
-              style={{
-                background:
-                  "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
-                color: "#fff",
-                boxShadow: "0 4px 16px rgba(251, 113, 133, 0.30)",
-              }}
-            >
-              <Plus className="w-4 h-4" strokeWidth={2.5} />
-              New Post
-            </motion.button>
-          )}
-        </div>
+                  </div>
         {/* Stats row */}
         {stats !== undefined && (
           <div className="w-full mt-5">
