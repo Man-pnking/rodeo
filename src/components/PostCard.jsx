@@ -120,7 +120,7 @@ export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
           </div>
         )}
 
-        <div className="flex items-center gap-1 px-2 sm:px-4 pb-2">
+        <div className="flex items-center gap-5 px-4 sm:px-6 pt-1 pb-3">
           <ActionButton
             icon={Heart}
             count={post.likes_count}
@@ -196,27 +196,29 @@ export default function PostCard({ post, onLike, onSave, onRepost, onDelete }) {
 
 function ActionButton({ icon: Icon, count, active, activeColor = "var(--accent)", onClick, aria, noCount }) {
   const [hover, setHover] = useState(false);
-  const color = active ? activeColor : hover ? "rgba(240,240,245,0.95)" : "rgba(240,240,245,0.6)";
+  const color = active
+    ? activeColor
+    : hover
+    ? "var(--text-primary)"
+    : "var(--text-tertiary)";
 
   return (
     <motion.button
-      whileTap={{ scale: 0.9 }}
+      whileTap={{ scale: 0.88 }}
       onClick={onClick}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition-colors"
-      style={{
-        background: hover ? "rgba(255,255,255,0.05)" : "transparent",
-        color,
-      }}
+      className="flex items-center gap-2 transition-colors"
+      style={{ color }}
       aria-label={aria}
     >
       <Icon
-        className="w-[18px] h-[18px] transition-colors"
+        className="w-[17px] h-[17px] transition-colors"
         style={{
           fill: active ? activeColor : "none",
           stroke: color,
         }}
+        strokeWidth={active ? 2 : 1.8}
       />
       {!noCount && count > 0 && (
         <span className="text-[12.5px] font-medium tabular-nums">{count}</span>
