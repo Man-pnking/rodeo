@@ -52,11 +52,11 @@ export default function ProfileHeader({
       </ParallaxLayer>
 
       {/* Avatar + actions */}
-      <div className="max-w-4xl mx-auto px-6 -mt-12 sm:-mt-14 flex flex-col items-center gap-0 relative z-10">
-        <div className="relative">
+      <div className="max-w-2xl mx-auto profile-card relative z-10 flex flex-col items-center px-6 pt-0 pb-6" style={{ background: "var(--bg-soft)", borderRadius: "28px", marginTop: "48px", border: "1px solid var(--border)", boxShadow: "0 8px 32px rgba(0,0,0,0.10)" }}>
+        <div className="relative -mt-16 sm:-mt-20 mb-2 rounded-full" style={{ padding: "4px", background: "var(--bg-soft)" }}>
           <StatusRing
             src={avatarUrl}
-            size={88}
+            size={96}
             ringWidth={statusInfo.hasStatus ? 4 : 0}
             gap={statusInfo.hasStatus ? 3 : 0}
             hasStatus={statusInfo.hasStatus}

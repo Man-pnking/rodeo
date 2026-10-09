@@ -28,7 +28,7 @@ export default function ProfileTabs({ value, onChange, isOwn }) {
               onClick={() => onChange(id)}
               className="relative flex-1 flex items-center justify-center gap-1.5 px-2 sm:px-3 py-2 rounded-full transition-colors duration-200"
               style={{
-                color: active ? "var(--accent-fg)" : "var(--text-secondary)",
+                color: active ? "var(--text-primary)" : "var(--text-secondary)",
                 fontWeight: active ? 600 : 500,
                 fontSize: "13px",
                 letterSpacing: "-0.008em",
@@ -40,10 +40,9 @@ export default function ProfileTabs({ value, onChange, isOwn }) {
                   layoutId="profile-tab-pill"
                   className="absolute inset-0 rounded-full"
                   style={{
-                    background:
-                      "linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%)",
+                    background: "var(--bg-soft)",
                     boxShadow:
-                      "0 2px 12px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
+                      "0 2px 10px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.08)",
                     zIndex: -1,
                   }}
                   transition={{ type: "spring", stiffness: 420, damping: 32 }}
