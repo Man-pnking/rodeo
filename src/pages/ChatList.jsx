@@ -69,7 +69,7 @@ export default function ChatList() {
 
   return (
     <div
-      className="w-full max-w-2xl mx-auto px-4 sm:px-6"
+      className="w-full px-4 sm:px-6"
       style={{
         paddingTop: "calc(env(safe-area-inset-top, 0) + 28px)",
         paddingBottom: "120px",
