@@ -69,14 +69,14 @@ export default function ChatList() {
 
   return (
     <div
-      className="w-full px-4 sm:px-6"
+      className="w-full"
       style={{
         paddingTop: "calc(env(safe-area-inset-top, 0) + 28px)",
         paddingBottom: "120px",
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 pl-1">
+      <div className="flex items-center justify-between mb-6 px-4 sm:px-6">
         <h1
           className="text-[28px] font-bold tracking-tight"
           style={{ color: "var(--text-primary)", letterSpacing: "-0.022em" }}
@@ -100,7 +100,7 @@ export default function ChatList() {
       </div>
 
       {/* Search bar */}
-      <div className="mb-4">
+      <div className="mb-4 px-4 sm:px-6">
         <div
           className="flex items-center gap-2 px-4 py-3 rounded-2xl"
           style={{ background: "var(--bg-soft)" }}
@@ -124,7 +124,7 @@ export default function ChatList() {
       {/* Loading */}
       {loading && (
         <div
-          className="text-center py-16 text-sm"
+          className="text-center py-16 px-4 text-sm"
           style={{ color: "var(--text-tertiary)" }}
         >
           Loading...
@@ -133,7 +133,7 @@ export default function ChatList() {
 
       {/* Empty state */}
       {!loading && mergedItems.length === 0 && (
-        <div className="text-center py-16">
+        <div className="text-center py-16 px-4">
           <MessageCircle
             className="w-10 h-10 mx-auto mb-4"
             style={{ color: "var(--text-tertiary)" }}
