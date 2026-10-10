@@ -4,7 +4,6 @@ import { X, Check, Search, Camera } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useFriendships } from "../hooks/useFriendships";
 import { useGroups } from "../hooks/useGroups";
-import { useMedia } from "../hooks/useMedia";
 import { useToast } from "../context/ToastContext.jsx";
 import { sounds } from "../lib/sounds";
 import MediaPicker from "./MediaPicker.jsx";

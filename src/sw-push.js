@@ -1,10 +1,12 @@
+/* global clients */
 // Custom service worker code for Web Push
 // This file is injected into the generated service worker by vite-plugin-pwa.
 
 self.addEventListener("push", (event) => {
+  // eslint-disable-next-line no-useless-assignment
+  let payload = {};
   if (!event.data) return;
 
-  let payload = {};
   try {
     payload = event.data.json();
   } catch {

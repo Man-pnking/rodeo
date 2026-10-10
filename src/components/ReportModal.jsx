@@ -3,13 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Flag, Check } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useReports } from "../hooks/useReports";
-import { useToast } from "../context/ToastContext.jsx";
 import { sounds } from "../lib/sounds";
 
 export default function ReportModal({ open, onClose, targetType, targetId }) {
   const { user } = useAuth();
   const { submit, loading, REASONS } = useReports();
-  const { toast } = useToast();
   const [step, setStep] = useState("pick"); // pick | details | done
   const [reason, setReason] = useState(null);
   const [details, setDetails] = useState("");

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence} from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useMessages } from "../hooks/useMessages";
@@ -10,8 +10,6 @@ import MessageBubble from "../components/MessageBubble.jsx";
 import MessageInput from "../components/MessageInput.jsx";
 import GroupAvatar from "../components/GroupAvatar.jsx";
 import DateSeparator from "../components/DateSeparator.jsx";
-import TypingIndicator from "../components/TypingIndicator.jsx";
-
 function sameDay(aIso, bIso) {
   if (!aIso || !bIso) return false;
   const a = new Date(aIso);
@@ -197,7 +195,7 @@ export default function Conversation() {
         })}
 
         <AnimatePresence>
-          {false && <TypingIndicator key="typing" />}
+          
         </AnimatePresence>
       </div>
 

@@ -1,6 +1,5 @@
 import { Camera, Settings as SettingsIcon, UserPlus, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import ParallaxLayer from "./ParallaxLayer.jsx";
 import { useState } from "react";
 import StatusRing from "./StatusRing.jsx";
 import UserActionsMenu from "./UserActionsMenu.jsx";
@@ -9,14 +8,10 @@ import { MoreVertical } from "lucide-react";
 import StatusViewer from "./StatusViewer.jsx";
 import { useStatusContext } from "../context/StatusContext.jsx";
 import ProfileStats from "./ProfileStats.jsx";
-import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
-
 export default function ProfileHeader({
   profile,
   isOwn,
   onEditAvatar,
-  onEditBanner,
   onAddFriend,
   onMessage,
   isFriend,
@@ -30,7 +25,6 @@ export default function ProfileHeader({
   const { groups, getStatusFor, reload } = useStatusContext();
   const statusInfo = getStatusFor(profile?.id);
   const avatarUrl = profile?.avatar_url;
-  const bannerUrl = profile?.banner_url;
 
   return (
     <div className="relative">

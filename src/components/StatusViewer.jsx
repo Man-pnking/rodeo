@@ -22,6 +22,18 @@ export default function StatusViewer({ groups, startIndex = 0, onClose }) {
   const group = groups[groupIndex];
   const item = group?.items[itemIndex];
 
+  const next = () => {
+    if (!group) return;
+    if (itemIndex < group.items.length - 1) {
+      setItemIndex(itemIndex + 1);
+    } else if (groupIndex < groups.length - 1) {
+      setGroupIndex(groupIndex + 1);
+      setItemIndex(0);
+    } else {
+      onClose();
+    }
+  };
+
   useEffect(() => {
     if (!item) return;
     setProgress(0);
@@ -60,18 +72,6 @@ export default function StatusViewer({ groups, startIndex = 0, onClose }) {
     setReplyText("");
     onClose?.();
     navigate(`/messages/${convId}`);
-  };
-
-  const next = () => {
-    if (!group) return;
-    if (itemIndex < group.items.length - 1) {
-      setItemIndex(itemIndex + 1);
-    } else if (groupIndex < groups.length - 1) {
-      setGroupIndex(groupIndex + 1);
-      setItemIndex(0);
-    } else {
-      onClose();
-    }
   };
 
   const prev = () => {

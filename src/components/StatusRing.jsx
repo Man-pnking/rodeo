@@ -10,7 +10,6 @@ export default function StatusRing({
   className = "",
 }) {
   const ringSize = size + (ringWidth + gap) * 2;
-  const totalPadding = ringWidth + gap;
 
   const inner = (
     <div

@@ -38,7 +38,7 @@ export function useMessages({ conversationId, groupId }, userId) {
       .order("created_at", { ascending: true });
     setMessages(data || []);
     setLoading(false);
-  }, [conversationId, groupId]);
+  }, [conversationId]);
 
   // Initial load
   useEffect(() => {

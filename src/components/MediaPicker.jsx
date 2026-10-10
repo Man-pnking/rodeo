@@ -7,7 +7,6 @@ import {
   Image as ImageIcon,
   Clipboard,
   Check,
-  Trash2,
   AlertCircle,
   Loader2,
   Send,
@@ -21,7 +20,7 @@ const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 export default function MediaPicker({ open, onClose, onPick }) {
   const { user } = useAuth();
-  const { items, loading, uploadMedia, deleteMedia } = useMedia(user?.id);
+  const { items, loading, uploadMedia } = useMedia(user?.id);
   const [tab, setTab] = useState("sources");
   const [dragActive, setDragActive] = useState(false);
   const [staged, setStaged] = useState([]); // files pending upload
@@ -43,19 +42,6 @@ export default function MediaPicker({ open, onClose, onPick }) {
   }, [open]);
 
   // Paste support
-  useEffect(() => {
-    if (!open) return;
-    const onPaste = (e) => {
-      const files = Array.from(e.clipboardData?.items || [])
-        .filter((i) => i.type.startsWith("image/"))
-        .map((i) => i.getAsFile())
-        .filter(Boolean);
-      if (files.length) addFiles(files);
-    };
-    window.addEventListener("paste", onPaste);
-    return () => window.removeEventListener("paste", onPaste);
-  }, [open, staged]);
-
   const validateFiles = (files) => {
     const valid = [];
     const errs = [];
@@ -94,6 +80,21 @@ export default function MediaPicker({ open, onClose, onPick }) {
     },
     [staged, tab]
   );
+
+  useEffect(() => {
+    if (!open) return;
+    const onPaste = (e) => {
+      const files = Array.from(e.clipboardData?.items || [])
+        .filter((i) => i.type.startsWith("image/"))
+        .map((i) => i.getAsFile())
+        .filter(Boolean);
+      if (files.length) addFiles(files);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, [open, staged]);
+
+
 
   const removeStaged = (tempId) => {
     setStaged((prev) => {

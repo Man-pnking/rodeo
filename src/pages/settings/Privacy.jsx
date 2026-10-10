@@ -1,10 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useSettingsContext } from "../../context/SettingsContext.jsx";
-import { SettingsSection, SettingsSelect, SettingsToggle, SettingsRow } from "../../components/SettingsRow.jsx";
+import { SettingsSection, SettingsSelect, SettingsToggle } from "../../components/SettingsRow.jsx";
 import BlockedList from "../../components/BlockedList.jsx";
 import CloseFriendsList from "../../components/CloseFriendsList.jsx";
-import { Star } from "lucide-react";
 import SlideIn from "../../components/SlideIn.jsx";
 
 const VIS = [

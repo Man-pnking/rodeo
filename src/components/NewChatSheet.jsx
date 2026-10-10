@@ -31,7 +31,7 @@ export default function NewChatSheet({ open, onClose }) {
       return;
     }
     onClose();
-    window.location.href = `/messages/${id}`;
+    window.location.assign(`/messages/${id}`);
   };
 
   return (

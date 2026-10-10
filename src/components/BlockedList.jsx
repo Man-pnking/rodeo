@@ -1,4 +1,4 @@
-import { Ban, X } from "lucide-react";
+import { Ban } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useBlocks } from "../hooks/useBlocks";
 import { useToast } from "../context/ToastContext.jsx";

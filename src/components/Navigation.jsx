@@ -1,7 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   Home as HomeIcon,
-  MessageCircle,
   Compass,
   Users,
   Settings as SettingsIcon,

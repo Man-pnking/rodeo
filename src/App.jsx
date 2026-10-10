@@ -7,7 +7,6 @@ const Login = lazy(() => import("./pages/Login.jsx"));
 const Signup = lazy(() => import("./pages/Signup.jsx"));
 const Profile = lazy(() => import("./pages/Profile.jsx"));
 const UserProfile = lazy(() => import("./pages/UserProfile.jsx"));
-const Messages = lazy(() => import("./pages/Messages.jsx"));
 const ChatList = lazy(() => import("./pages/ChatList.jsx"));
 const Conversation = lazy(() => import("./pages/Conversation.jsx"));
 const GroupInfo = lazy(() => import("./pages/GroupInfo.jsx"));
