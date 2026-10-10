@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { useAutoUpdate } from "../hooks/useAutoUpdate.jsx";
@@ -7,7 +8,7 @@ export default function UpdatePrompt() {
 
   return (
     <AnimatePresence>
-      {pendingUpdate && (
+      {pendingUpdate && createPortal(
         <>
           {/* Backdrop */}
           <motion.div
@@ -28,7 +29,7 @@ export default function UpdatePrompt() {
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 40, opacity: 0, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
-            className="fixed left-1/2 -translate-x-1/2 z-[201] w-full"
+            className="fixed left-0 right-0 z-[201] mx-auto w-full"
             style={{
               bottom: "calc(env(safe-area-inset-bottom, 0) + 24px)",
               maxWidth: "calc(100vw - 32px)",
@@ -95,7 +96,8 @@ export default function UpdatePrompt() {
               </div>
             </div>
           </motion.div>
-        </>
+        </>,
+        document.body
       )}
     </AnimatePresence>
   );
