@@ -22,7 +22,10 @@ export default function Onboarding({ onComplete }) {
   const { profile, update, refetch } = useProfile(user?.id);
   const { uploadMedia } = useMedia(user?.id);
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(() => {
+    const saved = localStorage.getItem("rodeo_onboarding_step");
+    return saved ? parseInt(saved, 10) : 0;
+  });
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
   const [name, setName] = useState("");
@@ -55,6 +58,13 @@ export default function Onboarding({ onComplete }) {
     else finish();
   };
 
+  // Persist step across reloads (needed when user clicks magic link)
+  useEffect(() => {
+    if (step > 0) {
+      localStorage.setItem("rodeo_onboarding_step", String(step));
+    }
+  }, [step]);
+
   const back = () => {
     setError("");
     if (step > 0) setStep((s) => s - 1);
@@ -62,6 +72,7 @@ export default function Onboarding({ onComplete }) {
 
   const finish = () => {
     localStorage.setItem(ONBOARDING_KEY, "true");
+    localStorage.removeItem("rodeo_onboarding_step");
     onComplete?.();
   };
 
