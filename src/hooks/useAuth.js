@@ -40,7 +40,6 @@ export function useAuth() {
     return supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: window.location.origin,
         shouldCreateUser: true,
       },
     });
