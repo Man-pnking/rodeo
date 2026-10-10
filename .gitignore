@@ -31,3 +31,4 @@ dist-ssr
 rodeo-status.txt
 rodeo-status.txt
 rodeo-status.txt
+*.bak-*
