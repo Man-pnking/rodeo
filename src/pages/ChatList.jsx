@@ -68,9 +68,15 @@ export default function ChatList() {
   }, [mergedItems, query]);
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 py-6">
+    <div
+      className="w-full max-w-2xl mx-auto px-4 sm:px-6"
+      style={{
+        paddingTop: "calc(env(safe-area-inset-top, 0) + 28px)",
+        paddingBottom: "120px",
+      }}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-6 pl-1">
         <h1
           className="text-[28px] font-bold tracking-tight"
           style={{ color: "var(--text-primary)", letterSpacing: "-0.022em" }}
