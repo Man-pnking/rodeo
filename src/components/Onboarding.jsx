@@ -458,8 +458,8 @@ function SlideEmail({ email, setEmail, loading, error, onSend }) {
       <Eyebrow>01 · Sign up</Eyebrow>
       <Headline>What's your email?</Headline>
       <Body>
-        We'll send you a magic link to sign in. No password needed — just
-        tap the link in your inbox.
+        We'll send you an 8-digit code to sign in. No password needed — just
+        enter the code from your inbox.
       </Body>
 
       <input
@@ -487,7 +487,7 @@ function SlideEmail({ email, setEmail, loading, error, onSend }) {
       )}
 
       <PrimaryButton onClick={onSend} disabled={!email.trim()} loading={loading}>
-        Send magic link
+        Send code
       </PrimaryButton>
     </>
   );
