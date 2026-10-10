@@ -28,23 +28,27 @@ export default function Navigation() {
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 30, delay: 0.1 }}
-        className="md:hidden fixed z-40 left-1/2 -translate-x-1/2"
+        className="md:hidden fixed left-0 right-0 z-40 flex justify-center pointer-events-none"
         style={{
           bottom: "calc(env(safe-area-inset-bottom, 0) + 16px)",
           padding: "6px",
-          background: "rgba(255, 255, 255, 0.72)",
-          backdropFilter: "blur(24px) saturate(180%)",
-          WebkitBackdropFilter: "blur(24px) saturate(180%)",
-          border: "1px solid rgba(255, 255, 255, 0.55)",
-          borderRadius: "9999px",
-          boxShadow:
-            "0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
-          display: "flex",
-          alignItems: "center",
-          gap: "2px",
         }}
       >
-        {MOBILE_ITEMS.map(({ to, icon: Icon, label }) => (
+        <div
+          className="pointer-events-auto flex items-center"
+          style={{
+            padding: "6px",
+            background: "rgba(255, 255, 255, 0.72)",
+            backdropFilter: "blur(24px) saturate(180%)",
+            WebkitBackdropFilter: "blur(24px) saturate(180%)",
+            border: "1px solid rgba(255, 255, 255, 0.55)",
+            borderRadius: "9999px",
+            boxShadow:
+              "0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
+            gap: "2px",
+          }}
+        >
+          {MOBILE_ITEMS.map(({ to, icon: Icon, label }) => (
           <NavLink key={to} to={to} style={{ textDecoration: "none" }}>
             {({ isActive }) => (
               <motion.div
@@ -88,6 +92,7 @@ export default function Navigation() {
             )}
           </NavLink>
         ))}
+        </div>
       </motion.nav>
 
       {/* ============ DESKTOP: Blue glassy sidebar (left) ============ */}

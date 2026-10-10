@@ -5,8 +5,25 @@ import { VitePWA } from "vite-plugin-pwa";
 export default defineConfig({
   plugins: [
     react(),
+    {
+      name: "write-version",
+      apply: "build",
+      closeBundle() {
+        const fs = require("fs");
+        const path = require("path");
+        const version = Date.now().toString();
+        const outDir = path.resolve(__dirname || ".", "dist");
+        fs.writeFileSync(
+          path.join(outDir, "version.json"),
+          JSON.stringify({ version }),
+          "utf8"
+        );
+        console.log("✅ version.json written:", version);
+      },
+    },
     VitePWA({
       registerType: "prompt",
+      injectRegister: "auto",
       includeAssets: ["icon.svg"],
       manifest: {
         name: "Rodeo — Meet. Ride. Together.",

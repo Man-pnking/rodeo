@@ -75,7 +75,10 @@ export default function FloatingBackground({ intensity = 1 }) {
           rotateX,
           rotateY,
           transformPerspective: 1200,
-          scale: 1.35,
+          width: "135%",
+        height: "135%",
+        left: "-17.5%",
+        top: "-17.5%",
         }}
       >
         <WorldMap

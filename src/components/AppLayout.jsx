@@ -23,7 +23,7 @@ export default function AppLayout({ children }) {
       {!hideBackground && <FloatingBackground intensity={1} />}
       {!hideNav && <Navigation />}
       <main
-        className="w-full min-h-screen transition-[padding] duration-200 relative z-10"
+        className="w-full min-h-screen relative z-10"
         style={{ paddingLeft: hideNav ? 0 : "72px" }}
       >
         {children}

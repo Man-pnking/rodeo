@@ -1,41 +1,89 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw, X } from "lucide-react";
-import { useRegisterSW } from "virtual:pwa-register/react";
+
+const VERSION_KEY = "rodeo_app_version";
 
 export default function UpdateBanner() {
   const [showBanner, setShowBanner] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const dismissed = useRef(false);
 
-  const {
-    needRefresh: [needRefresh],
-    updateServiceWorker,
-  } = useRegisterSW({
-    onRegisteredSW(swUrl, registration) {
-      // Check for updates every 30 minutes
-      if (registration) {
-        setInterval(() => {
-          registration.update();
-        }, 30 * 60 * 1000);
-      }
-    },
-    onRegisterError(error) {
-      console.warn("[SW] registration error", error);
-    },
-  });
-
+  // On mount, save current version and start polling
   useEffect(() => {
-    if (needRefresh) setShowBanner(true);
-  }, [needRefresh]);
+    let cancelled = false;
+
+    const checkVersion = async () => {
+      try {
+        const res = await fetch(`/version.json?_=${Date.now()}`, {
+          cache: "no-store",
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled || !data?.version) return;
+
+        const stored = localStorage.getItem(VERSION_KEY);
+
+        // First run — just save the current version, no banner
+        if (!stored) {
+          localStorage.setItem(VERSION_KEY, data.version);
+          return;
+        }
+
+        // Version mismatch → show banner
+        if (stored !== data.version && !dismissed.current) {
+          setShowBanner(true);
+        }
+      } catch {
+        // silent — offline or network issue
+      }
+    };
+
+    checkVersion();
+
+    // Check on app focus
+    const onFocus = () => checkVersion();
+    window.addEventListener("focus", onFocus);
+
+    // Poll every 15 minutes while the app is open
+    const interval = setInterval(checkVersion, 15 * 60 * 1000);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", onFocus);
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleUpdate = async () => {
     setUpdating(true);
     try {
-      await updateServiceWorker(true);
-      // updateServiceWorker(true) triggers a reload
+      // Clear SW caches before reload (Safari-friendly)
+      if ("caches" in window) {
+        const names = await caches.keys();
+        await Promise.all(names.map((n) => caches.delete(n)));
+      }
+      // Unregister service workers so a fresh one loads
+      if ("serviceWorker" in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map((r) => r.unregister()));
+      }
     } catch {
-      setUpdating(false);
+      // continue regardless
     }
+    // Save new version so banner doesn't reappear
+    try {
+      const res = await fetch(`/version.json?_=${Date.now()}`, { cache: "no-store" });
+      const data = await res.json();
+      if (data?.version) localStorage.setItem(VERSION_KEY, data.version);
+    } catch {}
+    // Hard reload
+    window.location.reload();
+  };
+
+  const handleDismiss = () => {
+    dismissed.current = true;
+    setShowBanner(false);
   };
 
   return (
@@ -70,15 +118,12 @@ export default function UpdateBanner() {
               onClick={handleUpdate}
               disabled={updating}
               className="px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-opacity disabled:opacity-60"
-              style={{
-                background: "rgba(255,255,255,0.22)",
-                color: "#fff",
-              }}
+              style={{ background: "rgba(255,255,255,0.22)", color: "#fff" }}
             >
               {updating ? "Updating..." : "Refresh"}
             </button>
             <button
-              onClick={() => setShowBanner(false)}
+              onClick={handleDismiss}
               className="p-1.5 -mr-1 rounded-full opacity-70 hover:opacity-100 transition-opacity"
               aria-label="Dismiss"
             >
