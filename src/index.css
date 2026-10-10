@@ -115,6 +115,7 @@ html.light { color-scheme: light; }
   * { -webkit-tap-highlight-color: transparent; }
 
   html {
+    touch-action: manipulation;
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     overflow-x: hidden;

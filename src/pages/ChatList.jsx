@@ -84,14 +84,6 @@ export default function ChatList() {
           Contact
         </h1>
         <div className="flex items-center gap-1">
-          <button
-            onClick={() => setNewChatOpen(true)}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-            style={{ color: "var(--text-primary)" }}
-            aria-label="Search contacts"
-          >
-            <Search className="w-[20px] h-[20px]" strokeWidth={2} />
-          </button>
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setNewGroupOpen(true)}
