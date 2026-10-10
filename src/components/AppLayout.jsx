@@ -23,10 +23,10 @@ export default function AppLayout({ children }) {
     path.startsWith("/group/");
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden relative">
+    <div className="w-full min-h-full overflow-x-hidden relative">
       {!hideBackground && <FloatingBackground intensity={1} />}
       {!hideNav && <Navigation />}
-      <main className="w-full min-h-screen relative z-10 md:pl-[76px]">
+      <main className="w-full min-h-full relative z-10 md:pl-[76px]">
         {children}
       </main>
     </div>
