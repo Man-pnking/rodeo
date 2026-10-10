@@ -50,7 +50,7 @@ export function useAuth() {
     return supabase.auth.verifyOtp({
       email,
       token,
-      type: "signup",
+      type: "email",
     });
   };
 
