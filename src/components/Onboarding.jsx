@@ -18,7 +18,7 @@ const TOTAL_STEPS = 7;
 const ONBOARDING_KEY = "rodeo_onboarding_done";
 
 export default function Onboarding({ onComplete }) {
-  const { user, sendMagicLink } = useAuth();
+  const { user, sendMagicLink, verifyOtp } = useAuth();
   const { profile, update, refetch } = useProfile(user?.id);
   const { uploadMedia } = useMedia(user?.id);
 
@@ -28,6 +28,8 @@ export default function Onboarding({ onComplete }) {
   });
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+  const [token, setToken] = useState("");
+  const [verifying, setVerifying] = useState(false);
   const [name, setName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -92,6 +94,24 @@ export default function Onboarding({ onComplete }) {
     }
     setEmailSent(true);
     next(); // go to CheckEmail slide
+  };
+
+  const handleVerify = async () => {
+    setError("");
+    const cleaned = token.replace(/\D/g, "").slice(0, 8);
+    if (cleaned.length !== 8) {
+      setError("Enter the 8-digit code from your email.");
+      return;
+    }
+    setVerifying(true);
+    const { error } = await verifyOtp(email, cleaned);
+    setVerifying(false);
+    if (error) {
+      setError(error.message || "Invalid or expired code. Try again.");
+      return;
+    }
+    // Success — user is now authenticated, advance to Location
+    setStep(3);
   };
 
   const handleResendLink = async () => {
@@ -266,13 +286,19 @@ export default function Onboarding({ onComplete }) {
                 />
               )}
               {step === 2 && (
-                <SlideCheckEmail
+                <SlideEnterCode
                   email={email}
-                  loading={loading}
+                  token={token}
+                  setToken={setToken}
+                  verifying={verifying}
+                  error={error}
+                  onVerify={handleVerify}
                   onResend={handleResendLink}
                   onEdit={() => {
                     setStep(1);
                     setEmailSent(false);
+                    setToken("");
+                    setError("");
                   }}
                 />
               )}
@@ -467,8 +493,10 @@ function SlideEmail({ email, setEmail, loading, error, onSend }) {
   );
 }
 
-// ---------- Slide 3: Check Email ----------
-function SlideCheckEmail({ email, loading, onResend, onEdit }) {
+// ---------- Slide 3: Enter Code ----------
+function SlideEnterCode({ email, token, setToken, verifying, error, onVerify, onResend, onEdit }) {
+  const digits = token.replace(/\D/g, "").slice(0, 8);
+
   return (
     <div className="text-center">
       <motion.div
@@ -482,42 +510,70 @@ function SlideCheckEmail({ email, loading, onResend, onEdit }) {
       </motion.div>
 
       <Eyebrow>02 · Verify</Eyebrow>
-      <Headline>Check your email</Headline>
+      <Headline>Enter your code</Headline>
       <Body>
-        We sent a magic link to
+        We sent an 8-digit code to
         <br />
         <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>
           {email}
         </span>
-        <br />
-        <br />
-        Tap the link in the email to sign in. You'll be brought back to Rodeo
-        automatically.
       </Body>
 
-      <button
-        onClick={onResend}
-        disabled={loading}
-        className="w-full py-3.5 rounded-full font-semibold text-[15px] mb-2 disabled:opacity-40"
+      <input
+        type="text"
+        inputMode="numeric"
+        value={digits}
+        onChange={(e) => setToken(e.target.value.replace(/\D/g, "").slice(0, 8))}
+        placeholder="00000000"
+        autoComplete="one-time-code"
+        autoFocus
+        maxLength={8}
+        className="w-full px-5 py-4 rounded-2xl text-[22px] font-bold outline-none mb-4 text-center transition-colors"
         style={{
           background: "var(--bg-soft)",
           color: "var(--text-primary)",
           border: "1px solid var(--border)",
+          letterSpacing: "0.35em",
+          fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
         }}
+        onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
+        onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+        onKeyDown={(e) => e.key === "Enter" && onVerify()}
+      />
+
+      {error && (
+        <p className="text-[13px] mb-3 text-center" style={{ color: "var(--danger)" }}>
+          {error}
+        </p>
+      )}
+
+      <PrimaryButton
+        onClick={onVerify}
+        disabled={digits.length !== 8}
+        loading={verifying}
       >
-        {loading ? "Sending..." : "Resend email"}
+        {verifying ? "Verifying..." : "Verify"}
+      </PrimaryButton>
+
+      <button
+        onClick={onResend}
+        className="w-full py-3 mt-2 text-sm font-medium"
+        style={{ color: "var(--text-secondary)" }}
+      >
+        Resend code
       </button>
 
       <button
         onClick={onEdit}
-        className="w-full py-3 text-sm font-medium"
-        style={{ color: "var(--text-secondary)" }}
+        className="w-full py-2 text-sm font-medium"
+        style={{ color: "var(--text-tertiary)" }}
       >
         Use a different email
       </button>
     </div>
   );
 }
+
 
 // ---------- Slide 4: Location ----------
 function SlideLocation({ locating, locationLabel, error, onRequest, onSkip }) {

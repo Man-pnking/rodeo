@@ -46,6 +46,15 @@ export function useAuth() {
     });
   };
 
+
+  const verifyOtp = async (email, token) => {
+    return supabase.auth.verifyOtp({
+      email,
+      token,
+      type: "signup",
+    });
+  };
+
   const signIn = async (email, password) => {
     return supabase.auth.signInWithPassword({ email, password });
   };
@@ -56,5 +65,5 @@ export function useAuth() {
 
   const user = session?.user ?? null;
 
-  return { session, user, loading, signUp, signIn, signOut, sendMagicLink };
+  return { session, user, loading, signUp, signIn, signOut, sendMagicLink, verifyOtp };
 }
