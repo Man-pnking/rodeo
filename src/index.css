@@ -136,6 +136,27 @@ html.light { color-scheme: light; }
     line-height: 1.5;
   }
 
+/* ===== Locked viewport (native app feel) ===== */
+html, body {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+#root {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+}
+
   ::selection {
     background: rgba(59, 123, 255, 0.25);
     color: var(--text-primary);
