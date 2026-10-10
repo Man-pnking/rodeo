@@ -76,7 +76,7 @@ export default function ChatList() {
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 px-4 sm:px-6">
+      <div className="flex items-center justify-between mb-6 px-2 sm:px-4">
         <h1
           className="text-[28px] font-bold tracking-tight"
           style={{ color: "var(--text-primary)", letterSpacing: "-0.022em" }}
@@ -100,7 +100,7 @@ export default function ChatList() {
       </div>
 
       {/* Search bar */}
-      <div className="mb-4 px-4 sm:px-6">
+      <div className="mb-4 px-2 sm:px-4">
         <div
           className="flex items-center gap-2 px-4 py-3 rounded-2xl"
           style={{ background: "var(--bg-soft)" }}
@@ -178,7 +178,7 @@ export default function ChatList() {
             <Link
               key={`${item.type}-${item.id}`}
               to={item.to}
-              className="flex items-center gap-3.5 py-3.5 px-4 sm:px-6 transition-colors"
+              className="flex items-center gap-3.5 py-3.5 px-2 sm:px-4 transition-colors"
               style={{ color: "var(--text-primary)" }}
             >
               {item.type === "group" ? (
