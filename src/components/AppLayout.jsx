@@ -10,13 +10,17 @@ export default function AppLayout({ children }) {
   const hideNav =
     path === "/profile" ||
     path.startsWith("/u/") ||
-    path.startsWith("/post/");
+    path.startsWith("/post/") ||
+    path.startsWith("/messages/") ||
+    path.startsWith("/group/");
 
   // Routes that should NOT show the floating map (splash/onboarding are separate)
   const hideBackground =
     path.startsWith("/login") ||
     path.startsWith("/signup") ||
-    path.startsWith("/settings");
+    path.startsWith("/settings") ||
+    path.startsWith("/messages/") ||
+    path.startsWith("/group/");
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden relative">

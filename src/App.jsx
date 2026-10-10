@@ -101,7 +101,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/messages" replace />} />
 
             <Route path="/messages" element={<RequireAuth><AppLayout><ChatList /></AppLayout></RequireAuth>} />
-            <Route path="/messages/:id" element={<RequireAuth><Conversation /></RequireAuth>} />
+            <Route path="/messages/:id" element={<RequireAuth><AppLayout><Conversation /></AppLayout></RequireAuth>} />
             <Route path="/group/:id" element={<RequireAuth><AppLayout><GroupInfo /></AppLayout></RequireAuth>} />
 
             <Route path="/profile" element={<RequireAuth><AppLayout><Profile /></AppLayout></RequireAuth>} />
