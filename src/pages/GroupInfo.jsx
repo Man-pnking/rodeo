@@ -8,7 +8,7 @@ import { useToast } from "../context/ToastContext.jsx";
 import { sounds } from "../lib/sounds";
 import GroupAvatar from "../components/GroupAvatar.jsx";
 import MediaPicker from "../components/MediaPicker.jsx";
-import { SettingsSection } from "../components/SettingsUI.jsx";
+import { SettingsSection } from "../components/SettingsRow.jsx";
 import SlideIn from "../components/SlideIn.jsx";
 
 export default function GroupInfo() {

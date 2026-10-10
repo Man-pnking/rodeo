@@ -8,7 +8,7 @@ import { supabase } from "../lib/supabase";
 import { useAuth } from "../hooks/useAuth";
 import { useProfile } from "../hooks/useProfile";
 import SlideIn from "../components/SlideIn.jsx";
-import { SettingsRow } from "../components/SettingsUI.jsx";
+import { SettingsRow } from "../components/SettingsRow.jsx";
 import EditProfileModal from "../components/EditProfileModal.jsx";
 
 export default function Settings() {

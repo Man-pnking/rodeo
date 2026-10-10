@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, HelpCircle, FileText, Shield, Info } from "lucide-react";
 import { useToast } from "../../context/ToastContext.jsx";
-import { SettingsSection, SettingsRow } from "../../components/SettingsUI.jsx";
+import { SettingsSection, SettingsRow } from "../../components/SettingsRow.jsx";
 import SlideIn from "../../components/SlideIn.jsx";
 
 export default function General() {

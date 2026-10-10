@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Mail, Key, Trash2, Shield } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
-import { SettingsRow, SettingsSection } from "../../components/SettingsUI.jsx";
+import { SettingsRow, SettingsSection } from "../../components/SettingsRow.jsx";
 import SlideIn from "../../components/SlideIn.jsx";
 import ChangePasswordModal from "../../components/ChangePasswordModal.jsx";
 import ChangeEmailModal from "../../components/ChangeEmailModal.jsx";

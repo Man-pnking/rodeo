@@ -4,7 +4,7 @@ import { useTheme } from "../../context/ThemeContext.jsx";
 import { useSettingsContext } from "../../context/SettingsContext.jsx";
 import { useToast } from "../../context/ToastContext.jsx";
 import { sounds } from "../../lib/sounds";
-import { SettingsSection } from "../../components/SettingsUI.jsx";
+import { SettingsSection } from "../../components/SettingsRow.jsx";
 import SlideIn from "../../components/SlideIn.jsx";
 
 const THEMES = [

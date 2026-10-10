@@ -3,7 +3,7 @@ import { ArrowLeft, Bell, BellOff } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useSettingsContext } from "../../context/SettingsContext.jsx";
 import { usePushNotifications } from "../../hooks/usePushNotifications";
-import { SettingsSection, SettingsToggle } from "../../components/SettingsUI.jsx";
+import { SettingsSection, SettingsToggle } from "../../components/SettingsRow.jsx";
 import SlideIn from "../../components/SlideIn.jsx";
 import { useToast } from "../../context/ToastContext.jsx";
 

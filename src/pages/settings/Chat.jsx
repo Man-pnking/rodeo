@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useSettingsContext } from "../../context/SettingsContext.jsx";
-import { SettingsSection, SettingsToggle, SettingsSelect } from "../../components/SettingsUI.jsx";
+import { SettingsSection, SettingsToggle, SettingsSelect } from "../../components/SettingsRow.jsx";
 import SlideIn from "../../components/SlideIn.jsx";
 
 export default function Chat() {
