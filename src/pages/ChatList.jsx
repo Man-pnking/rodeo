@@ -19,6 +19,9 @@ function timeAgo(iso) {
   return new Date(iso).toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
+// Single source of truth for horizontal padding
+const PAD = "px-5";
+
 export default function ChatList() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -71,36 +74,35 @@ export default function ChatList() {
     <div
       className="w-full"
       style={{
-        paddingTop: "calc(env(safe-area-inset-top, 0) + 28px)",
-        paddingBottom: "120px",
+        paddingTop: "calc(env(safe-area-inset-top, 0) + 24px)",
+        paddingBottom: "140px",
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 px-4 sm:px-6">
+      <div className={`${PAD} flex items-center justify-between mb-5`}>
         <h1
-          className="text-[28px] font-bold tracking-tight"
-          style={{ color: "var(--text-primary)", letterSpacing: "-0.022em" }}
+          className="text-[30px] font-bold tracking-tight leading-none"
+          style={{ color: "var(--text-primary)", letterSpacing: "-0.025em" }}
         >
           Contact
         </h1>
-        <div className="flex items-center gap-1">
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setNewGroupOpen(true)}
-            className="w-10 h-10 rounded-full flex items-center justify-center"
-            style={{
-              background: "var(--accent)",
-              color: "var(--accent-fg)",
-            }}
-            aria-label="New chat"
-          >
-            <Plus className="w-5 h-5" strokeWidth={2.5} />
-          </motion.button>
-        </div>
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setNewGroupOpen(true)}
+          className="w-11 h-11 rounded-full flex items-center justify-center"
+          style={{
+            background: "var(--accent)",
+            color: "var(--accent-fg)",
+            boxShadow: "0 6px 20px rgba(59, 123, 255, 0.30)",
+          }}
+          aria-label="New chat"
+        >
+          <Plus className="w-5 h-5" strokeWidth={2.5} />
+        </motion.button>
       </div>
 
       {/* Search bar */}
-      <div className="mb-4">
+      <div className={`${PAD} mb-5`}>
         <div
           className="flex items-center gap-2 px-4 py-3 rounded-2xl"
           style={{ background: "var(--bg-soft)" }}
@@ -124,7 +126,7 @@ export default function ChatList() {
       {/* Loading */}
       {loading && (
         <div
-          className="text-center py-16 px-4 text-sm"
+          className={`${PAD} text-center py-16 text-sm`}
           style={{ color: "var(--text-tertiary)" }}
         >
           Loading...
@@ -133,7 +135,7 @@ export default function ChatList() {
 
       {/* Empty state */}
       {!loading && mergedItems.length === 0 && (
-        <div className="text-center py-16 px-4">
+        <div className={`${PAD} text-center py-16`}>
           <MessageCircle
             className="w-10 h-10 mx-auto mb-4"
             style={{ color: "var(--text-tertiary)" }}
@@ -161,10 +163,10 @@ export default function ChatList() {
         </div>
       )}
 
-      {/* No search results */}
+      {/* No results */}
       {!loading && mergedItems.length > 0 && filteredItems.length === 0 && (
         <div
-          className="text-center py-16 text-sm"
+          className={`${PAD} text-center py-16 text-sm`}
           style={{ color: "var(--text-tertiary)" }}
         >
           No results for "{query}"
@@ -178,7 +180,7 @@ export default function ChatList() {
             <Link
               key={`${item.type}-${item.id}`}
               to={item.to}
-              className="flex items-center gap-3.5 py-3.5 px-4 sm:px-6 transition-colors"
+              className={`${PAD} flex items-center gap-3.5 py-3.5 transition-colors active:bg-white/5`}
               style={{ color: "var(--text-primary)" }}
             >
               {item.type === "group" ? (
@@ -193,7 +195,7 @@ export default function ChatList() {
                   style={{
                     background: item.avatar
                       ? `url(${item.avatar}) center/cover`
-                      : "linear-gradient(135deg, var(--brand) 0%, var(--violet) 100%)",
+                      : "linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%)",
                   }}
                 />
               )}
