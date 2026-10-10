@@ -32,3 +32,5 @@ rodeo-status.txt
 rodeo-status.txt
 rodeo-status.txt
 *.bak-*
+*debug*.txt
+# Uncomment if you want all txt ignored
