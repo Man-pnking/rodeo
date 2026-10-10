@@ -26,10 +26,7 @@ export default function AppLayout({ children }) {
     <div className="min-h-screen w-full overflow-x-hidden relative">
       {!hideBackground && <FloatingBackground intensity={1} />}
       {!hideNav && <Navigation />}
-      <main
-        className="w-full min-h-screen relative z-10"
-        style={{ paddingLeft: hideNav ? 0 : "76px" }}
-      >
+      <main className="w-full min-h-screen relative z-10 md:pl-[76px]">
         {children}
       </main>
     </div>
