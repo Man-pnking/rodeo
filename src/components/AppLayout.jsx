@@ -28,7 +28,7 @@ export default function AppLayout({ children }) {
       {!hideNav && <Navigation />}
       <main
         className="w-full min-h-screen relative z-10"
-        style={{ paddingLeft: hideNav ? 0 : "72px" }}
+        style={{ paddingLeft: hideNav ? 0 : "76px" }}
       >
         {children}
       </main>

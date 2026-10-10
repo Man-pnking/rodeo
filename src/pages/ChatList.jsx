@@ -74,16 +74,16 @@ export default function ChatList() {
 
   return (
     <div
-      className="w-full"
+      className="w-full md:!pb-10"
       style={{
         paddingTop: "calc(env(safe-area-inset-top, 0) + 20px)",
-        paddingBottom: "140px",
+        paddingBottom: "calc(env(safe-area-inset-bottom, 0) + 104px)",
       }}
     >
       {/* ============ HEADER ============ */}
       <div className={`${PAD} flex items-center justify-between mb-6`}>
         <h1
-          className="text-[32px] font-bold leading-none"
+          className="text-[32px] font-bold leading-[1.05]"
           style={{ color: "var(--text-primary)", letterSpacing: "-0.028em" }}
         >
           Contact
@@ -174,12 +174,12 @@ export default function ChatList() {
 
       {/* ============ LIST ============ */}
       {!loading && filteredItems.length > 0 && (
-        <div className="w-full">
+        <div className={`w-full ${PAD} flex flex-col`}>
           {filteredItems.map((item) => (
             <Link
               key={`${item.type}-${item.id}`}
               to={item.to}
-              className={`${PAD} pr-6 flex items-center gap-3.5 py-3 transition-colors`}
+              className="flex items-center gap-3.5 py-3 transition-colors rounded-xl"
               style={{ color: "var(--text-primary)" }}
             >
               {item.type === "group" ? (
@@ -200,7 +200,7 @@ export default function ChatList() {
               )}
 
               <div className="min-w-0 flex-1">
-                <div className="flex items-baseline justify-between gap-3">
+                <div className="flex items-center justify-between gap-3">
                   <div className="font-semibold text-[15px] truncate">
                     {item.name}
                   </div>
