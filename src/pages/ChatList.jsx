@@ -179,7 +179,7 @@ export default function ChatList() {
             <Link
               key={`${item.type}-${item.id}`}
               to={item.to}
-              className={`${PAD} flex items-center gap-3.5 py-3 transition-colors`}
+              className={`${PAD} pr-6 flex items-center gap-3.5 py-3 transition-colors`}
               style={{ color: "var(--text-primary)" }}
             >
               {item.type === "group" ? (
