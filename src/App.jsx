@@ -2,6 +2,8 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Splash from "./components/Splash.jsx";
 import Onboarding from "./components/Onboarding.jsx";
+import { UpdateProvider } from "./hooks/useAutoUpdate.jsx";
+import UpdatePrompt from "./components/UpdatePrompt.jsx";
 import AppLayout from "./components/AppLayout.jsx";
 const Login = lazy(() => import("./pages/Login.jsx"));
 const Signup = lazy(() => import("./pages/Signup.jsx"));
@@ -71,12 +73,14 @@ export default function App() {
   };
 
   return (
+    <UpdateProvider>
     <ParallaxProvider>
     <SettingsProvider>
     <ThemeProvider>
     <ToastProvider>
     <StatusProvider>
     <div className="relative min-h-screen w-full text-warm">
+      <UpdatePrompt />
       <div className="relative z-10">
         {/* Splash screen */}
         {<Splash onDone={() => setSplashDone(true)} />}
@@ -125,5 +129,6 @@ export default function App() {
     </ThemeProvider>
     </SettingsProvider>
     </ParallaxProvider>
+    </UpdateProvider>
   );
 }
