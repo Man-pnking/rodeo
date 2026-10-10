@@ -59,6 +59,7 @@ function RequireGuest({ children }) {
 
 export default function App() {
   const isMobile = useIsMobile();
+  const { user } = useAuth();
   const [splashDone, setSplashDone] = useState(false);
   const [onboarded, setOnboarded] = useState(false);
 
@@ -85,11 +86,11 @@ export default function App() {
         {/* Splash screen */}
         {<Splash onDone={() => setSplashDone(true)} />}
 
-        {splashDone && !onboarded && (
+        {splashDone && !onboarded && !user && (
           <Onboarding onComplete={handleOnboardingComplete} />
         )}
 
-        {splashDone && onboarded && (
+        {splashDone && (onboarded || user) && (
           <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center">
               <div className="w-8 h-8 rounded-full border-2 border-iri-pink border-t-transparent animate-spin" />
