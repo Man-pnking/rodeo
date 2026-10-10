@@ -57,8 +57,8 @@ function RequireGuest({ children }) {
 
 export default function App() {
   const isMobile = useIsMobile();
-  const [splashDone, setSplashDone] = useState(() => !isMobile);
-  const [onboarded, setOnboarded] = useState(true);
+  const [splashDone, setSplashDone] = useState(false);
+  const [onboarded, setOnboarded] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem(ONBOARDING_KEY);
@@ -78,8 +78,8 @@ export default function App() {
     <StatusProvider>
     <div className="relative min-h-screen w-full text-warm">
       <div className="relative z-10">
-        {/* Splash only on mobile */}
-        {isMobile && <Splash onDone={() => setSplashDone(true)} />}
+        {/* Splash screen */}
+        {<Splash onDone={() => setSplashDone(true)} />}
 
         {splashDone && !onboarded && (
           <Onboarding onComplete={handleOnboardingComplete} />
