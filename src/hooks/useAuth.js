@@ -25,8 +25,15 @@ export function useAuth() {
     };
   }, []);
 
-  const signUp = async (email, password) => {
-    return supabase.auth.signUp({ email, password });
+  const signUp = async (email, password, options = {}) => {
+    return supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: window.location.origin,
+        ...options,
+      },
+    });
   };
 
   const signIn = async (email, password) => {

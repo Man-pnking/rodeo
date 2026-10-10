@@ -13,7 +13,7 @@ import { useProfile } from "../hooks/useProfile";
 import { useMedia } from "../hooks/useMedia";
 import WorldMap from "./WorldMap.jsx";
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 const STEPS = [
   { id: "welcome", label: "Welcome" },
@@ -210,17 +210,23 @@ export default function Onboarding({ onComplete }) {
                 />
               )}
               {step === 2 && (
-                <SlideProfile
+                <SlideUsername
                   name={name}
                   setName={setName}
-                  avatarUrl={avatarUrl}
-                  uploading={uploading}
                   error={error}
-                  onPickAvatar={() => fileRef.current?.click()}
                   onContinue={saveName}
                 />
               )}
               {step === 3 && (
+                <SlideAvatar
+                  avatarUrl={avatarUrl}
+                  uploading={uploading}
+                  error={error}
+                  onPickAvatar={() => fileRef.current?.click()}
+                  onContinue={next}
+                />
+              )}
+              {step === 4 && (
                 <SlideReady
                   name={name}
                   locationLabel={locationLabel}
@@ -388,64 +394,24 @@ function SlideLocation({ locating, locationLabel, error, onRequest, onSkip }) {
 }
 
 // ---------- Slide 3: Profile ----------
-function SlideProfile({
-  name,
-  setName,
-  avatarUrl,
-  uploading,
-  error,
-  onPickAvatar,
-  onContinue,
-}) {
+function SlideUsername({ name, setName, error, onContinue }) {
   return (
     <>
-      <Eyebrow>03 · Profile</Eyebrow>
-      <Headline>Who are you?</Headline>
+      <Eyebrow>03 · Username</Eyebrow>
+      <Headline>Choose a username</Headline>
       <Body>
-        Choose a name and photo — this is how people will find you.
+        This is how friends will find and message you. Lowercase letters,
+        numbers, and underscores only.
       </Body>
 
-      {/* Avatar */}
-      <div className="flex justify-center mb-6 -mt-1">
-        <button
-          onClick={onPickAvatar}
-          disabled={uploading}
-          className="relative w-24 h-24 rounded-full flex items-center justify-center disabled:opacity-60"
-          style={{
-            background: avatarUrl
-              ? `url(${avatarUrl}) center/cover`
-              : "var(--bg-soft)",
-            border: "1px solid var(--border)",
-          }}
-        >
-          {!avatarUrl && !uploading && (
-            <UserIcon className="w-8 h-8" style={{ color: "var(--text-tertiary)" }} />
-          )}
-          {uploading && (
-            <Loader2
-              className="w-6 h-6 animate-spin"
-              style={{ color: "var(--accent)" }}
-            />
-          )}
-          <div
-            className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full flex items-center justify-center"
-            style={{
-              background: "var(--accent)",
-              border: "3px solid var(--bg)",
-            }}
-          >
-            <Camera className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
-          </div>
-        </button>
-      </div>
-
-      {/* Name input */}
       <input
         type="text"
         value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Your name"
-        maxLength={30}
+        onChange={(e) => setName(e.target.value.toLowerCase())}
+        placeholder="yourname"
+        maxLength={20}
+        autoComplete="username"
+        autoFocus
         className="w-full px-5 py-3.5 rounded-2xl text-[15px] font-medium outline-none mb-4 text-center transition-colors"
         style={{
           background: "var(--bg-soft)",
@@ -462,17 +428,68 @@ function SlideProfile({
         </p>
       )}
 
-      <PrimaryButton
-        onClick={onContinue}
-        disabled={!name.trim() || uploading}
-      >
+      <PrimaryButton onClick={onContinue} disabled={!name.trim()}>
         Continue
       </PrimaryButton>
     </>
   );
 }
 
-// ---------- Slide 4: Ready ----------
+function SlideAvatar({ avatarUrl, uploading, error, onPickAvatar, onContinue }) {
+  return (
+    <>
+      <Eyebrow>04 · Photo</Eyebrow>
+      <Headline>Add a profile photo</Headline>
+      <Body>
+        A photo helps friends recognize you. You can always change it later.
+      </Body>
+
+      <div className="flex justify-center mb-6">
+        <button
+          onClick={onPickAvatar}
+          disabled={uploading}
+          className="relative w-28 h-28 rounded-full flex items-center justify-center disabled:opacity-60"
+          style={{
+            background: avatarUrl
+              ? `url(${avatarUrl}) center/cover`
+              : "var(--bg-soft)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          {!avatarUrl && !uploading && (
+            <UserIcon className="w-10 h-10" style={{ color: "var(--text-tertiary)" }} />
+          )}
+          {uploading && (
+            <Loader2
+              className="w-7 h-7 animate-spin"
+              style={{ color: "var(--accent)" }}
+            />
+          )}
+          <div
+            className="absolute -bottom-1 -right-1 w-9 h-9 rounded-full flex items-center justify-center"
+            style={{
+              background: "var(--accent)",
+              border: "3px solid var(--bg)",
+            }}
+          >
+            <Camera className="w-4 h-4 text-white" strokeWidth={2.2} />
+          </div>
+        </button>
+      </div>
+
+      {error && (
+        <p className="text-[13px] mb-3 text-center" style={{ color: "var(--danger)" }}>
+          {error}
+        </p>
+      )}
+
+      <PrimaryButton onClick={onContinue} disabled={uploading}>
+        {avatarUrl ? "Continue" : "Skip for now"}
+      </PrimaryButton>
+    </>
+  );
+}
+
 function SlideReady({ name, locationLabel, onFinish }) {
   const firstName = name?.trim().split(" ")[0];
   return (
