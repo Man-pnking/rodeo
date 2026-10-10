@@ -100,7 +100,7 @@ export default function ChatList() {
       </div>
 
       {/* Search bar */}
-      <div className="mb-4 px-2 sm:px-4">
+      <div className="mb-4">
         <div
           className="flex items-center gap-2 px-4 py-3 rounded-2xl"
           style={{ background: "var(--bg-soft)" }}
