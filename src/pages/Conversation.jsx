@@ -161,17 +161,30 @@ export default function Conversation() {
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="px-4 py-4 relative"
-        style={{ flex: 1, minHeight: 0, overflowY: "auto", zIndex: 1 }}
+        className="px-4 py-5 relative"
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: "auto",
+          zIndex: 1,
+          background:
+            "radial-gradient(ellipse at 50% 0%, var(--accent-soft) 0%, transparent 60%)",
+        }}
       >
         {loading && (
-          <div className="text-center text-warm-mute text-sm py-6">
-            Loading...
+          <div className="text-center py-6 text-sm" style={{ color: "var(--text-tertiary)" }}>
+            Loading messages...
           </div>
         )}
         {!loading && messages.length === 0 && (
-          <div className="text-center text-warm-mute text-sm py-12">
-            Say hi 👋
+          <div className="flex flex-col items-center justify-center text-center py-16">
+            <div className="text-4xl mb-3">👋</div>
+            <div className="text-[15px] font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+              Say hi
+            </div>
+            <div className="text-[13px]" style={{ color: "var(--text-tertiary)" }}>
+              This is the beginning of your conversation
+            </div>
           </div>
         )}
 
