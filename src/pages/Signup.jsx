@@ -1,15 +1,12 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Mail, Check } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Signup() {
-  const { signUp } = useAuth();
-  const navigate = useNavigate();
+  const { sendMagicLink } = useAuth();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState(null);
@@ -18,38 +15,25 @@ export default function Signup() {
     e.preventDefault();
     setError("");
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-    if (!/^[a-z0-9_]{3,20}$/.test(username)) {
-      setError("Username: 3-20 chars, lowercase, numbers, or underscore.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email address.");
       return;
     }
 
     setLoading(true);
-    const { data, error } = await signUp(email, password, {
-      data: { username },
-    });
+    const { error } = await sendMagicLink(email);
     setLoading(false);
 
     if (error) {
       setError(error.message);
       return;
     }
-
-    if (data?.session) {
-      // Confirmation is OFF — user is logged in
-      navigate("/");
-    } else {
-      // Confirmation is ON — show check email screen
-      setSentTo(email);
-    }
+    setSentTo(email);
   };
 
   const handleResend = async () => {
     setLoading(true);
-    await signUp(email, password, { data: { username } });
+    await sendMagicLink(email);
     setLoading(false);
   };
 
@@ -81,7 +65,7 @@ export default function Signup() {
             className="text-[14px] leading-relaxed mb-6"
             style={{ color: "var(--text-secondary)" }}
           >
-            We sent a confirmation link to
+            We sent a magic link to
             <br />
             <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>
               {sentTo}
@@ -92,8 +76,8 @@ export default function Signup() {
             className="text-[13px] leading-relaxed mb-8"
             style={{ color: "var(--text-tertiary)" }}
           >
-            Click the link in the email to verify your account. After
-            verifying, you'll be taken back to Rodeo automatically.
+            Tap the link in the email to sign in. You'll be brought back to
+            Rodeo automatically.
           </p>
 
           <button
@@ -106,15 +90,13 @@ export default function Signup() {
               border: "1px solid var(--border)",
             }}
           >
-            {loading ? "Resending..." : "Resend email"}
+            {loading ? "Sending..." : "Resend email"}
           </button>
 
           <button
             onClick={() => {
               setSentTo(null);
               setEmail("");
-              setPassword("");
-              setUsername("");
             }}
             className="w-full py-3 mt-2 text-sm font-medium"
             style={{ color: "var(--text-secondary)" }}
@@ -137,7 +119,7 @@ export default function Signup() {
     );
   }
 
-  // ===== Signup form =====
+  // ===== Email input screen =====
   return (
     <div className="relative min-h-screen flex items-center justify-center px-6 py-12">
       <motion.div
@@ -154,36 +136,12 @@ export default function Signup() {
             Join Rodeo
           </h1>
           <p className="text-[14px]" style={{ color: "var(--text-secondary)" }}>
-            Create an account in seconds.
+            Enter your email — we'll send you a magic link to sign in. No
+            password needed.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label
-              className="block text-[12px] font-semibold uppercase mb-2"
-              style={{ color: "var(--text-tertiary)", letterSpacing: "0.08em" }}
-            >
-              Username
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value.toLowerCase())}
-              placeholder="yourname"
-              required
-              autoComplete="username"
-              className="w-full px-4 py-3 rounded-xl text-[15px] outline-none transition-colors"
-              style={{
-                background: "var(--bg-soft)",
-                color: "var(--text-primary)",
-                border: "1px solid var(--border)",
-              }}
-              onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
-              onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
-            />
-          </div>
-
           <div>
             <label
               className="block text-[12px] font-semibold uppercase mb-2"
@@ -198,31 +156,7 @@ export default function Signup() {
               placeholder="you@example.com"
               required
               autoComplete="email"
-              className="w-full px-4 py-3 rounded-xl text-[15px] outline-none transition-colors"
-              style={{
-                background: "var(--bg-soft)",
-                color: "var(--text-primary)",
-                border: "1px solid var(--border)",
-              }}
-              onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
-              onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
-            />
-          </div>
-
-          <div>
-            <label
-              className="block text-[12px] font-semibold uppercase mb-2"
-              style={{ color: "var(--text-tertiary)", letterSpacing: "0.08em" }}
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 6 characters"
-              required
-              autoComplete="new-password"
+              autoFocus
               className="w-full px-4 py-3 rounded-xl text-[15px] outline-none transition-colors"
               style={{
                 background: "var(--bg-soft)",
@@ -251,10 +185,10 @@ export default function Signup() {
             }}
           >
             {loading ? (
-              "Creating..."
+              "Sending..."
             ) : (
               <>
-                Create account
+                Send magic link
                 <ArrowRight className="w-4 h-4" />
               </>
             )}

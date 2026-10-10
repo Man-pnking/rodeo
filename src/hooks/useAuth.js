@@ -36,6 +36,16 @@ export function useAuth() {
     });
   };
 
+  const sendMagicLink = async (email) => {
+    return supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: window.location.origin,
+        shouldCreateUser: true,
+      },
+    });
+  };
+
   const signIn = async (email, password) => {
     return supabase.auth.signInWithPassword({ email, password });
   };
@@ -46,5 +56,5 @@ export function useAuth() {
 
   const user = session?.user ?? null;
 
-  return { session, user, loading, signUp, signIn, signOut };
+  return { session, user, loading, signUp, signIn, signOut, sendMagicLink };
 }

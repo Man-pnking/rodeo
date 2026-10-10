@@ -7,35 +7,42 @@ import {
   Check,
   Camera,
   Loader2,
+  Mail,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useProfile } from "../hooks/useProfile";
 import { useMedia } from "../hooks/useMedia";
 import WorldMap from "./WorldMap.jsx";
 
-const TOTAL_STEPS = 5;
-
-const STEPS = [
-  { id: "welcome", label: "Welcome" },
-  { id: "location", label: "Location" },
-  { id: "profile", label: "Profile" },
-  { id: "ready", label: "Ready" },
-];
+const TOTAL_STEPS = 7;
+const ONBOARDING_KEY = "rodeo_onboarding_done";
 
 export default function Onboarding({ onComplete }) {
-  const { user } = useAuth();
+  const { user, sendMagicLink } = useAuth();
   const { profile, update, refetch } = useProfile(user?.id);
   const { uploadMedia } = useMedia(user?.id);
 
   const [step, setStep] = useState(0);
+  const [email, setEmail] = useState("");
+  const [emailSent, setEmailSent] = useState(false);
   const [name, setName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [locating, setLocating] = useState(false);
   const [locationLabel, setLocationLabel] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const fileRef = useRef(null);
 
+  // Auto-advance: if user becomes authenticated mid-flow and was on Email/CheckEmail,
+  // move them forward to Location
+  useEffect(() => {
+    if (user && step <= 2) {
+      setStep(3);
+    }
+  }, [user, step]);
+
+  // Pre-fill from existing profile
   useEffect(() => {
     if (profile?.display_name && !name) setName(profile.display_name);
     if (profile?.avatar_url && !avatarUrl) setAvatarUrl(profile.avatar_url);
@@ -45,7 +52,7 @@ export default function Onboarding({ onComplete }) {
   const next = () => {
     setError("");
     if (step < TOTAL_STEPS - 1) setStep((s) => s + 1);
-    else onComplete?.();
+    else finish();
   };
 
   const back = () => {
@@ -53,6 +60,36 @@ export default function Onboarding({ onComplete }) {
     if (step > 0) setStep((s) => s - 1);
   };
 
+  const finish = () => {
+    localStorage.setItem(ONBOARDING_KEY, "true");
+    onComplete?.();
+  };
+
+  // ---------- Magic link ----------
+  const handleSendLink = async () => {
+    setError("");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    setLoading(true);
+    const { error } = await sendMagicLink(email);
+    setLoading(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    setEmailSent(true);
+    next(); // go to CheckEmail slide
+  };
+
+  const handleResendLink = async () => {
+    setLoading(true);
+    await sendMagicLink(email);
+    setLoading(false);
+  };
+
+  // ---------- Location ----------
   const requestLocation = async () => {
     setError("");
     if (!navigator.geolocation) {
@@ -73,12 +110,14 @@ export default function Onboarding({ onComplete }) {
         } catch {
           label = "";
         }
-        await update({
-          latitude,
-          longitude,
-          location_label: label,
-          location_updated_at: new Date().toISOString(),
-        });
+        if (user) {
+          await update({
+            latitude,
+            longitude,
+            location_label: label,
+            location_updated_at: new Date().toISOString(),
+          });
+        }
         setLocationLabel(label);
         setLocating(false);
         setTimeout(() => next(), 500);
@@ -91,6 +130,7 @@ export default function Onboarding({ onComplete }) {
     );
   };
 
+  // ---------- Avatar ----------
   const handleAvatarPick = async (file) => {
     if (!file) return;
     setUploading(true);
@@ -108,17 +148,20 @@ export default function Onboarding({ onComplete }) {
       return;
     }
     setAvatarUrl(data.url);
-    await update({ avatar_url: data.url });
+    if (user) await update({ avatar_url: data.url });
   };
 
-  const saveName = async () => {
-    const trimmed = name.trim();
-    if (!trimmed) {
-      setError("Please enter a name");
+  // ---------- Username ----------
+  const saveUsername = async () => {
+    const trimmed = name.trim().toLowerCase();
+    if (!/^[a-z0-9_]{3,20}$/.test(trimmed)) {
+      setError("3–20 characters: lowercase letters, numbers, underscores.");
       return;
     }
-    await update({ display_name: trimmed });
-    await refetch();
+    if (user) {
+      await update({ display_name: trimmed });
+      await refetch();
+    }
     next();
   };
 
@@ -129,10 +172,10 @@ export default function Onboarding({ onComplete }) {
       className="relative min-h-screen w-full overflow-hidden flex flex-col"
       style={{ background: "var(--bg)" }}
     >
-      {/* ===== Map — full bleed ===== */}
+      {/* ===== Map — full bleed, fades in ===== */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 0.9 }}
+        animate={{ opacity: 0.85 }}
         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
         className="absolute inset-x-0 top-0 pointer-events-none"
         style={{
@@ -144,12 +187,12 @@ export default function Onboarding({ onComplete }) {
         <WorldMap dotColor="#2AA5B0" activeColor="#3B7BFF" animateHotSpots />
       </motion.div>
 
-      {/* ===== Top bar — Back + Skip ===== */}
+      {/* ===== Top bar ===== */}
       <div
         className="relative z-20 flex items-center justify-between px-6"
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0) + 20px)" }}
       >
-        {step > 0 ? (
+        {step > 0 && step !== 2 ? (
           <button
             onClick={back}
             className="text-sm font-medium px-3 py-1.5 rounded-full"
@@ -164,16 +207,18 @@ export default function Onboarding({ onComplete }) {
         ) : (
           <div />
         )}
-        <button
-          onClick={skipToFinish}
-          className="text-sm font-medium"
-          style={{ color: "var(--text-tertiary)" }}
-        >
-          Skip
-        </button>
+        {step < TOTAL_STEPS - 1 && step !== 2 && (
+          <button
+            onClick={skipToFinish}
+            className="text-sm font-medium"
+            style={{ color: "var(--text-tertiary)" }}
+          >
+            Skip
+          </button>
+        )}
       </div>
 
-      {/* ===== Spacer so map shows ===== */}
+      {/* ===== Spacer ===== */}
       <div className="flex-1" />
 
       {/* ===== Content sheet ===== */}
@@ -194,13 +239,33 @@ export default function Onboarding({ onComplete }) {
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
+              exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
             >
               {step === 0 && <SlideWelcome onContinue={next} />}
               {step === 1 && (
+                <SlideEmail
+                  email={email}
+                  setEmail={setEmail}
+                  loading={loading}
+                  error={error}
+                  onSend={handleSendLink}
+                />
+              )}
+              {step === 2 && (
+                <SlideCheckEmail
+                  email={email}
+                  loading={loading}
+                  onResend={handleResendLink}
+                  onEdit={() => {
+                    setStep(1);
+                    setEmailSent(false);
+                  }}
+                />
+              )}
+              {step === 3 && (
                 <SlideLocation
                   locating={locating}
                   locationLabel={locationLabel}
@@ -209,15 +274,15 @@ export default function Onboarding({ onComplete }) {
                   onSkip={next}
                 />
               )}
-              {step === 2 && (
+              {step === 4 && (
                 <SlideUsername
                   name={name}
                   setName={setName}
                   error={error}
-                  onContinue={saveName}
+                  onContinue={saveUsername}
                 />
               )}
-              {step === 3 && (
+              {step === 5 && (
                 <SlideAvatar
                   avatarUrl={avatarUrl}
                   uploading={uploading}
@@ -226,11 +291,11 @@ export default function Onboarding({ onComplete }) {
                   onContinue={next}
                 />
               )}
-              {step === 4 && (
+              {step === 6 && (
                 <SlideReady
                   name={name}
                   locationLabel={locationLabel}
-                  onFinish={onComplete}
+                  onFinish={finish}
                 />
               )}
             </motion.div>
@@ -238,7 +303,7 @@ export default function Onboarding({ onComplete }) {
 
           {/* Progress dots */}
           <div className="flex items-center justify-center gap-2 mt-8">
-            {STEPS.map((_, i) => (
+            {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
               <div
                 key={i}
                 className="rounded-full transition-all duration-300"
@@ -268,6 +333,7 @@ export default function Onboarding({ onComplete }) {
   );
 }
 
+// ============ Shared UI ============
 function Eyebrow({ children }) {
   return (
     <div
@@ -332,7 +398,7 @@ function PrimaryButton({ children, onClick, disabled, loading }) {
 function SlideWelcome({ onContinue }) {
   return (
     <>
-      <Eyebrow>01 · Welcome</Eyebrow>
+      <Eyebrow>Welcome</Eyebrow>
       <Headline>
         Meet the world,
         <br />
@@ -348,12 +414,106 @@ function SlideWelcome({ onContinue }) {
   );
 }
 
-// ---------- Slide 2: Location ----------
+// ---------- Slide 2: Email ----------
+function SlideEmail({ email, setEmail, loading, error, onSend }) {
+  return (
+    <>
+      <Eyebrow>01 · Sign up</Eyebrow>
+      <Headline>What's your email?</Headline>
+      <Body>
+        We'll send you a magic link to sign in. No password needed — just
+        tap the link in your inbox.
+      </Body>
+
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="you@example.com"
+        autoComplete="email"
+        autoFocus
+        className="w-full px-5 py-3.5 rounded-2xl text-[15px] font-medium outline-none mb-4 text-center transition-colors"
+        style={{
+          background: "var(--bg-soft)",
+          color: "var(--text-primary)",
+          border: "1px solid var(--border)",
+        }}
+        onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
+        onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+        onKeyDown={(e) => e.key === "Enter" && onSend()}
+      />
+
+      {error && (
+        <p className="text-[13px] mb-3 text-center" style={{ color: "var(--danger)" }}>
+          {error}
+        </p>
+      )}
+
+      <PrimaryButton onClick={onSend} disabled={!email.trim()} loading={loading}>
+        Send magic link
+      </PrimaryButton>
+    </>
+  );
+}
+
+// ---------- Slide 3: Check Email ----------
+function SlideCheckEmail({ email, loading, onResend, onEdit }) {
+  return (
+    <div className="text-center">
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+        className="inline-flex items-center justify-center w-16 h-16 rounded-full mx-auto mb-6"
+        style={{ background: "var(--accent-soft)" }}
+      >
+        <Mail className="w-7 h-7" style={{ color: "var(--accent)" }} />
+      </motion.div>
+
+      <Eyebrow>02 · Verify</Eyebrow>
+      <Headline>Check your email</Headline>
+      <Body>
+        We sent a magic link to
+        <br />
+        <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>
+          {email}
+        </span>
+        <br />
+        <br />
+        Tap the link in the email to sign in. You'll be brought back to Rodeo
+        automatically.
+      </Body>
+
+      <button
+        onClick={onResend}
+        disabled={loading}
+        className="w-full py-3.5 rounded-full font-semibold text-[15px] mb-2 disabled:opacity-40"
+        style={{
+          background: "var(--bg-soft)",
+          color: "var(--text-primary)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        {loading ? "Sending..." : "Resend email"}
+      </button>
+
+      <button
+        onClick={onEdit}
+        className="w-full py-3 text-sm font-medium"
+        style={{ color: "var(--text-secondary)" }}
+      >
+        Use a different email
+      </button>
+    </div>
+  );
+}
+
+// ---------- Slide 4: Location ----------
 function SlideLocation({ locating, locationLabel, error, onRequest, onSkip }) {
   const done = !!locationLabel;
   return (
     <>
-      <Eyebrow>02 · Location</Eyebrow>
+      <Eyebrow>03 · Location</Eyebrow>
       <Headline>
         {done ? `You're in ${locationLabel}` : "Find friends nearby"}
       </Headline>
@@ -364,10 +524,7 @@ function SlideLocation({ locating, locationLabel, error, onRequest, onSkip }) {
       </Body>
 
       {error && (
-        <p
-          className="text-[13px] mb-4 -mt-3"
-          style={{ color: "var(--danger)" }}
-        >
+        <p className="text-[13px] mb-4 -mt-3" style={{ color: "var(--danger)" }}>
           {error}
         </p>
       )}
@@ -393,15 +550,15 @@ function SlideLocation({ locating, locationLabel, error, onRequest, onSkip }) {
   );
 }
 
-// ---------- Slide 3: Profile ----------
+// ---------- Slide 5: Username ----------
 function SlideUsername({ name, setName, error, onContinue }) {
   return (
     <>
-      <Eyebrow>03 · Username</Eyebrow>
+      <Eyebrow>04 · Username</Eyebrow>
       <Headline>Choose a username</Headline>
       <Body>
-        This is how friends will find and message you. Lowercase letters,
-        numbers, and underscores only.
+        This is how friends will find you. Lowercase letters, numbers, and
+        underscores only.
       </Body>
 
       <input
@@ -420,6 +577,7 @@ function SlideUsername({ name, setName, error, onContinue }) {
         }}
         onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
         onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+        onKeyDown={(e) => e.key === "Enter" && onContinue()}
       />
 
       {error && (
@@ -435,10 +593,11 @@ function SlideUsername({ name, setName, error, onContinue }) {
   );
 }
 
+// ---------- Slide 6: Avatar ----------
 function SlideAvatar({ avatarUrl, uploading, error, onPickAvatar, onContinue }) {
   return (
     <>
-      <Eyebrow>04 · Photo</Eyebrow>
+      <Eyebrow>05 · Photo</Eyebrow>
       <Headline>Add a profile photo</Headline>
       <Body>
         A photo helps friends recognize you. You can always change it later.
@@ -460,10 +619,7 @@ function SlideAvatar({ avatarUrl, uploading, error, onPickAvatar, onContinue }) 
             <UserIcon className="w-10 h-10" style={{ color: "var(--text-tertiary)" }} />
           )}
           {uploading && (
-            <Loader2
-              className="w-7 h-7 animate-spin"
-              style={{ color: "var(--accent)" }}
-            />
+            <Loader2 className="w-7 h-7 animate-spin" style={{ color: "var(--accent)" }} />
           )}
           <div
             className="absolute -bottom-1 -right-1 w-9 h-9 rounded-full flex items-center justify-center"
@@ -490,8 +646,9 @@ function SlideAvatar({ avatarUrl, uploading, error, onPickAvatar, onContinue }) 
   );
 }
 
+// ---------- Slide 7: Ready ----------
 function SlideReady({ name, locationLabel, onFinish }) {
-  const firstName = name?.trim().split(" ")[0];
+  const display = name?.trim().replace(/_/g, " ").split(" ")[0];
   return (
     <div className="text-center">
       <motion.div
@@ -507,10 +664,8 @@ function SlideReady({ name, locationLabel, onFinish }) {
         <Check className="w-10 h-10 text-white" strokeWidth={3} />
       </motion.div>
 
-      <Eyebrow>04 · Ready</Eyebrow>
-      <Headline>
-        You're in{firstName ? `, ${firstName}` : ""}
-      </Headline>
+      <Eyebrow>06 · Ready</Eyebrow>
+      <Headline>You're in{display ? `, ${display}` : ""}</Headline>
       <Body>
         {locationLabel
           ? `We'll show you people near ${locationLabel} first. Start chatting whenever you're ready.`
