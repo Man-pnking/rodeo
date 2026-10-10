@@ -2,6 +2,7 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Splash from "./components/Splash.jsx";
 import Onboarding from "./components/Onboarding.jsx";
+import UpdateBanner from "./components/UpdateBanner.jsx";
 import AppLayout from "./components/AppLayout.jsx";
 const Login = lazy(() => import("./pages/Login.jsx"));
 const Signup = lazy(() => import("./pages/Signup.jsx"));
@@ -77,6 +78,7 @@ export default function App() {
     <ToastProvider>
     <StatusProvider>
     <div className="relative min-h-screen w-full text-warm">
+      <UpdateBanner />
       <div className="relative z-10">
         {/* Splash screen */}
         {<Splash onDone={() => setSplashDone(true)} />}
