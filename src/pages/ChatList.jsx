@@ -9,6 +9,10 @@ import GroupAvatar from "../components/GroupAvatar.jsx";
 import NewChatSheet from "../components/NewChatSheet.jsx";
 import CreateGroupSheet from "../components/CreateGroupSheet.jsx";
 
+// Single source of truth for horizontal padding across the whole page.
+// Every section uses this — nothing overrides.
+const PAD = "px-5";
+
 function timeAgo(iso) {
   if (!iso) return "";
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -19,15 +23,13 @@ function timeAgo(iso) {
   return new Date(iso).toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
-// Single source of truth for horizontal padding
-const PAD = "px-5";
-
 export default function ChatList() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { conversations, loading: convLoading } = useConversations(user?.id);
   const { groups, loading: groupLoading } = useGroups(user?.id);
   const loading = convLoading || groupLoading;
+
   const [newChatOpen, setNewChatOpen] = useState(false);
   const [newGroupOpen, setNewGroupOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -74,22 +76,22 @@ export default function ChatList() {
     <div
       className="w-full"
       style={{
-        paddingTop: "calc(env(safe-area-inset-top, 0) + 24px)",
+        paddingTop: "calc(env(safe-area-inset-top, 0) + 20px)",
         paddingBottom: "140px",
       }}
     >
-      {/* Header */}
-      <div className={`${PAD} flex items-center justify-between mb-5`}>
+      {/* ============ HEADER ============ */}
+      <div className={`${PAD} flex items-center justify-between mb-6`}>
         <h1
-          className="text-[30px] font-bold tracking-tight leading-none"
-          style={{ color: "var(--text-primary)", letterSpacing: "-0.025em" }}
+          className="text-[32px] font-bold leading-none"
+          style={{ color: "var(--text-primary)", letterSpacing: "-0.028em" }}
         >
           Contact
         </h1>
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={() => setNewGroupOpen(true)}
-          className="w-11 h-11 rounded-full flex items-center justify-center"
+          className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
           style={{
             background: "var(--accent)",
             color: "var(--accent-fg)",
@@ -101,10 +103,10 @@ export default function ChatList() {
         </motion.button>
       </div>
 
-      {/* Search bar */}
-      <div className={`${PAD} mb-5`}>
+      {/* ============ SEARCH ============ */}
+      <div className={`${PAD} mb-6`}>
         <div
-          className="flex items-center gap-2 px-4 py-3 rounded-2xl"
+          className="flex items-center gap-2 h-12 rounded-2xl px-4"
           style={{ background: "var(--bg-soft)" }}
         >
           <Search
@@ -123,7 +125,7 @@ export default function ChatList() {
         </div>
       </div>
 
-      {/* Loading */}
+      {/* ============ LOADING ============ */}
       {loading && (
         <div
           className={`${PAD} text-center py-16 text-sm`}
@@ -133,7 +135,7 @@ export default function ChatList() {
         </div>
       )}
 
-      {/* Empty state */}
+      {/* ============ EMPTY ============ */}
       {!loading && mergedItems.length === 0 && (
         <div className={`${PAD} text-center py-16`}>
           <MessageCircle
@@ -152,10 +154,7 @@ export default function ChatList() {
           <button
             onClick={() => setNewChatOpen(true)}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold"
-            style={{
-              background: "var(--accent)",
-              color: "var(--accent-fg)",
-            }}
+            style={{ background: "var(--accent)", color: "var(--accent-fg)" }}
           >
             <Plus className="w-4 h-4" strokeWidth={2.5} />
             New chat
@@ -163,7 +162,7 @@ export default function ChatList() {
         </div>
       )}
 
-      {/* No results */}
+      {/* ============ NO RESULTS ============ */}
       {!loading && mergedItems.length > 0 && filteredItems.length === 0 && (
         <div
           className={`${PAD} text-center py-16 text-sm`}
@@ -173,14 +172,14 @@ export default function ChatList() {
         </div>
       )}
 
-      {/* List */}
+      {/* ============ LIST ============ */}
       {!loading && filteredItems.length > 0 && (
-        <div className="flex flex-col">
+        <div className="w-full">
           {filteredItems.map((item) => (
             <Link
               key={`${item.type}-${item.id}`}
               to={item.to}
-              className={`${PAD} flex items-center gap-3.5 py-3.5 transition-colors active:bg-white/5`}
+              className={`${PAD} flex items-center gap-3.5 py-3 transition-colors`}
               style={{ color: "var(--text-primary)" }}
             >
               {item.type === "group" ? (
