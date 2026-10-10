@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState, lazy, Suspense , Component } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Splash from "./components/Splash.jsx";
 import Onboarding from "./components/Onboarding.jsx";
@@ -27,6 +27,31 @@ import { ToastProvider } from "./context/ToastContext.jsx";
 import { ParallaxProvider } from "./context/ParallaxContext.jsx";
 import { SettingsProvider } from "./context/SettingsContext.jsx";
 import { useIsMobile } from "./hooks/useIsMobile";
+
+class AppErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(error) { return { error }; }
+  componentDidCatch(error, info) { console.error("[AppErrorBoundary]", error, info); }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 24, fontFamily: "system-ui, sans-serif", minHeight: "100vh", background: "#fff", color: "#111" }}>
+          <h2 style={{ color: "#dc2626", marginBottom: 12 }}>Something went wrong</h2>
+          <p style={{ marginBottom: 16, color: "#666" }}>Tap below to reload the app.</p>
+          <button
+            onClick={() => { try { localStorage.clear(); } catch (e) {} location.reload(); }}
+            style={{ padding: "10px 18px", borderRadius: 999, background: "#3B7BFF", color: "#fff", border: 0, fontWeight: 600, fontSize: 14 }}
+          >Reload</button>
+          <pre style={{ marginTop: 20, padding: 12, background: "#f5f5f5", borderRadius: 8, fontSize: 11, whiteSpace: "pre-wrap", overflow: "auto" }}>
+            {String(this.state.error?.stack || this.state.error?.message || this.state.error)}
+          </pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 
 const ONBOARDING_KEY = "rodeo_onboarded";
 
@@ -74,6 +99,7 @@ export default function App() {
   };
 
   return (
+    <AppErrorBoundary>
     <UpdateProvider>
     <ParallaxProvider>
     <SettingsProvider>
@@ -131,5 +157,6 @@ export default function App() {
     </SettingsProvider>
     </ParallaxProvider>
     </UpdateProvider>
+    </AppErrorBoundary>
   );
 }
