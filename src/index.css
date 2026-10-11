@@ -137,14 +137,19 @@ html.light { color-scheme: light; }
   }
 
 /* ===== Locked viewport (native app feel) ===== */
-html, body {
-  height: 100%;
+html {
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   overscroll-behavior: none;
-  position: fixed;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
   width: 100%;
-  top: 0;
-  left: 0;
 }
 
 #root {
