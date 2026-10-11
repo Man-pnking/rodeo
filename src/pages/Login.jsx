@@ -5,7 +5,7 @@ import { ArrowLeft, Mail, Loader2 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 
 const RESEND_COOLDOWN = 30;
-const OTP_LENGTH = 6;
+const OTP_LENGTH = 8;
 
 export default function Login() {
   const { sendMagicLink, verifyOtp } = useAuth();
@@ -20,14 +20,12 @@ export default function Login() {
 
   const inputsRef = useRef([]);
 
-  // Cooldown timer for resend
   useEffect(() => {
     if (cooldown <= 0) return;
     const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
     return () => clearTimeout(t);
   }, [cooldown]);
 
-  // Focus first OTP input when entering step
   useEffect(() => {
     if (step === "otp") {
       setTimeout(() => inputsRef.current[0]?.focus(), 100);
@@ -84,7 +82,6 @@ export default function Login() {
     next[idx] = v;
     setOtp(next);
     if (v && idx < OTP_LENGTH - 1) inputsRef.current[idx + 1]?.focus();
-    // Auto-submit when complete
     if (next.every((d) => d !== "") && next.join("").length === OTP_LENGTH) {
       setTimeout(() => handleVerify(next.join("")), 150);
     }
@@ -111,17 +108,19 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-6 py-12">
+    <div
+      className="relative min-h-screen flex items-center justify-center px-6 py-12"
+      style={{ background: "var(--bg)", color: "var(--text-primary)" }}
+    >
       <div className="w-full max-w-sm">
-        {/* Logo / heading */}
         <div className="mb-10">
           <h1 className="display-lg mb-2">
             Welcome <span className="gradient-text">back</span>
           </h1>
-          <p className="text-warm-mute text-[15px]">
+          <p className="text-[15px]" style={{ color: "var(--text-secondary)" }}>
             {step === "email"
               ? "Sign in with your email — we'll send you a code."
-              : `We sent a 6-digit code to ${email}`}
+              : `We sent an 8-digit code to ${email}`}
           </p>
         </div>
 
@@ -137,10 +136,21 @@ export default function Login() {
               className="space-y-5"
             >
               <div>
-                <label className="text-label block mb-2">Email</label>
+                <label
+                  className="text-label block mb-2"
+                  htmlFor="login-email"
+                  style={{ color: "var(--text-tertiary)" }}
+                >
+                  Email
+                </label>
                 <div className="relative">
-                  <Mail className="absolute left-0 top-[6px] w-4 h-4 text-warm-mute pointer-events-none" strokeWidth={2} />
+                  <Mail
+                    className="absolute left-0 top-[6px] w-4 h-4 pointer-events-none"
+                    strokeWidth={2}
+                    style={{ color: "var(--text-tertiary)" }}
+                  />
                   <input
+                    id="login-email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -150,7 +160,14 @@ export default function Login() {
                     autoFocus
                     inputMode="email"
                     disabled={loading}
-                    className="w-full bg-transparent border-0 border-b border-white/15 focus:border-iri-pink pl-6 pb-3 text-warm placeholder:text-warm-mute outline-none transition-colors disabled:opacity-50"
+                    className="w-full bg-transparent border-0 border-b pl-6 pb-3 outline-none transition-colors disabled:opacity-50"
+                    style={{
+                      borderBottomColor: "var(--border-strong)",
+                      color: "var(--text-primary)",
+                      caretColor: "var(--accent)",
+                    }}
+                    onFocus={(e) => { e.target.style.borderBottomColor = "var(--accent)"; }}
+                    onBlur={(e) => { e.target.style.borderBottomColor = "var(--border-strong)"; }}
                   />
                 </div>
               </div>
@@ -159,7 +176,8 @@ export default function Login() {
                 <motion.div
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-[13px] text-red-400"
+                  className="text-[13px]"
+                  style={{ color: "var(--danger)" }}
                   role="alert"
                 >
                   {error}
@@ -188,7 +206,7 @@ export default function Login() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
-              className="space-y-5"
+              className="space-y-6"
             >
               <div
                 className="flex items-center justify-between gap-2"
@@ -207,9 +225,18 @@ export default function Login() {
                     disabled={loading}
                     onChange={(e) => handleOtpChange(idx, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                    onFocus={(e) => e.target.select()}
-                    className="w-11 h-14 text-center text-[22px] font-semibold bg-transparent border-0 border-b-2 border-white/15 focus:border-iri-pink text-warm outline-none transition-colors disabled:opacity-50"
-                    aria-label={`Digit ${idx + 1}`}
+                    onFocus={(e) => {
+                      e.target.select();
+                      e.target.style.borderBottomColor = "var(--accent)";
+                    }}
+                    onBlur={(e) => { e.target.style.borderBottomColor = "var(--border-strong)"; }}
+                    className="w-9 h-14 text-center text-[22px] font-semibold bg-transparent border-0 border-b-2 outline-none transition-colors disabled:opacity-50"
+                    style={{
+                      borderBottomColor: "var(--border-strong)",
+                      color: "var(--text-primary)",
+                      caretColor: "var(--accent)",
+                    }}
+                    aria-label={`Digit ${idx + 1} of ${OTP_LENGTH}`}
                   />
                 ))}
               </div>
@@ -218,7 +245,8 @@ export default function Login() {
                 <motion.div
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-[13px] text-red-400"
+                  className="text-[13px]"
+                  style={{ color: "var(--danger)" }}
                   role="alert"
                 >
                   {error}
@@ -240,7 +268,8 @@ export default function Login() {
                   type="button"
                   onClick={handleResend}
                   disabled={loading || cooldown > 0}
-                  className="text-[13px] font-medium text-warm-mute hover:text-warm transition-colors disabled:opacity-50"
+                  className="text-[13px] font-medium transition-colors disabled:opacity-50"
+                  style={{ color: "var(--text-secondary)" }}
                 >
                   {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend code"}
                 </button>
@@ -249,9 +278,9 @@ export default function Login() {
           )}
         </AnimatePresence>
 
-        <p className="text-[13px] text-warm-mute mt-8 text-center">
+        <p className="text-[13px] mt-8 text-center" style={{ color: "var(--text-secondary)" }}>
           New here?{" "}
-          <Link to="/signup" className="text-iri-pink font-medium hover:underline">
+          <Link to="/signup" className="font-medium hover:underline" style={{ color: "var(--accent)" }}>
             Create an account
           </Link>
         </p>
