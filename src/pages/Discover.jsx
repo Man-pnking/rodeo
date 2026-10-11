@@ -15,6 +15,7 @@ import EmptyDiscover from "../components/discover/EmptyDiscover.jsx";
 import LoadingSkeleton from "../components/discover/LoadingSkeleton.jsx";
 
 const PAD = "px-5";
+const EMPTY_LOC = { country: null, state: null, city: null, label: null };
 
 export default function Discover() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export default function Discover() {
   const [scope, setScope] = useState("nearby");
   const [rawQuery, setRawQuery] = useState("");
   const [query, setQuery] = useState("");
-  const [location, setLocation] = useState({ country: null, state: null, city: null, label: null });
+  const [location, setLocation] = useState(EMPTY_LOC);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [pendingIds, setPendingIds] = useState(() => new Set());
@@ -48,20 +49,11 @@ export default function Discover() {
 
   const handleTabChange = (nextScope) => {
     setScope(nextScope);
-    if (nextScope !== "place") {
-      setLocation({ country: null, state: null, city: null, label: null });
-    }
+    if (nextScope !== "place") setLocation(EMPTY_LOC);
   };
 
-  const handlePickLocation = (loc) => {
-    setLocation(loc);
-    setPickerOpen(false);
-  };
-
-  const handleClearLocation = () => {
-    setLocation({ country: null, state: null, city: null, label: null });
-  };
-
+  const handlePickLocation = (loc) => { setLocation(loc); setPickerOpen(false); };
+  const handleClearLocation = () => setLocation(EMPTY_LOC);
   const handleOpen = (person) => setSelected(person);
 
   const handleMessage = async (person) => {
@@ -98,11 +90,7 @@ export default function Discover() {
           className="flex items-center gap-2 h-12 rounded-2xl px-4 mb-3"
           style={{ background: "var(--bg-soft)" }}
         >
-          <Search
-            className="w-[18px] h-[18px] shrink-0"
-            style={{ color: "var(--text-tertiary)" }}
-            strokeWidth={2}
-          />
+          <Search className="w-[18px] h-[18px] shrink-0" style={{ color: "var(--text-tertiary)" }} strokeWidth={2} />
           <input
             type="text"
             value={rawQuery}
@@ -113,6 +101,7 @@ export default function Discover() {
           />
           {rawQuery && (
             <button
+              type="button"
               onClick={() => setRawQuery("")}
               className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
               style={{ background: "var(--bg-card)", color: "var(--text-tertiary)" }}
@@ -124,11 +113,10 @@ export default function Discover() {
         </div>
 
         <button
+          type="button"
           onClick={() => setPickerOpen(true)}
           className="w-full flex items-center gap-2 h-10 rounded-2xl px-4 mb-3 text-left"
-          style={{
-            background: location.country ? "var(--accent-soft)" : "var(--bg-soft)",
-          }}
+          style={{ background: location.country ? "var(--accent-soft)" : "var(--bg-soft)" }}
         >
           <MapPin
             className="w-4 h-4 shrink-0"
@@ -156,18 +144,16 @@ export default function Discover() {
           )}
         </button>
 
-        {!location.country && (
-          <FilterTabs value={scope} onChange={handleTabChange} />
-        )}
+        {!location.country && <FilterTabs value={scope} onChange={handleTabChange} />}
       </div>
 
-      <div className={PAD} style={{ minHeight: 0 }}>
+      <div className={PAD}>
         {loading && <LoadingSkeleton />}
 
         {!loading && error && (
           <div className="text-center py-12">
             <div className="text-[15px] font-semibold mb-2" style={{ color: "var(--danger)" }}>
-              Couldn’t load people
+              Couldn't load people
             </div>
             <div className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
               {error}
@@ -195,6 +181,7 @@ export default function Discover() {
 
             {hasMore && (
               <button
+                type="button"
                 onClick={loadMore}
                 disabled={loadingMore}
                 className="mt-4 mx-auto px-5 py-2.5 rounded-full text-[13px] font-semibold"

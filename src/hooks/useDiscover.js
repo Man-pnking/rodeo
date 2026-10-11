@@ -19,12 +19,8 @@ export function useDiscover(scope = "world", query = "", location = {}) {
       const reqId = ++reqIdRef.current;
       const offset = reset ? 0 : offsetRef.current;
 
-      if (reset) {
-        setLoading(true);
-        setError(null);
-      } else {
-        setLoadingMore(true);
-      }
+      if (reset) { setLoading(true); setError(null); }
+      else setLoadingMore(true);
 
       const { data, error: err } = await supabase.rpc("discover_profiles", {
         p_q: query.trim() || null,

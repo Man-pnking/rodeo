@@ -17,11 +17,10 @@ export default function FilterTabs({ value, onChange }) {
         return (
           <button
             key={t.id}
+            type="button"
             onClick={() => onChange(t.id)}
             className="relative flex-1 py-2 px-4 rounded-full text-[13px] font-semibold transition-colors"
-            style={{
-              color: active ? "var(--accent-fg)" : "var(--text-secondary)",
-            }}
+            style={{ color: active ? "var(--accent-fg)" : "var(--text-secondary)" }}
           >
             {active && (
               <motion.div

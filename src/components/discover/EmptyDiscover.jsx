@@ -20,10 +20,7 @@ export default function EmptyDiscover({ scope, query }) {
         style={{ color: "var(--text-tertiary)" }}
         strokeWidth={1.6}
       />
-      <div
-        className="text-[16px] font-semibold mb-1"
-        style={{ color: "var(--text-primary)" }}
-      >
+      <div className="text-[16px] font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
         {headline}
       </div>
       <div className="text-[13px]" style={{ color: "var(--text-secondary)" }}>

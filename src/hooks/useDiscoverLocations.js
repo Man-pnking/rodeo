@@ -1,19 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 
-/**
- * Fetches all (country, state, city) tuples with people counts and
- * builds a nested tree for the location picker.
- *
- * Shape:
- *   [
- *     { country: "Nigeria", people: 3,
- *       states: [
- *         { state: "Lagos State", people: 2,
- *           cities: [{ city: "Lagos", people: 2 }] },
- *       ] }
- *   ]
- */
 export function useDiscoverLocations() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);

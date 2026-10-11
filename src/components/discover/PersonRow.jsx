@@ -1,10 +1,8 @@
-import { motion } from "framer-motion";
 import { Plus, Check, MessageCircle } from "lucide-react";
 
 function formatDistance(km) {
   if (km == null || Number.isNaN(km)) return null;
   if (km < 1) return "< 1 km";
-  if (km < 100) return `${Math.round(km)} km`;
   if (km < 1000) return `${Math.round(km)} km`;
   return `${Math.round(km / 1000).toLocaleString()}k km`;
 }
@@ -14,10 +12,12 @@ export default function PersonRow({ person, onOpen, onMessage, onAdd, isFriend, 
   const name = person.display_name || person.username || "Unknown";
 
   return (
-    <motion.button
-      whileTap={{ scale: 0.99 }}
+    <div
+      role="button"
+      tabIndex={0}
       onClick={() => onOpen(person)}
-      className="w-full flex items-center gap-3 py-2.5 px-1 rounded-2xl text-left transition-colors"
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onOpen(person); }}
+      className="w-full flex items-center gap-3 py-2.5 px-1 rounded-2xl text-left transition-colors cursor-pointer"
       style={{ color: "var(--text-primary)" }}
     >
       <div
@@ -31,7 +31,7 @@ export default function PersonRow({ person, onOpen, onMessage, onAdd, isFriend, 
 
       <div className="min-w-0 flex-1">
         <div className="text-[15px] font-semibold truncate">{name}</div>
-        <div className="flex items-center gap-2 text-[12.5px] truncate" style={{ color: "var(--text-tertiary)" }}>
+        <div className="flex items-center gap-1.5 text-[12.5px] truncate" style={{ color: "var(--text-tertiary)" }}>
           <span className="truncate">@{person.username}</span>
           {person.location_label && (
             <>
@@ -50,6 +50,7 @@ export default function PersonRow({ person, onOpen, onMessage, onAdd, isFriend, 
 
       {isFriend ? (
         <button
+          type="button"
           onClick={(e) => { e.stopPropagation(); onMessage(person); }}
           className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
           style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
@@ -67,6 +68,7 @@ export default function PersonRow({ person, onOpen, onMessage, onAdd, isFriend, 
         </div>
       ) : (
         <button
+          type="button"
           onClick={(e) => { e.stopPropagation(); onAdd(person); }}
           className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
           style={{ background: "var(--accent)", color: "var(--accent-fg)" }}
@@ -75,6 +77,6 @@ export default function PersonRow({ person, onOpen, onMessage, onAdd, isFriend, 
           <Plus className="w-4 h-4" strokeWidth={2.6} />
         </button>
       )}
-    </motion.button>
+    </div>
   );
 }

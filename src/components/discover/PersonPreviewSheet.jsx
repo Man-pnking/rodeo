@@ -1,14 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MessageCircle, UserPlus, Check, MapPin } from "lucide-react";
 
-export default function PersonPreviewSheet({
-  person,
-  onClose,
-  onMessage,
-  onAdd,
-  isFriend,
-  isPending,
-}) {
+export default function PersonPreviewSheet({ person, onClose, onMessage, onAdd, isFriend, isPending }) {
   return (
     <AnimatePresence>
       {person && (
@@ -18,7 +11,7 @@ export default function PersonPreviewSheet({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-[100]"
+            className="fixed inset-0 z-[120]"
             style={{
               background: "rgba(0,0,0,0.45)",
               backdropFilter: "blur(4px)",
@@ -30,7 +23,7 @@ export default function PersonPreviewSheet({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 40, opacity: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
-            className="fixed inset-x-0 bottom-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[380px] z-[101] rounded-t-3xl md:rounded-3xl"
+            className="fixed inset-x-0 bottom-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[380px] z-[121] rounded-t-3xl md:rounded-3xl"
             style={{
               background: "var(--bg)",
               border: "1px solid var(--border)",
@@ -38,6 +31,7 @@ export default function PersonPreviewSheet({
             }}
           >
             <button
+              type="button"
               onClick={onClose}
               className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center"
               style={{ background: "var(--bg-soft)", color: "var(--text-secondary)" }}
@@ -56,10 +50,7 @@ export default function PersonPreviewSheet({
                 }}
               />
 
-              <div
-                className="text-[20px] font-bold mb-0.5"
-                style={{ color: "var(--text-primary)" }}
-              >
+              <div className="text-[20px] font-bold mb-0.5" style={{ color: "var(--text-primary)" }}>
                 {person.display_name || person.username}
               </div>
 
@@ -89,6 +80,7 @@ export default function PersonPreviewSheet({
               <div className="w-full flex gap-2">
                 {isFriend ? (
                   <button
+                    type="button"
                     onClick={() => onMessage(person)}
                     className="flex-1 py-3 rounded-full font-semibold text-[14px] inline-flex items-center justify-center gap-2"
                     style={{ background: "var(--accent)", color: "var(--accent-fg)" }}
@@ -98,6 +90,7 @@ export default function PersonPreviewSheet({
                   </button>
                 ) : isPending ? (
                   <button
+                    type="button"
                     disabled
                     className="flex-1 py-3 rounded-full font-semibold text-[14px] inline-flex items-center justify-center gap-2 opacity-60"
                     style={{ background: "var(--bg-soft)", color: "var(--text-secondary)" }}
@@ -107,6 +100,7 @@ export default function PersonPreviewSheet({
                   </button>
                 ) : (
                   <button
+                    type="button"
                     onClick={() => onAdd(person)}
                     className="flex-1 py-3 rounded-full font-semibold text-[14px] inline-flex items-center justify-center gap-2"
                     style={{ background: "var(--accent)", color: "var(--accent-fg)" }}
