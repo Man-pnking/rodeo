@@ -11,7 +11,6 @@ const Profile = lazy(() => import("./pages/Profile.jsx"));
 const UserProfile = lazy(() => import("./pages/UserProfile.jsx"));
 const ChatList = lazy(() => import("./pages/ChatList.jsx"));
 const Discover = lazy(() => import("./pages/Discover.jsx"));
-const DevLogin = lazy(() => import("./pages/DevLogin.jsx"));
 const Conversation = lazy(() => import("./pages/Conversation.jsx"));
 const GroupInfo = lazy(() => import("./pages/GroupInfo.jsx"));
 const Settings = lazy(() => import("./pages/Settings.jsx"));
@@ -110,7 +109,7 @@ export default function App() {
     <StatusProvider>
     <div className="relative w-full flex-1 min-h-0 flex flex-col overflow-hidden text-warm">
       <UpdatePrompt />
-      <div className="absolute inset-0" style={{ zIndex: 10 }}>
+      <div className="relative z-10 flex-1 min-h-0 flex flex-col overflow-hidden">
         {/* Splash screen */}
         {<Splash onDone={() => setSplashDone(true)} />}
 
@@ -126,7 +125,6 @@ export default function App() {
           }>
           <Routes>
             <Route path="/login" element={<RequireGuest><Login /></RequireGuest>} />
-            <Route path="/dev-login" element={<DevLogin />} />
             <Route path="/signup" element={<RequireGuest><Signup /></RequireGuest>} />
 
             {/* Home = contact list */}

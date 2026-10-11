@@ -6,7 +6,6 @@ export default function AppLayout({ children }) {
   const location = useLocation();
   const path = location.pathname;
 
-  // Routes that should not show the navigation rail
   const hideNav =
     path === "/profile" ||
     path.startsWith("/u/") ||
@@ -14,7 +13,6 @@ export default function AppLayout({ children }) {
     path.startsWith("/messages/") ||
     path.startsWith("/group/");
 
-  // Routes that should NOT show the floating map (splash/onboarding are separate)
   const hideBackground =
     path.startsWith("/login") ||
     path.startsWith("/signup") ||
@@ -23,13 +21,10 @@ export default function AppLayout({ children }) {
     path.startsWith("/group/");
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="w-full h-full flex flex-col overflow-hidden relative">
       {!hideBackground && <FloatingBackground intensity={1} />}
       {!hideNav && <Navigation />}
-      <main
-        className="absolute inset-0 overflow-y-auto md:pl-[76px]"
-        style={{ WebkitOverflowScrolling: "touch" }}
-      >
+      <main className="w-full flex-1 min-h-0 overflow-y-auto relative z-10 md:pl-[76px]">
         {children}
       </main>
     </div>

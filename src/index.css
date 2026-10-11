@@ -153,9 +153,12 @@ body {
 }
 
 #root {
-  position: absolute;
-  inset: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
 
   ::selection {
@@ -294,4 +297,14 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ===== App shell: viewport lock ===== */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--bg);
 }
