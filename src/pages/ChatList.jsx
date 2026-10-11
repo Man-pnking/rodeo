@@ -33,6 +33,7 @@ export default function ChatList() {
   const loading = convLoading || groupLoading;
 
   const [newChatOpen, setNewChatOpen] = useState(false);
+  const isMobile = useIsMobile();
   const [newGroupOpen, setNewGroupOpen] = useState(false);
   const [query, setQuery] = useState("");
 
