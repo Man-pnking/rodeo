@@ -138,8 +138,7 @@ html.light { color-scheme: light; }
 
 /* ===== Locked viewport (native app feel) ===== */
 html, body {
-  height: 100dvh;
-  max-height: 100dvh;
+  height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
   position: fixed;
@@ -149,12 +148,10 @@ html, body {
 }
 
 #root {
-  height: 100dvh;
-  max-height: 100dvh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: none;
 }
