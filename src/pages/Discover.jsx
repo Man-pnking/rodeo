@@ -13,6 +13,7 @@ import PersonPreviewSheet from "../components/discover/PersonPreviewSheet.jsx";
 import LocationPicker from "../components/discover/LocationPicker.jsx";
 import EmptyDiscover from "../components/discover/EmptyDiscover.jsx";
 import LoadingSkeleton from "../components/discover/LoadingSkeleton.jsx";
+import DebugScroll from "../components/DebugScroll.jsx";
 
 const PAD = "px-5";
 const EMPTY_LOC = { country: null, state: null, city: null, label: null };
@@ -71,6 +72,8 @@ export default function Discover() {
   };
 
   return (
+    <>
+    <DebugScroll />
     <div
       className="w-full"
       style={{
@@ -221,5 +224,6 @@ export default function Discover() {
         document.body
       )}
     </div>
+    </>
   );
 }
