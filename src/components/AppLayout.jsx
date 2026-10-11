@@ -23,10 +23,13 @@ export default function AppLayout({ children }) {
     path.startsWith("/group/");
 
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden relative">
+    <div className="absolute inset-0 overflow-hidden">
       {!hideBackground && <FloatingBackground intensity={1} />}
       {!hideNav && <Navigation />}
-      <main className="w-full flex-1 min-h-0 flex flex-col overflow-y-auto relative z-10 md:pl-[76px] overscroll-contain">
+      <main
+        className="absolute inset-0 overflow-y-auto md:pl-[76px]"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
         {children}
       </main>
     </div>
