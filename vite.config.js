@@ -8,17 +8,21 @@ export default defineConfig({
     {
       name: "write-version",
       apply: "build",
-      closeBundle() {
-        const fs = require("fs");
-        const path = require("path");
+      configResolved(config) {
+        this.outDir = config.build.outDir;
+      },
+      async writeBundle() {
+        const { mkdir, writeFile } = await import("node:fs/promises");
+        const path = await import("node:path");
         const version = Date.now().toString();
-        const outDir = path.resolve(__dirname || ".", "dist");
-        fs.writeFileSync(
+        const outDir = this.outDir || "dist";
+        await mkdir(outDir, { recursive: true });
+        await writeFile(
           path.join(outDir, "version.json"),
           JSON.stringify({ version }),
           "utf8"
         );
-        console.log("✅ version.json written:", version);
+        console.log("version.json written:", version);
       },
     },
     VitePWA({
