@@ -18,7 +18,7 @@ export default function PersonPreviewSheet({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-[80]"
+            className="fixed inset-0 z-[100]"
             style={{
               background: "rgba(0,0,0,0.45)",
               backdropFilter: "blur(4px)",
@@ -30,7 +30,7 @@ export default function PersonPreviewSheet({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 40, opacity: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
-            className="fixed inset-x-0 bottom-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[380px] z-[81] rounded-t-3xl md:rounded-3xl"
+            className="fixed inset-x-0 bottom-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[380px] z-[101] rounded-t-3xl md:rounded-3xl"
             style={{
               background: "var(--bg)",
               border: "1px solid var(--border)",

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { Search, X, MapPin, ChevronDown } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
@@ -160,7 +161,7 @@ export default function Discover() {
         )}
       </div>
 
-      <div className={PAD}>
+      <div className={PAD} style={{ minHeight: 0 }}>
         {loading && <LoadingSkeleton />}
 
         {!loading && error && (
@@ -210,22 +211,28 @@ export default function Discover() {
         )}
       </div>
 
-      <LocationPicker
-        open={pickerOpen}
-        onClose={() => setPickerOpen(false)}
-        onPick={handlePickLocation}
-        locations={locations}
-        current={location}
-      />
+      {createPortal(
+        <LocationPicker
+          open={pickerOpen}
+          onClose={() => setPickerOpen(false)}
+          onPick={handlePickLocation}
+          locations={locations}
+          current={location}
+        />,
+        document.body
+      )}
 
-      <PersonPreviewSheet
-        person={selected}
-        onClose={() => setSelected(null)}
-        onMessage={handleMessage}
-        onAdd={(p) => { handleAdd(p); setSelected(null); }}
-        isFriend={selected ? friendIds.has(selected.id) : false}
-        isPending={selected ? pendingIds.has(selected.id) : false}
-      />
+      {createPortal(
+        <PersonPreviewSheet
+          person={selected}
+          onClose={() => setSelected(null)}
+          onMessage={handleMessage}
+          onAdd={(p) => { handleAdd(p); setSelected(null); }}
+          isFriend={selected ? friendIds.has(selected.id) : false}
+          isPending={selected ? pendingIds.has(selected.id) : false}
+        />,
+        document.body
+      )}
     </div>
   );
 }
