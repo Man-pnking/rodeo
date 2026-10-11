@@ -1,21 +1,31 @@
 /**
- * Full-screen 100dvh layout for the conversation view.
- * Header (fixed top), messages (scroll), composer (fixed bottom).
- * Uses CSS grid so no child needs absolute positioning.
+ * Full-screen conversation layout.
+ *
+ * Uses position: fixed so it escapes any parent-height ambiguity, then
+ * a grid with minmax(0, 1fr) for the scrollable middle row. This is the
+ * only pattern that reliably pins the composer at the bottom on both
+ * desktop Safari and iOS Safari.
  */
 export default function ConversationShell({ header, children, composer }) {
   return (
     <div
-      className="w-full flex-1 min-h-0"
       style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         display: "grid",
-        gridTemplateRows: "auto 1fr auto",
+        gridTemplateRows: "auto minmax(0, 1fr) auto",
         background: "var(--bg)",
         overflow: "hidden",
+        zIndex: 5,
       }}
     >
       {header}
-      {children}
+      <div style={{ minHeight: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+        {children}
+      </div>
       {composer}
     </div>
   );
