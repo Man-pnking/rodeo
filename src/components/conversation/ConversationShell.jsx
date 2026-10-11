@@ -6,10 +6,8 @@
 export default function ConversationShell({ header, children, composer }) {
   return (
     <div
-      className="w-full"
+      className="w-full flex-1 min-h-0"
       style={{
-        height: "100%",
-        maxHeight: "100%",
         display: "grid",
         gridTemplateRows: "auto 1fr auto",
         background: "var(--bg)",
