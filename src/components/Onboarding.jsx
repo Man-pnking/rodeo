@@ -51,7 +51,8 @@ export default function Onboarding({ onComplete }) {
   useEffect(() => {
     if (profile?.display_name && !name) setName(profile.display_name);
     if (profile?.avatar_url && !avatarUrl) setAvatarUrl(profile.avatar_url);
-    if (profile?.location_label && !locationLabel) setLocationLabel(profile.location_label);
+    if (profile?.location_label && !locationLabel)
+      setLocationLabel(profile.location_label);
   }, [profile]);
 
   const next = () => {
@@ -132,40 +133,49 @@ export default function Onboarding({ onComplete }) {
       async (pos) => {
         const { latitude, longitude } = pos.coords;
         let country = "";
-let state = "";
-let city = "";
-try {
-  const res = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=14`,
-    { headers: { "Accept-Language": "en" } }
-  );
-  const data = await res.json();
-  const a = data?.address || {};
-  country = a.country || "";
-  state = a.state || a.region || a.state_district || "";
-  city = a.city || a.town || a.village || a.municipality || a.county || a.suburb || "";
-} catch {}
-const label = [city, state, country].filter(Boolean).join(", ");
-if (user) {
-  await update({
-    latitude,
-    longitude,
-    country: country || null,
-    state: state || null,
-    city: city || null,
-    location_label: label || country || null,
-    location_updated_at: new Date().toISOString(),
-  });
-}
-setLocationLabel(label || country);
+        let state = "";
+        let city = "";
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=14`,
+            { headers: { "Accept-Language": "en" } },
+          );
+          const data = await res.json();
+          const a = data?.address || {};
+          country = a.country || "";
+          state = a.state || a.region || a.state_district || "";
+          city =
+            a.city ||
+            a.town ||
+            a.village ||
+            a.municipality ||
+            a.county ||
+            a.suburb ||
+            "";
+        } catch {}
+        const label = [city, state, country].filter(Boolean).join(", ");
+        if (user) {
+          await update({
+            latitude,
+            longitude,
+            country: country || null,
+            state: state || null,
+            city: city || null,
+            location_label: label || country || null,
+            location_updated_at: new Date().toISOString(),
+          });
+        }
+        setLocationLabel(label || country);
         setLocating(false);
         setTimeout(() => next(), 500);
       },
       () => {
         setLocating(false);
-        setError("Location permission denied. You can enable it later in Settings.");
+        setError(
+          "Location permission denied. You can enable it later in Settings.",
+        );
       },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 },
     );
   };
 
@@ -176,7 +186,8 @@ setLocationLabel(label || country);
     setError("");
     const dims = await new Promise((resolve) => {
       const img = new Image();
-      img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+      img.onload = () =>
+        resolve({ width: img.naturalWidth, height: img.naturalHeight });
       img.onerror = () => resolve({});
       img.src = URL.createObjectURL(file);
     });
@@ -219,7 +230,8 @@ setLocationLabel(label || country);
         className="absolute inset-x-0 top-0 pointer-events-none"
         style={{
           height: "65%",
-          WebkitMaskImage: "linear-gradient(180deg, black 60%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(180deg, black 60%, transparent 100%)",
           maskImage: "linear-gradient(180deg, black 60%, transparent 100%)",
         }}
       >
@@ -450,9 +462,8 @@ function SlideWelcome({ onContinue }) {
         one chat at a time
       </Headline>
       <Body>
-        Discover friends near you and around the world. Start conversations
-        with people who share your interests — no feed, no noise, just
-        messaging.
+        Discover friends near you and around the world. Start conversations with
+        people who share your interests — no feed, no noise, just messaging.
       </Body>
       <PrimaryButton onClick={onContinue}>Get started</PrimaryButton>
     </>
@@ -489,12 +500,19 @@ function SlideEmail({ email, setEmail, loading, error, onSend }) {
       />
 
       {error && (
-        <p className="text-[13px] mb-3 text-center" style={{ color: "var(--danger)" }}>
+        <p
+          className="text-[13px] mb-3 text-center"
+          style={{ color: "var(--danger)" }}
+        >
           {error}
         </p>
       )}
 
-      <PrimaryButton onClick={onSend} disabled={!email.trim()} loading={loading}>
+      <PrimaryButton
+        onClick={onSend}
+        disabled={!email.trim()}
+        loading={loading}
+      >
         Send code
       </PrimaryButton>
     </>
@@ -502,7 +520,16 @@ function SlideEmail({ email, setEmail, loading, error, onSend }) {
 }
 
 // ---------- Slide 3: Enter Code ----------
-function SlideEnterCode({ email, token, setToken, verifying, error, onVerify, onResend, onEdit }) {
+function SlideEnterCode({
+  email,
+  token,
+  setToken,
+  verifying,
+  error,
+  onVerify,
+  onResend,
+  onEdit,
+}) {
   const digits = token.replace(/\D/g, "").slice(0, 8);
 
   return (
@@ -531,7 +558,9 @@ function SlideEnterCode({ email, token, setToken, verifying, error, onVerify, on
         type="text"
         inputMode="numeric"
         value={digits}
-        onChange={(e) => setToken(e.target.value.replace(/\D/g, "").slice(0, 8))}
+        onChange={(e) =>
+          setToken(e.target.value.replace(/\D/g, "").slice(0, 8))
+        }
         placeholder="00000000"
         autoComplete="one-time-code"
         autoFocus
@@ -550,7 +579,10 @@ function SlideEnterCode({ email, token, setToken, verifying, error, onVerify, on
       />
 
       {error && (
-        <p className="text-[13px] mb-3 text-center" style={{ color: "var(--danger)" }}>
+        <p
+          className="text-[13px] mb-3 text-center"
+          style={{ color: "var(--danger)" }}
+        >
           {error}
         </p>
       )}
@@ -582,7 +614,6 @@ function SlideEnterCode({ email, token, setToken, verifying, error, onVerify, on
   );
 }
 
-
 // ---------- Slide 4: Location ----------
 function SlideLocation({ locating, locationLabel, error, onRequest, onSkip }) {
   const done = !!locationLabel;
@@ -599,7 +630,10 @@ function SlideLocation({ locating, locationLabel, error, onRequest, onSkip }) {
       </Body>
 
       {error && (
-        <p className="text-[13px] mb-4 -mt-3" style={{ color: "var(--danger)" }}>
+        <p
+          className="text-[13px] mb-4 -mt-3"
+          style={{ color: "var(--danger)" }}
+        >
           {error}
         </p>
       )}
@@ -656,7 +690,10 @@ function SlideUsername({ name, setName, error, onContinue }) {
       />
 
       {error && (
-        <p className="text-[13px] mb-3 text-center" style={{ color: "var(--danger)" }}>
+        <p
+          className="text-[13px] mb-3 text-center"
+          style={{ color: "var(--danger)" }}
+        >
           {error}
         </p>
       )}
@@ -669,7 +706,13 @@ function SlideUsername({ name, setName, error, onContinue }) {
 }
 
 // ---------- Slide 6: Avatar ----------
-function SlideAvatar({ avatarUrl, uploading, error, onPickAvatar, onContinue }) {
+function SlideAvatar({
+  avatarUrl,
+  uploading,
+  error,
+  onPickAvatar,
+  onContinue,
+}) {
   return (
     <>
       <Eyebrow>05 · Photo</Eyebrow>
@@ -691,10 +734,16 @@ function SlideAvatar({ avatarUrl, uploading, error, onPickAvatar, onContinue }) 
           }}
         >
           {!avatarUrl && !uploading && (
-            <UserIcon className="w-10 h-10" style={{ color: "var(--text-tertiary)" }} />
+            <UserIcon
+              className="w-10 h-10"
+              style={{ color: "var(--text-tertiary)" }}
+            />
           )}
           {uploading && (
-            <Loader2 className="w-7 h-7 animate-spin" style={{ color: "var(--accent)" }} />
+            <Loader2
+              className="w-7 h-7 animate-spin"
+              style={{ color: "var(--accent)" }}
+            />
           )}
           <div
             className="absolute -bottom-1 -right-1 w-9 h-9 rounded-full flex items-center justify-center"
@@ -709,7 +758,10 @@ function SlideAvatar({ avatarUrl, uploading, error, onPickAvatar, onContinue }) 
       </div>
 
       {error && (
-        <p className="text-[13px] mb-3 text-center" style={{ color: "var(--danger)" }}>
+        <p
+          className="text-[13px] mb-3 text-center"
+          style={{ color: "var(--danger)" }}
+        >
           {error}
         </p>
       )}
