@@ -131,25 +131,33 @@ export default function Onboarding({ onComplete }) {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
-        let label = "";
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`
-          );
-          const data = await res.json();
-          label = data?.address?.city || data?.address?.town || data?.address?.country || "";
-        } catch {
-          label = "";
-        }
-        if (user) {
-          await update({
-            latitude,
-            longitude,
-            location_label: label,
-            location_updated_at: new Date().toISOString(),
-          });
-        }
-        setLocationLabel(label);
+        let country = "";
+let state = "";
+let city = "";
+try {
+  const res = await fetch(
+    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=14`,
+    { headers: { "Accept-Language": "en" } }
+  );
+  const data = await res.json();
+  const a = data?.address || {};
+  country = a.country || "";
+  state = a.state || a.region || a.state_district || "";
+  city = a.city || a.town || a.village || a.municipality || a.county || a.suburb || "";
+} catch {}
+const label = [city, state, country].filter(Boolean).join(", ");
+if (user) {
+  await update({
+    latitude,
+    longitude,
+    country: country || null,
+    state: state || null,
+    city: city || null,
+    location_label: label || country || null,
+    location_updated_at: new Date().toISOString(),
+  });
+}
+setLocationLabel(label || country);
         setLocating(false);
         setTimeout(() => next(), 500);
       },
