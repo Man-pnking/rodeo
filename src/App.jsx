@@ -10,6 +10,7 @@ const Signup = lazy(() => import("./pages/Signup.jsx"));
 const Profile = lazy(() => import("./pages/Profile.jsx"));
 const UserProfile = lazy(() => import("./pages/UserProfile.jsx"));
 const ChatList = lazy(() => import("./pages/ChatList.jsx"));
+const Discover = lazy(() => import("./pages/Discover.jsx"));
 const Conversation = lazy(() => import("./pages/Conversation.jsx"));
 const GroupInfo = lazy(() => import("./pages/GroupInfo.jsx"));
 const Settings = lazy(() => import("./pages/Settings.jsx"));
@@ -129,6 +130,7 @@ export default function App() {
             {/* Home = contact list */}
             <Route path="/" element={<Navigate to="/messages" replace />} />
 
+            <Route path="/discover" element={<RequireAuth><AppLayout><Discover /></AppLayout></RequireAuth>} />
             <Route path="/messages" element={<RequireAuth><AppLayout><ChatList /></AppLayout></RequireAuth>} />
             <Route path="/messages/:id" element={<RequireAuth><AppLayout><Conversation /></AppLayout></RequireAuth>} />
             <Route path="/group/:id" element={<RequireAuth><AppLayout><GroupInfo /></AppLayout></RequireAuth>} />
