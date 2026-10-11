@@ -1,13 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, X } from "lucide-react";
+import { Search, X, MapPin, ChevronDown } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useFriendships } from "../hooks/useFriendships";
 import { useConversations } from "../hooks/useConversations";
 import { useDiscover } from "../hooks/useDiscover";
+import { useDiscoverLocations } from "../hooks/useDiscoverLocations";
 import FilterTabs from "../components/discover/FilterTabs.jsx";
 import PersonRow from "../components/discover/PersonRow.jsx";
 import PersonPreviewSheet from "../components/discover/PersonPreviewSheet.jsx";
+import LocationPicker from "../components/discover/LocationPicker.jsx";
 import EmptyDiscover from "../components/discover/EmptyDiscover.jsx";
 import LoadingSkeleton from "../components/discover/LoadingSkeleton.jsx";
 
@@ -18,22 +20,46 @@ export default function Discover() {
   const { user } = useAuth();
   const { friends = [] } = useFriendships(user?.id) || {};
   const { getOrCreate } = useConversations(user?.id) || {};
+  const { tree: locations } = useDiscoverLocations();
 
   const [scope, setScope] = useState("nearby");
   const [rawQuery, setRawQuery] = useState("");
   const [query, setQuery] = useState("");
+  const [location, setLocation] = useState({ country: null, state: null, city: null, label: null });
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [pendingIds, setPendingIds] = useState(() => new Set());
 
-  // Debounce search
   useEffect(() => {
     const t = setTimeout(() => setQuery(rawQuery), 300);
     return () => clearTimeout(t);
   }, [rawQuery]);
 
-  const { people, loading, loadingMore, error, hasMore, loadMore } = useDiscover(scope, query);
+  const effectiveScope = location.country ? "place" : scope;
+
+  const { people, loading, loadingMore, error, hasMore, loadMore } = useDiscover(
+    effectiveScope,
+    query,
+    location.country ? location : {}
+  );
 
   const friendIds = useMemo(() => new Set(friends.map((f) => f.id)), [friends]);
+
+  const handleTabChange = (nextScope) => {
+    setScope(nextScope);
+    if (nextScope !== "place") {
+      setLocation({ country: null, state: null, city: null, label: null });
+    }
+  };
+
+  const handlePickLocation = (loc) => {
+    setLocation(loc);
+    setPickerOpen(false);
+  };
+
+  const handleClearLocation = () => {
+    setLocation({ country: null, state: null, city: null, label: null });
+  };
 
   const handleOpen = (person) => setSelected(person);
 
@@ -44,14 +70,11 @@ export default function Discover() {
   };
 
   const handleAdd = (person) => {
-    // Optimistic: mark as pending; friendship request flow depends on your system
     setPendingIds((prev) => {
       const next = new Set(prev);
       next.add(person.id);
       return next;
     });
-    // TODO: wire to real add-friend RPC when ready.
-    // For now this is a visual placeholder so the UI is complete.
   };
 
   return (
@@ -62,7 +85,6 @@ export default function Discover() {
         paddingBottom: "calc(env(safe-area-inset-bottom, 0) + 120px)",
       }}
     >
-      {/* Header */}
       <div className={`${PAD} mb-5`}>
         <h1
           className="text-[32px] font-bold leading-[1.05] mb-4"
@@ -71,9 +93,8 @@ export default function Discover() {
           Discover
         </h1>
 
-        {/* Search */}
         <div
-          className="flex items-center gap-2 h-12 rounded-2xl px-4 mb-4"
+          className="flex items-center gap-2 h-12 rounded-2xl px-4 mb-3"
           style={{ background: "var(--bg-soft)" }}
         >
           <Search
@@ -101,11 +122,44 @@ export default function Discover() {
           )}
         </div>
 
-        {/* Tabs */}
-        <FilterTabs value={scope} onChange={setScope} />
+        <button
+          onClick={() => setPickerOpen(true)}
+          className="w-full flex items-center gap-2 h-10 rounded-2xl px-4 mb-3 text-left"
+          style={{
+            background: location.country ? "var(--accent-soft)" : "var(--bg-soft)",
+          }}
+        >
+          <MapPin
+            className="w-4 h-4 shrink-0"
+            style={{ color: location.country ? "var(--accent)" : "var(--text-tertiary)" }}
+            strokeWidth={2}
+          />
+          <span
+            className="flex-1 text-[14px] font-medium truncate"
+            style={{ color: location.country ? "var(--accent)" : "var(--text-secondary)" }}
+          >
+            {location.label || "Filter by location"}
+          </span>
+          {location.country ? (
+            <span
+              onClick={(e) => { e.stopPropagation(); handleClearLocation(); }}
+              className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+              style={{ background: "var(--bg-card)", color: "var(--text-tertiary)" }}
+              role="button"
+              aria-label="Clear location"
+            >
+              <X className="w-3 h-3" strokeWidth={2.5} />
+            </span>
+          ) : (
+            <ChevronDown className="w-4 h-4 shrink-0" style={{ color: "var(--text-tertiary)" }} />
+          )}
+        </button>
+
+        {!location.country && (
+          <FilterTabs value={scope} onChange={handleTabChange} />
+        )}
       </div>
 
-      {/* Body */}
       <div className={PAD}>
         {loading && <LoadingSkeleton />}
 
@@ -121,7 +175,7 @@ export default function Discover() {
         )}
 
         {!loading && !error && people.length === 0 && (
-          <EmptyDiscover scope={scope} query={query} />
+          <EmptyDiscover scope={effectiveScope} query={query} />
         )}
 
         {!loading && !error && people.length > 0 && (
@@ -156,14 +210,19 @@ export default function Discover() {
         )}
       </div>
 
+      <LocationPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onPick={handlePickLocation}
+        locations={locations}
+        current={location}
+      />
+
       <PersonPreviewSheet
         person={selected}
         onClose={() => setSelected(null)}
         onMessage={handleMessage}
-        onAdd={(p) => {
-          handleAdd(p);
-          setSelected(null);
-        }}
+        onAdd={(p) => { handleAdd(p); setSelected(null); }}
         isFriend={selected ? friendIds.has(selected.id) : false}
         isPending={selected ? pendingIds.has(selected.id) : false}
       />
