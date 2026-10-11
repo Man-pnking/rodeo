@@ -7,6 +7,8 @@ import { useConversations } from "../hooks/useConversations";
 import { useGroups } from "../hooks/useGroups";
 import GroupAvatar from "../components/GroupAvatar.jsx";
 import NewChatSheet from "../components/NewChatSheet.jsx";
+import NewChatModal from "../components/NewChatModal.jsx";
+import { useIsMobile } from "../hooks/useIsMobile";
 import CreateGroupSheet from "../components/CreateGroupSheet.jsx";
 
 // Single source of truth for horizontal padding across the whole page.
@@ -241,7 +243,11 @@ export default function ChatList() {
         </div>
       )}
 
-      <NewChatSheet open={newChatOpen} onClose={() => setNewChatOpen(false)} />
+      {isMobile ? (
+        <NewChatSheet open={newChatOpen} onClose={() => setNewChatOpen(false)} />
+      ) : (
+        <NewChatModal open={newChatOpen} onClose={() => setNewChatOpen(false)} />
+      )}
       <CreateGroupSheet
         open={newGroupOpen}
         onClose={() => setNewGroupOpen(false)}

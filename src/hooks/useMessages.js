@@ -3,7 +3,9 @@ import { supabase } from "../lib/supabase";
 
 async function sendPushToUser(userId, payload) {
   try {
-    await supabase.functions.invoke("send-push", { body: { user_id: userId, ...payload } });
+    await supabase.functions.invoke("send-push", {
+      body: { user_id: userId, ...payload },
+    });
   } catch (e) {
     console.warn("[push] failed", e);
   }
@@ -22,50 +24,74 @@ async function getConversationOtherUser(conversationId, senderId) {
 export function useMessages({ conversationId, groupId }, userId) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const channelRef = useRef(null);
+  const [error, setError] = useState(null);
 
+  const channelRef = useRef(null);
+  const mountedRef = useRef(true);
+  const targetCol = groupId ? "group_id" : "conversation_id";
+  const targetVal = groupId || conversationId;
+
+  // Track mount state so async callbacks don't setState after unmount
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  // -------- Load --------
   const load = useCallback(async () => {
-    if (!conversationId) {
+    setError(null);
+    if (!targetVal || !userId) {
+      if (mountedRef.current) {
+        setMessages([]);
+        setLoading(false);
+      }
+      return;
+    }
+    if (mountedRef.current) setLoading(true);
+
+    const { data, error: err } = await supabase
+      .from("messages")
+      .select("*")
+      .eq(targetCol, targetVal)
+      .order("created_at", { ascending: true });
+
+    if (!mountedRef.current) return;
+    if (err) {
+      setError(err.message || "Could not load messages.");
       setMessages([]);
       setLoading(false);
       return;
     }
-    setLoading(true);
-    const { data } = await supabase
-      .from("messages")
-      .select("*")
-      .eq("conversation_id", conversationId)
-      .order("created_at", { ascending: true });
-    setMessages(data || []);
+    setMessages(Array.isArray(data) ? data : []);
     setLoading(false);
-  }, [conversationId]);
+  }, [targetVal, targetCol, userId]);
 
-  // Initial load
   useEffect(() => {
     load();
   }, [load]);
 
-  // Realtime subscription
+  // -------- Realtime --------
   useEffect(() => {
-    const filterValue = groupId || conversationId;
-    const filterCol = groupId ? "group_id" : "conversation_id";
-    if (!filterValue) return;
+    if (!targetVal) return;
 
     const channel = supabase
-      .channel(`messages:${filterCol}:${filterValue}`)
+      .channel(`messages:${targetCol}:${targetVal}`)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "messages",
-          filter: `${filterCol}=eq.${filterValue}`,
+          filter: `${targetCol}=eq.${targetVal}`,
         },
         (payload) => {
+          if (!mountedRef.current || !payload?.new) return;
           setMessages((prev) => {
-            // Dedupe
-            if (prev.find((m) => m.id === payload.new.id)) return prev;
-            return [...prev, payload.new];
+            const list = Array.isArray(prev) ? prev : [];
+            if (list.find((m) => m.id === payload.new.id)) return list;
+            return [...list, payload.new];
           });
         }
       )
@@ -75,11 +101,14 @@ export function useMessages({ conversationId, groupId }, userId) {
           event: "UPDATE",
           schema: "public",
           table: "messages",
-          filter: `${filterCol}=eq.${filterValue}`,
+          filter: `${targetCol}=eq.${targetVal}`,
         },
         (payload) => {
+          if (!mountedRef.current || !payload?.new) return;
           setMessages((prev) =>
-            prev.map((m) => (m.id === payload.new.id ? payload.new : m))
+            (Array.isArray(prev) ? prev : []).map((m) =>
+              m.id === payload.new.id ? payload.new : m
+            )
           );
         }
       )
@@ -87,38 +116,42 @@ export function useMessages({ conversationId, groupId }, userId) {
 
     channelRef.current = channel;
     return () => {
-      if (channelRef.current) supabase.removeChannel(channelRef.current);
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
-  }, [conversationId, groupId]);
+  }, [targetVal, targetCol]);
 
-  // Mark incoming messages as read
+  // -------- Mark incoming as read --------
   useEffect(() => {
-    const targetId = groupId || conversationId;
-    if (!targetId || !userId || messages.length === 0) return;
+    if (!targetVal || !userId) return;
+    if (!Array.isArray(messages) || messages.length === 0) return;
+
     const unread = messages.filter(
-      (m) => m.sender_id !== userId && !m.read_at
+      (m) => m && m.sender_id !== userId && !m.read_at
     );
     if (unread.length === 0) return;
 
+    const readAt = new Date().toISOString();
     supabase
       .from("messages")
-      .update({ read_at: new Date().toISOString() })
+      .update({ read_at: readAt })
       .in("id", unread.map((m) => m.id))
       .then(() => {
+        if (!mountedRef.current) return;
         setMessages((prev) =>
-          prev.map((m) =>
-            unread.find((u) => u.id === m.id)
-              ? { ...m, read_at: new Date().toISOString() }
-              : m
+          (Array.isArray(prev) ? prev : []).map((m) =>
+            unread.find((u) => u.id === m.id) ? { ...m, read_at: readAt } : m
           )
         );
       });
-  }, [messages, conversationId, groupId, userId]);
+  }, [messages, targetVal, userId]);
 
+  // -------- Send --------
   const send = async (body, imageUrl) => {
-    const targetValue = groupId || conversationId;
-    if (!userId || !targetValue) return { error: "Missing" };
-    if (!body?.trim() && !imageUrl) return { error: "Empty" };
+    if (!userId || !targetVal) return { error: "Missing target" };
+    if (!body?.trim() && !imageUrl) return { error: "Empty message" };
 
     const payload = {
       sender_id: userId,
@@ -128,24 +161,28 @@ export function useMessages({ conversationId, groupId }, userId) {
     if (groupId) payload.group_id = groupId;
     else payload.conversation_id = conversationId;
 
-    const { data: inserted, error } = await supabase
+    const { data: inserted, error: err } = await supabase
       .from("messages")
       .insert(payload)
       .select()
       .single();
-    if (error) return { error: error.message };
 
-    // Optimistically add to local state so the sender sees it instantly
-    if (inserted) {
+    if (err) return { error: err.message };
+
+    if (inserted && mountedRef.current) {
       setMessages((prev) => {
-        if (prev.find((m) => m.id === inserted.id)) return prev;
-        return [...prev, inserted];
+        const list = Array.isArray(prev) ? prev : [];
+        if (list.find((m) => m.id === inserted.id)) return list;
+        return [...list, inserted];
       });
     }
 
-    // Fire push to the other user (DM only, not groups for now)
+    // Push notification for DMs only
     if (!groupId && conversationId) {
-      const recipientId = await getConversationOtherUser(conversationId, userId);
+      const recipientId = await getConversationOtherUser(
+        conversationId,
+        userId
+      );
       if (recipientId) {
         sendPushToUser(recipientId, {
           title: "New message",
@@ -159,5 +196,5 @@ export function useMessages({ conversationId, groupId }, userId) {
     return {};
   };
 
-  return { messages, loading, reload: load, send };
+  return { messages, loading, error, reload: load, send };
 }

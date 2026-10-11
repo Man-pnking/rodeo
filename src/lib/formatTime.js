@@ -1,5 +1,3 @@
-// Pure time helpers — no React, no side effects.
-
 export function sameDay(aIso, bIso) {
   if (!aIso || !bIso) return false;
   const a = new Date(aIso);
@@ -25,7 +23,6 @@ export function dayLabel(iso) {
   const today = new Date();
   const yesterday = new Date();
   yesterday.setDate(today.getDate() - 1);
-
   if (sameDay(d.toISOString(), today.toISOString())) return "Today";
   if (sameDay(d.toISOString(), yesterday.toISOString())) return "Yesterday";
   return d.toLocaleDateString([], { month: "short", day: "numeric" });

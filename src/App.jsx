@@ -112,11 +112,11 @@ export default function App() {
         {/* Splash screen */}
         {<Splash onDone={() => setSplashDone(true)} />}
 
-        {splashDone && !onboarded && !user && (
+        {splashDone && !onboarded && !user && !["/login", "/signup"].includes(location.pathname) && (
           <Onboarding onComplete={handleOnboardingComplete} />
         )}
 
-        {splashDone && (onboarded || user) && (
+        {splashDone && (onboarded || user || ["/login", "/signup"].includes(location.pathname)) && (
           <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center">
               <div className="w-8 h-8 rounded-full border-2 border-iri-pink border-t-transparent animate-spin" />
