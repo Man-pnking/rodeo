@@ -151,10 +151,12 @@ html, body {
 #root {
   height: 100dvh;
   max-height: 100dvh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: auto;
+  overscroll-behavior: none;
 }
 
   ::selection {

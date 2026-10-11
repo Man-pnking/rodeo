@@ -8,8 +8,8 @@ export default function ConversationShell({ header, children, composer }) {
     <div
       className="w-full"
       style={{
-        height: "100dvh",
-        maxHeight: "100dvh",
+        height: "100%",
+        maxHeight: "100%",
         display: "grid",
         gridTemplateRows: "auto 1fr auto",
         background: "var(--bg)",
