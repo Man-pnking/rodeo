@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabase";
 
 const PAGE_SIZE = 30;
 
-export function useDiscover(scope = "world", query = "") {
+export function useDiscover(scope = "world", query = "", location = {}) {
   const [people, setPeople] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -11,6 +11,8 @@ export function useDiscover(scope = "world", query = "") {
   const [hasMore, setHasMore] = useState(false);
   const offsetRef = useRef(0);
   const reqIdRef = useRef(0);
+
+  const { country = null, state = null, city = null } = location || {};
 
   const fetchPage = useCallback(
     async (reset) => {
@@ -27,6 +29,9 @@ export function useDiscover(scope = "world", query = "") {
       const { data, error: err } = await supabase.rpc("discover_profiles", {
         p_q: query.trim() || null,
         p_scope: scope,
+        p_country: country,
+        p_state: state,
+        p_city: city,
         p_limit: PAGE_SIZE,
         p_offset: offset,
       });
@@ -48,10 +53,9 @@ export function useDiscover(scope = "world", query = "") {
       setLoading(false);
       setLoadingMore(false);
     },
-    [scope, query]
+    [scope, query, country, state, city]
   );
 
-  // Reset + fetch when scope or query changes
   useEffect(() => {
     offsetRef.current = 0;
     fetchPage(true);
